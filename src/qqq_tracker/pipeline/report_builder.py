@@ -18,7 +18,17 @@ def build_ai_input(price_summary: pd.DataFrame, macro_summary: pd.DataFrame, fmp
             ])
     if not macro_summary.empty:
         for _, r in macro_summary.iterrows():
-            rows.append(["宏观", r.get("name") or r.get("series_id"), r.get("latest_value"), "用于方向判断", r.get("status", "信息"), r.get("latest_date"), "宏观环境", "FRED"])
+            category = "宏观原始" if r.get("status") == "信息" else "宏观"
+            rows.append([
+                category,
+                r.get("name") or r.get("series_id"),
+                r.get("latest_value"),
+                r.get("threshold", "用于方向判断"),
+                r.get("status", "信息"),
+                r.get("latest_date"),
+                r.get("direction", "宏观环境"),
+                "FRED",
+            ])
     if not fmp_summary.empty:
         available_ratio = fmp_summary["ok"].mean() if "ok" in fmp_summary.columns and len(fmp_summary) else None
         status = "绿色" if available_ratio and available_ratio >= 0.8 else "黄色" if available_ratio and available_ratio >= 0.5 else "灰色"

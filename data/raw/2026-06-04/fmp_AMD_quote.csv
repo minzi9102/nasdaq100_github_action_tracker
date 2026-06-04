@@ -1,2 +1,2 @@
 ﻿symbol,name,price,changePercentage,change,volume,dayLow,dayHigh,yearHigh,yearLow,marketCap,priceAvg50,priceAvg200,exchange,open,previousClose,timestamp,source
-AMD,"Advanced Micro Devices, Inc.",542.52,4.0227,20.98,28701602,524.3001,546.15,546.44,114.71,884633112000,347.4446,242.73904,NASDAQ,533.82,521.54,1780516801,fmp
+AMD,"Advanced Micro Devices, Inc.",513.51,-5.34727,-29.01,3254601,510.62,518.68,546.44,114.71,837329406000,347.4446,242.73904,NASDAQ,514.75,542.52,1780580237,fmp

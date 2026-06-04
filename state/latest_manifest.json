@@ -1,22 +1,22 @@
 {
   "as_of": "2026-06-04",
-  "generated_at": "2026-06-04T13:28:32Z",
+  "generated_at": "2026-06-04T13:37:26Z",
   "latest_files": {
-    "markdown_summary": "/home/runner/work/nasdaq100_github_action_tracker/nasdaq100_github_action_tracker/reports/latest/analysis_summary.md",
-    "excel_report": "/home/runner/work/nasdaq100_github_action_tracker/nasdaq100_github_action_tracker/reports/latest/nasdaq100_qqq_daily_tracker.xlsx",
-    "ai_input_csv": "/home/runner/work/nasdaq100_github_action_tracker/nasdaq100_github_action_tracker/reports/latest/ai_input.csv",
-    "price_summary_csv": "/home/runner/work/nasdaq100_github_action_tracker/nasdaq100_github_action_tracker/reports/latest/price_summary.csv",
-    "macro_summary_csv": "/home/runner/work/nasdaq100_github_action_tracker/nasdaq100_github_action_tracker/reports/latest/macro_summary.csv",
-    "fmp_summary_csv": "/home/runner/work/nasdaq100_github_action_tracker/nasdaq100_github_action_tracker/reports/latest/fmp_summary.csv",
-    "run_log_csv": "/home/runner/work/nasdaq100_github_action_tracker/nasdaq100_github_action_tracker/reports/latest/run_log.csv"
+    "markdown_summary": "reports/latest/analysis_summary.md",
+    "excel_report": "reports/latest/nasdaq100_qqq_daily_tracker.xlsx",
+    "ai_input_csv": "reports/latest/ai_input.csv",
+    "price_summary_csv": "reports/latest/price_summary.csv",
+    "macro_summary_csv": "reports/latest/macro_summary.csv",
+    "fmp_summary_csv": "reports/latest/fmp_summary.csv",
+    "run_log_csv": "reports/latest/run_log.csv"
   },
   "provider_logs": [
     {
       "provider": "alpha_vantage",
       "method": "daily_adjusted",
       "symbol": "QQQ",
-      "ok": false,
-      "message": "Thank you for using Alpha Vantage! This is a premium endpoint. You may subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to instantly unlock all premium endpoints"
+      "ok": true,
+      "message": "QQQ: 100 rows"
     },
     {
       "provider": "tiingo",

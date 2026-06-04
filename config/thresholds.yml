@@ -13,11 +13,22 @@ price:
     yellow_gte: -0.15
 macro:
   ten_year_yield_level:
-    green_lt: 0.0425
-    yellow_lt: 0.05
+    green_lt: 4.25
+    yellow_lt: 5.0
   ten_year_yield_1m_change:
-    green_lte: 0.0
-    yellow_lte: 0.15
+    green_lte: 0.15
+    yellow_lte: 0.30
+    red_gte: 0.30
+  two_ten_spread:
+    yellow_lt: 0.0
+    red_lte: -0.50
+    red_1m_deepen_lte: -0.25
+  inflation_three_changes:
+    yellow_when_latest_rises: true
+    red_when_three_increase: true
+  unemployment_3m_change:
+    yellow_gte: 0.30
+    red_gte: 0.50
 fundamental:
   fmp_quote_available_ratio:
     green_gte: 0.80

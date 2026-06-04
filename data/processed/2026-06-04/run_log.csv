@@ -1,5 +1,5 @@
 ﻿provider,method,symbol,ok,message
-alpha_vantage,daily_adjusted,QQQ,False,Thank you for using Alpha Vantage! This is a premium endpoint. You may subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to instantly unlock all premium endpoints
+alpha_vantage,daily_adjusted,QQQ,True,QQQ: 100 rows
 tiingo,daily_prices,QQQ,True,QQQ: 288 rows
 fred,observations,DGS10,True,DGS10: 365 rows
 fred,observations,DGS2,True,DGS2: 365 rows

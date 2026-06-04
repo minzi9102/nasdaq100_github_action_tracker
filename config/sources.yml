@@ -5,7 +5,7 @@ providers:
     class_path: qqq_tracker.providers.alpha_vantage.AlphaVantageProvider
     api_key_env: ALPHA_VANTAGE_API_KEY
     base_url: https://www.alphavantage.co/query
-    default_outputsize: full
+    default_outputsize: compact
     rate_limit_note: 免费层通常不适合一次性抓101只成分股，建议先抓QQQ和少数验证标的。
 
   fred:

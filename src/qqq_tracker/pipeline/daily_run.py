@@ -35,6 +35,10 @@ def provider_config(settings: Settings, name: str) -> Dict:
     return settings.sources.get("providers", {}).get(name, {})
 
 
+def rel_path(path: Path, root: Path) -> str:
+    return path.relative_to(root).as_posix()
+
+
 def make_providers(settings: Settings) -> Dict[str, object]:
     timeout = settings.pipeline.get("api", {}).get("request_timeout_seconds", 30)
     retry_count = settings.pipeline.get("api", {}).get("retry_count", 2)
@@ -118,6 +122,143 @@ def summarize_price(symbol: str, df: pd.DataFrame, source: str, thresholds: Dict
     }
 
 
+def fred_latest(df: pd.DataFrame) -> tuple[float | None, str | None]:
+    if df.empty or "value" not in df.columns:
+        return None, None
+    d = df.dropna(subset=["value"]).sort_values("date")
+    if d.empty:
+        return None, None
+    latest = d.iloc[-1]
+    return float(latest["value"]), latest.get("date")
+
+
+def fred_prior_value(df: pd.DataFrame, periods_back: int) -> float | None:
+    if df.empty or "value" not in df.columns:
+        return None
+    d = df.dropna(subset=["value"]).sort_values("date")
+    if len(d) <= periods_back:
+        return None
+    return float(d.iloc[-periods_back - 1]["value"])
+
+
+def fred_recent_pct_changes(df: pd.DataFrame, periods: int = 3) -> list[float]:
+    if df.empty or "value" not in df.columns:
+        return []
+    d = df.dropna(subset=["value"]).sort_values("date")
+    values = d["value"].astype(float)
+    return [float(x) for x in values.pct_change().dropna().tail(periods)]
+
+
+def macro_signal_yield_level(value: float | None) -> str:
+    if value is None:
+        return "灰色"
+    if value >= 5.0:
+        return "红色"
+    if value >= 4.25:
+        return "黄色"
+    return "绿色"
+
+
+def macro_signal_rising_change(value: float | None, yellow_gte: float, red_gte: float) -> str:
+    if value is None:
+        return "灰色"
+    if value >= red_gte:
+        return "红色"
+    if value >= yellow_gte:
+        return "黄色"
+    return "绿色"
+
+
+def macro_signal_yield_spread(spread: float | None, one_month_change: float | None) -> str:
+    if spread is None:
+        return "灰色"
+    if spread <= -0.50 or (one_month_change is not None and spread < 0 and one_month_change <= -0.25):
+        return "红色"
+    if spread < 0 or (one_month_change is not None and one_month_change <= -0.10):
+        return "黄色"
+    return "绿色"
+
+
+def macro_signal_three_changes(changes: list[float]) -> str:
+    if len(changes) < 3:
+        return "灰色"
+    increasing = changes[0] < changes[1] < changes[2]
+    if increasing and changes[2] > 0:
+        return "红色"
+    if changes[1] < changes[2] and changes[2] > 0:
+        return "黄色"
+    return "绿色"
+
+
+def build_macro_signal_rows(fred_frames: Dict[str, pd.DataFrame]) -> list[Dict]:
+    rows: list[Dict] = []
+    dgs10_value, dgs10_date = fred_latest(fred_frames.get("DGS10", pd.DataFrame()))
+    dgs10_prior = fred_prior_value(fred_frames.get("DGS10", pd.DataFrame()), 21)
+    dgs10_change = dgs10_value - dgs10_prior if dgs10_value is not None and dgs10_prior is not None else None
+    dgs2_value, dgs2_date = fred_latest(fred_frames.get("DGS2", pd.DataFrame()))
+    dgs2_prior = fred_prior_value(fred_frames.get("DGS2", pd.DataFrame()), 21)
+    spread = dgs10_value - dgs2_value if dgs10_value is not None and dgs2_value is not None else None
+    prior_spread = dgs10_prior - dgs2_prior if dgs10_prior is not None and dgs2_prior is not None else None
+    spread_change = spread - prior_spread if spread is not None and prior_spread is not None else None
+
+    rows.extend([
+        {
+            "series_id": "DGS10_LEVEL_SIGNAL",
+            "name": "美国10年期国债收益率水平",
+            "latest_date": dgs10_date,
+            "latest_value": dgs10_value,
+            "status": macro_signal_yield_level(dgs10_value),
+            "threshold": "<4.25%绿色，4.25%-5%黄色，>=5%红色",
+            "direction": "长期利率压力",
+        },
+        {
+            "series_id": "DGS10_1M_CHANGE_SIGNAL",
+            "name": "美国10年期国债收益率1月变化",
+            "latest_date": dgs10_date,
+            "latest_value": dgs10_change,
+            "status": macro_signal_rising_change(dgs10_change, 0.15, 0.30),
+            "threshold": "<0.15个百分点绿色，0.15-0.30黄色，>=0.30红色",
+            "direction": "长期利率上行速度",
+        },
+        {
+            "series_id": "DGS10_DGS2_SPREAD_SIGNAL",
+            "name": "2年/10年利差",
+            "latest_date": dgs10_date or dgs2_date,
+            "latest_value": spread,
+            "status": macro_signal_yield_spread(spread, spread_change),
+            "threshold": "正利差绿色，倒挂黄色，深度倒挂或倒挂加深红色",
+            "direction": "收益率曲线压力",
+        },
+    ])
+
+    for series_id, label in [("CPIAUCSL", "CPI近3次变化"), ("PCEPI", "PCE近3次变化")]:
+        value, latest_date = fred_latest(fred_frames.get(series_id, pd.DataFrame()))
+        changes = fred_recent_pct_changes(fred_frames.get(series_id, pd.DataFrame()), 3)
+        rows.append({
+            "series_id": f"{series_id}_3_CHANGE_SIGNAL",
+            "name": label,
+            "latest_date": latest_date,
+            "latest_value": changes[-1] if changes else None,
+            "status": macro_signal_three_changes(changes),
+            "threshold": "近3次环比变化连续上行且最新为正红色，最新上行黄色，否则绿色",
+            "direction": f"通胀压力，最新指数={value}" if value is not None else "通胀压力",
+        })
+
+    unrate_value, unrate_date = fred_latest(fred_frames.get("UNRATE", pd.DataFrame()))
+    unrate_prior = fred_prior_value(fred_frames.get("UNRATE", pd.DataFrame()), 3)
+    unrate_change = unrate_value - unrate_prior if unrate_value is not None and unrate_prior is not None else None
+    rows.append({
+        "series_id": "UNRATE_3M_CHANGE_SIGNAL",
+        "name": "失业率3个月变化",
+        "latest_date": unrate_date,
+        "latest_value": unrate_change,
+        "status": macro_signal_rising_change(unrate_change, 0.30, 0.50),
+        "threshold": "<0.30个百分点绿色，0.30-0.50黄色，>=0.50红色",
+        "direction": f"就业降温速度，最新失业率={unrate_value}" if unrate_value is not None else "就业降温速度",
+    })
+    return rows
+
+
 def run_daily(as_of: str = "auto") -> Dict:
     settings = Settings()
     settings.ensure_dirs()
@@ -139,7 +280,7 @@ def run_daily(as_of: str = "auto") -> Dict:
     if settings.pipeline.get("run", {}).get("fetch_alpha_vantage_prices", True):
         av: AlphaVantageProvider = providers["alpha_vantage"]  # type: ignore[assignment]
         for symbol in settings.symbols.get("price_symbols", ["QQQ"]):
-            result = av.daily_adjusted(symbol, outputsize=provider_config(settings, "alpha_vantage").get("default_outputsize", "full"))
+            result = av.daily_adjusted(symbol, outputsize=provider_config(settings, "alpha_vantage").get("default_outputsize", "compact"))
             logs.append({"provider": result.name, "method": "daily_adjusted", "symbol": symbol, "ok": result.ok, "message": result.message})
             if result.ok:
                 df = result.data
@@ -168,6 +309,7 @@ def run_daily(as_of: str = "auto") -> Dict:
 
     # FRED macro
     macro_rows = []
+    fred_frames: Dict[str, pd.DataFrame] = {}
     fred: FREDProvider = providers["fred"]  # type: ignore[assignment]
     if settings.pipeline.get("run", {}).get("fetch_fred_macro", True):
         series_map = settings.fred_series.get("series", {})
@@ -176,9 +318,19 @@ def run_daily(as_of: str = "auto") -> Dict:
             logs.append({"provider": result.name, "method": "observations", "symbol": series_id, "ok": result.ok, "message": result.message})
             if result.ok:
                 write_csv(result.data, raw_dir / f"fred_{series_id}.csv")
+                fred_frames[series_id] = result.data
                 latest = latest_value(result.data)
                 last_date = result.data.sort_values("date").iloc[-1]["date"] if not result.data.empty else None
-                macro_rows.append({"series_id": series_id, "name": name, "latest_date": last_date, "latest_value": latest, "status": "信息" if latest is not None else "灰色"})
+                macro_rows.append({
+                    "series_id": series_id,
+                    "name": name,
+                    "latest_date": last_date,
+                    "latest_value": latest,
+                    "status": "信息" if latest is not None else "灰色",
+                    "threshold": "原始FRED观测值，衍生信号见下方",
+                    "direction": "宏观原始数据",
+                })
+        macro_rows.extend(build_macro_signal_rows(fred_frames))
     macro_summary = pd.DataFrame(macro_rows)
     write_csv(macro_summary, processed_dir / "macro_summary.csv")
 
@@ -242,13 +394,13 @@ def run_daily(as_of: str = "auto") -> Dict:
         "as_of": run_date,
         "generated_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
         "latest_files": {
-            "markdown_summary": str(latest_dir / "analysis_summary.md"),
-            "excel_report": str(xlsx_path),
-            "ai_input_csv": str(latest_dir / "ai_input.csv"),
-            "price_summary_csv": str(latest_dir / "price_summary.csv"),
-            "macro_summary_csv": str(latest_dir / "macro_summary.csv"),
-            "fmp_summary_csv": str(latest_dir / "fmp_summary.csv"),
-            "run_log_csv": str(latest_dir / "run_log.csv"),
+            "markdown_summary": rel_path(latest_dir / "analysis_summary.md", settings.paths.root),
+            "excel_report": rel_path(xlsx_path, settings.paths.root),
+            "ai_input_csv": rel_path(latest_dir / "ai_input.csv", settings.paths.root),
+            "price_summary_csv": rel_path(latest_dir / "price_summary.csv", settings.paths.root),
+            "macro_summary_csv": rel_path(latest_dir / "macro_summary.csv", settings.paths.root),
+            "fmp_summary_csv": rel_path(latest_dir / "fmp_summary.csv", settings.paths.root),
+            "run_log_csv": rel_path(latest_dir / "run_log.csv", settings.paths.root),
         },
         "provider_logs": logs,
     }

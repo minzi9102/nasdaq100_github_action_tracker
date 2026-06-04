@@ -8,11 +8,11 @@ from .base import BaseProvider, ProviderResult
 class AlphaVantageProvider(BaseProvider):
     provider_name = "alpha_vantage"
 
-    def daily_adjusted(self, symbol: str, outputsize: str = "full") -> ProviderResult:
+    def daily_adjusted(self, symbol: str, outputsize: str = "compact") -> ProviderResult:
         if not self.available:
             return self.unavailable_result("daily_adjusted")
         params = {
-            "function": "TIME_SERIES_DAILY_ADJUSTED",
+            "function": "TIME_SERIES_DAILY",
             "symbol": symbol,
             "outputsize": outputsize,
             "apikey": self.api_key,
@@ -36,7 +36,7 @@ class AlphaVantageProvider(BaseProvider):
                     "low": float(v.get("3. low", 0)),
                     "close": float(v.get("4. close", 0)),
                     "adjusted_close": float(v.get("5. adjusted close", v.get("4. close", 0))),
-                    "volume": float(v.get("6. volume", 0)),
+                    "volume": float(v.get("6. volume", v.get("5. volume", 0))),
                     "source": self.provider_name,
                 })
             df = pd.DataFrame(rows).sort_values("date")

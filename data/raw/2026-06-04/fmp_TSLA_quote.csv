@@ -1,2 +1,2 @@
 ﻿symbol,name,price,changePercentage,change,volume,dayLow,dayHigh,yearHigh,yearLow,marketCap,priceAvg50,priceAvg200,exchange,open,previousClose,timestamp,source
-TSLA,"Tesla, Inc.",423.7,-0.00943975,-0.04,43747438,416,433.6,498.83,273.21,1591298564000,394.4792,413.41696,NASDAQ,418.7,423.74,1780516800,fmp
+TSLA,"Tesla, Inc.",424.49,0.18645,0.79,2987410,418.38,426.25,498.83,273.21,1594265582800,394.4792,413.41696,NASDAQ,419.84,423.7,1780580233,fmp
