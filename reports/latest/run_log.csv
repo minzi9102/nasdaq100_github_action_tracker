@@ -1,0 +1,25 @@
+﻿provider,method,symbol,ok,message
+alpha_vantage,daily_adjusted,QQQ,False,Thank you for using Alpha Vantage! This is a premium endpoint. You may subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to instantly unlock all premium endpoints
+tiingo,daily_prices,QQQ,True,QQQ: 288 rows
+fred,observations,DGS10,True,DGS10: 365 rows
+fred,observations,DGS2,True,DGS2: 365 rows
+fred,observations,DGS3MO,True,DGS3MO: 365 rows
+fred,observations,DFF,True,DFF: 365 rows
+fred,observations,CPIAUCSL,True,CPIAUCSL: 365 rows
+fred,observations,PCEPI,True,PCEPI: 365 rows
+fred,observations,UNRATE,True,UNRATE: 365 rows
+fmp,quote,AAPL,True,AAPL: quote rows=1
+fmp,quote,MSFT,True,MSFT: quote rows=1
+fmp,quote,NVDA,True,NVDA: quote rows=1
+fmp,quote,AMZN,True,AMZN: quote rows=1
+fmp,quote,META,True,META: quote rows=1
+fmp,quote,GOOGL,True,GOOGL: quote rows=1
+fmp,quote,AVGO,False,402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/quote?symbol=AVGO&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+fmp,quote,TSLA,True,TSLA: quote rows=1
+fmp,quote,COST,True,COST: quote rows=1
+fmp,quote,AMD,True,AMD: quote rows=1
+fmp,key_metrics,AAPL,True,AAPL: key_metrics rows=5
+fmp,key_metrics,MSFT,True,MSFT: key_metrics rows=5
+fmp,key_metrics,NVDA,True,NVDA: key_metrics rows=5
+fmp,key_metrics,AMZN,True,AMZN: key_metrics rows=5
+fmp,key_metrics,META,True,META: key_metrics rows=5

@@ -1,0 +1,38 @@
+# 数据源注册表。新增接口时，在这里注册 provider 和用途。
+providers:
+  alpha_vantage:
+    enabled: true
+    class_path: qqq_tracker.providers.alpha_vantage.AlphaVantageProvider
+    api_key_env: ALPHA_VANTAGE_API_KEY
+    base_url: https://www.alphavantage.co/query
+    default_outputsize: full
+    rate_limit_note: 免费层通常不适合一次性抓101只成分股，建议先抓QQQ和少数验证标的。
+
+  fred:
+    enabled: true
+    class_path: qqq_tracker.providers.fred.FREDProvider
+    api_key_env: FRED_API_KEY
+    base_url: https://api.stlouisfed.org/fred
+    rate_limit_note: 用于宏观序列，日频运行压力较小。
+
+  fmp:
+    enabled: true
+    class_path: qqq_tracker.providers.fmp.FMPProvider
+    api_key_env: FMP_API_KEY
+    base_url: https://financialmodelingprep.com/stable
+    rate_limit_note: 用于报价、关键指标、基本面。不同套餐字段和调用限制可能不同。
+
+  tiingo:
+    enabled: true
+    class_path: qqq_tracker.providers.tiingo.TiingoProvider
+    api_key_env: TIINGO_API_TOKEN
+    base_url: https://api.tiingo.com/tiingo
+    rate_limit_note: 用于日线价格备用源和成分股历史价格计算。
+
+outputs:
+  commit_outputs_to_repo: true
+  latest_dir: reports/latest
+  raw_dir: data/raw
+  processed_dir: data/processed
+  archive_dir: reports/archive
+  manifest_path: state/latest_manifest.json

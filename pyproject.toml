@@ -1,0 +1,8 @@
+[project]
+name = "nasdaq100-github-action-tracker"
+version = "1.0.0"
+description = "Nasdaq-100 / QQQ daily data pipeline for GitHub Actions"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

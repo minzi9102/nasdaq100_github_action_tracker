@@ -1,0 +1,27 @@
+# 初始标的。后续可以扩展到完整纳斯达克100成分股。
+primary_etf: QQQ
+index_symbol: NDX
+price_symbols:
+  - QQQ
+sample_component_symbols:
+  - AAPL
+  - MSFT
+  - NVDA
+  - AMZN
+  - META
+  - GOOGL
+  - AVGO
+  - TSLA
+  - COST
+  - AMD
+fundamental_symbols:
+  - AAPL
+  - MSFT
+  - NVDA
+  - AMZN
+  - META
+  - GOOGL
+  - AVGO
+  - TSLA
+  - COST
+  - AMD

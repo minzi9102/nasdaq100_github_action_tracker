@@ -1,0 +1,12 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.ipynb_checkpoints/
+logs/
+.tmp/
+# 如果你不想把日报提交到仓库，可取消下面几行注释
+# data/raw/
+# data/processed/
+# reports/

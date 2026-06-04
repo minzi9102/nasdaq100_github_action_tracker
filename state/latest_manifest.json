@@ -1,0 +1,183 @@
+{
+  "as_of": "2026-06-04",
+  "generated_at": "2026-06-04T13:22:50Z",
+  "latest_files": {
+    "markdown_summary": "D:\\BME2026\\TECHNICAL\\NASQ\\nasdaq100_github_action_tracker\\nasdaq100_github_action_tracker\\reports\\latest\\analysis_summary.md",
+    "excel_report": "D:\\BME2026\\TECHNICAL\\NASQ\\nasdaq100_github_action_tracker\\nasdaq100_github_action_tracker\\reports\\latest\\nasdaq100_qqq_daily_tracker.xlsx",
+    "ai_input_csv": "D:\\BME2026\\TECHNICAL\\NASQ\\nasdaq100_github_action_tracker\\nasdaq100_github_action_tracker\\reports\\latest\\ai_input.csv",
+    "price_summary_csv": "D:\\BME2026\\TECHNICAL\\NASQ\\nasdaq100_github_action_tracker\\nasdaq100_github_action_tracker\\reports\\latest\\price_summary.csv",
+    "macro_summary_csv": "D:\\BME2026\\TECHNICAL\\NASQ\\nasdaq100_github_action_tracker\\nasdaq100_github_action_tracker\\reports\\latest\\macro_summary.csv",
+    "fmp_summary_csv": "D:\\BME2026\\TECHNICAL\\NASQ\\nasdaq100_github_action_tracker\\nasdaq100_github_action_tracker\\reports\\latest\\fmp_summary.csv",
+    "run_log_csv": "D:\\BME2026\\TECHNICAL\\NASQ\\nasdaq100_github_action_tracker\\nasdaq100_github_action_tracker\\reports\\latest\\run_log.csv"
+  },
+  "provider_logs": [
+    {
+      "provider": "alpha_vantage",
+      "method": "daily_adjusted",
+      "symbol": "QQQ",
+      "ok": false,
+      "message": "Thank you for using Alpha Vantage! This is a premium endpoint. You may subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to instantly unlock all premium endpoints"
+    },
+    {
+      "provider": "tiingo",
+      "method": "daily_prices",
+      "symbol": "QQQ",
+      "ok": true,
+      "message": "QQQ: 288 rows"
+    },
+    {
+      "provider": "fred",
+      "method": "observations",
+      "symbol": "DGS10",
+      "ok": true,
+      "message": "DGS10: 365 rows"
+    },
+    {
+      "provider": "fred",
+      "method": "observations",
+      "symbol": "DGS2",
+      "ok": true,
+      "message": "DGS2: 365 rows"
+    },
+    {
+      "provider": "fred",
+      "method": "observations",
+      "symbol": "DGS3MO",
+      "ok": true,
+      "message": "DGS3MO: 365 rows"
+    },
+    {
+      "provider": "fred",
+      "method": "observations",
+      "symbol": "DFF",
+      "ok": true,
+      "message": "DFF: 365 rows"
+    },
+    {
+      "provider": "fred",
+      "method": "observations",
+      "symbol": "CPIAUCSL",
+      "ok": true,
+      "message": "CPIAUCSL: 365 rows"
+    },
+    {
+      "provider": "fred",
+      "method": "observations",
+      "symbol": "PCEPI",
+      "ok": true,
+      "message": "PCEPI: 365 rows"
+    },
+    {
+      "provider": "fred",
+      "method": "observations",
+      "symbol": "UNRATE",
+      "ok": true,
+      "message": "UNRATE: 365 rows"
+    },
+    {
+      "provider": "fmp",
+      "method": "quote",
+      "symbol": "AAPL",
+      "ok": true,
+      "message": "AAPL: quote rows=1"
+    },
+    {
+      "provider": "fmp",
+      "method": "quote",
+      "symbol": "MSFT",
+      "ok": true,
+      "message": "MSFT: quote rows=1"
+    },
+    {
+      "provider": "fmp",
+      "method": "quote",
+      "symbol": "NVDA",
+      "ok": true,
+      "message": "NVDA: quote rows=1"
+    },
+    {
+      "provider": "fmp",
+      "method": "quote",
+      "symbol": "AMZN",
+      "ok": true,
+      "message": "AMZN: quote rows=1"
+    },
+    {
+      "provider": "fmp",
+      "method": "quote",
+      "symbol": "META",
+      "ok": true,
+      "message": "META: quote rows=1"
+    },
+    {
+      "provider": "fmp",
+      "method": "quote",
+      "symbol": "GOOGL",
+      "ok": true,
+      "message": "GOOGL: quote rows=1"
+    },
+    {
+      "provider": "fmp",
+      "method": "quote",
+      "symbol": "AVGO",
+      "ok": false,
+      "message": "402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/quote?symbol=AVGO&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
+    },
+    {
+      "provider": "fmp",
+      "method": "quote",
+      "symbol": "TSLA",
+      "ok": true,
+      "message": "TSLA: quote rows=1"
+    },
+    {
+      "provider": "fmp",
+      "method": "quote",
+      "symbol": "COST",
+      "ok": true,
+      "message": "COST: quote rows=1"
+    },
+    {
+      "provider": "fmp",
+      "method": "quote",
+      "symbol": "AMD",
+      "ok": true,
+      "message": "AMD: quote rows=1"
+    },
+    {
+      "provider": "fmp",
+      "method": "key_metrics",
+      "symbol": "AAPL",
+      "ok": true,
+      "message": "AAPL: key_metrics rows=5"
+    },
+    {
+      "provider": "fmp",
+      "method": "key_metrics",
+      "symbol": "MSFT",
+      "ok": true,
+      "message": "MSFT: key_metrics rows=5"
+    },
+    {
+      "provider": "fmp",
+      "method": "key_metrics",
+      "symbol": "NVDA",
+      "ok": true,
+      "message": "NVDA: key_metrics rows=5"
+    },
+    {
+      "provider": "fmp",
+      "method": "key_metrics",
+      "symbol": "AMZN",
+      "ok": true,
+      "message": "AMZN: key_metrics rows=5"
+    },
+    {
+      "provider": "fmp",
+      "method": "key_metrics",
+      "symbol": "META",
+      "ok": true,
+      "message": "META: key_metrics rows=5"
+    }
+  ]
+}

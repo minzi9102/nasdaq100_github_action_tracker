@@ -1,0 +1,64 @@
+name: Nasdaq-100 QQQ Daily Tracker
+
+on:
+  workflow_dispatch:
+  schedule:
+    # GitHub cron uses UTC. 00:00 UTC = 08:00 Asia/Singapore.
+    # Tue-Sat Singapore morning is suitable for reading prior U.S. trading day data.
+    - cron: "0 0 * * 2-6"
+
+permissions:
+  contents: write
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  daily-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run daily tracker
+        env:
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+          TIINGO_API_TOKEN: ${{ secrets.TIINGO_API_TOKEN }}
+        run: |
+          python scripts/run_daily.py --as-of auto
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nasdaq100-qqq-daily-report
+          path: |
+            reports/latest/
+            data/processed/
+            state/latest_manifest.json
+          retention-days: 30
+
+      - name: Commit generated outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add reports/latest reports/archive data/raw data/processed state/latest_manifest.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update daily Nasdaq-100 QQQ tracker outputs"
+            git push
+          fi
