@@ -1,14 +1,14 @@
 {
   "as_of": "2026-06-04",
-  "generated_at": "2026-06-04T13:22:50Z",
+  "generated_at": "2026-06-04T13:28:32Z",
   "latest_files": {
-    "markdown_summary": "D:\\BME2026\\TECHNICAL\\NASQ\\nasdaq100_github_action_tracker\\nasdaq100_github_action_tracker\\reports\\latest\\analysis_summary.md",
-    "excel_report": "D:\\BME2026\\TECHNICAL\\NASQ\\nasdaq100_github_action_tracker\\nasdaq100_github_action_tracker\\reports\\latest\\nasdaq100_qqq_daily_tracker.xlsx",
-    "ai_input_csv": "D:\\BME2026\\TECHNICAL\\NASQ\\nasdaq100_github_action_tracker\\nasdaq100_github_action_tracker\\reports\\latest\\ai_input.csv",
-    "price_summary_csv": "D:\\BME2026\\TECHNICAL\\NASQ\\nasdaq100_github_action_tracker\\nasdaq100_github_action_tracker\\reports\\latest\\price_summary.csv",
-    "macro_summary_csv": "D:\\BME2026\\TECHNICAL\\NASQ\\nasdaq100_github_action_tracker\\nasdaq100_github_action_tracker\\reports\\latest\\macro_summary.csv",
-    "fmp_summary_csv": "D:\\BME2026\\TECHNICAL\\NASQ\\nasdaq100_github_action_tracker\\nasdaq100_github_action_tracker\\reports\\latest\\fmp_summary.csv",
-    "run_log_csv": "D:\\BME2026\\TECHNICAL\\NASQ\\nasdaq100_github_action_tracker\\nasdaq100_github_action_tracker\\reports\\latest\\run_log.csv"
+    "markdown_summary": "/home/runner/work/nasdaq100_github_action_tracker/nasdaq100_github_action_tracker/reports/latest/analysis_summary.md",
+    "excel_report": "/home/runner/work/nasdaq100_github_action_tracker/nasdaq100_github_action_tracker/reports/latest/nasdaq100_qqq_daily_tracker.xlsx",
+    "ai_input_csv": "/home/runner/work/nasdaq100_github_action_tracker/nasdaq100_github_action_tracker/reports/latest/ai_input.csv",
+    "price_summary_csv": "/home/runner/work/nasdaq100_github_action_tracker/nasdaq100_github_action_tracker/reports/latest/price_summary.csv",
+    "macro_summary_csv": "/home/runner/work/nasdaq100_github_action_tracker/nasdaq100_github_action_tracker/reports/latest/macro_summary.csv",
+    "fmp_summary_csv": "/home/runner/work/nasdaq100_github_action_tracker/nasdaq100_github_action_tracker/reports/latest/fmp_summary.csv",
+    "run_log_csv": "/home/runner/work/nasdaq100_github_action_tracker/nasdaq100_github_action_tracker/reports/latest/run_log.csv"
   },
   "provider_logs": [
     {
