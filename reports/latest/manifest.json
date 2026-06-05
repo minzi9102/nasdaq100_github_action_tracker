@@ -1,6 +1,6 @@
 {
   "as_of": "2026-06-05",
-  "generated_at": "2026-06-05T03:45:14Z",
+  "generated_at": "2026-06-05T08:06:12Z",
   "latest_files": {
     "excel_report": "reports/latest/nasdaq100_qqq_daily_tracker.xlsx",
     "manifest_json": "reports/latest/manifest.json",
@@ -28,11 +28,11 @@
     {
       "dataset": "price_daily",
       "provider": "tiingo",
-      "ok": true,
-      "rows": 288,
-      "coverage_ratio": 1.0,
-      "missing_symbols": "",
-      "message": "QQQ: 288 rows"
+      "ok": false,
+      "rows": 0,
+      "coverage_ratio": 0.0,
+      "missing_symbols": "QQQ",
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/QQQ/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
     },
     {
       "dataset": "macro_daily",
@@ -100,29 +100,29 @@
     {
       "dataset": "qqq_holdings",
       "provider": "invesco",
-      "ok": false,
-      "rows": 0,
-      "coverage_ratio": 0.0,
+      "ok": true,
+      "rows": 104,
+      "coverage_ratio": 1.0,
       "missing_symbols": "",
-      "message": "https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ - 406 Client Error: Not Acceptable for url: https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ; https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&ticker=QQQ - 406 Client Error: Not Acceptable for url: https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&ticker=QQQ; https://www.invesco.com/us/financial-products/etfs/holdings?audienceType=Investor&ticker=QQQ - HTTPSConnectionPool(host='www.invesco.com', port=443): Max retries exceeded with url: /us/financial-products/etfs/holdings?audienceType=Investor&ticker=QQQ (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))"
+      "message": "QQQ: holdings rows=104 effective_date=2026-06-03"
     },
     {
       "dataset": "breadth_metrics",
       "provider": "tiingo",
-      "ok": false,
-      "rows": 0,
-      "coverage_ratio": 0.0,
-      "missing_symbols": "",
-      "message": "no holdings symbols available"
+      "ok": true,
+      "rows": 8,
+      "coverage_ratio": 0.5,
+      "missing_symbols": "NVDA,AAPL,MU,MSFT,AMZN,AMD,AVGO,TSLA,GOOGL,GOOG,META,WMT,INTC,CSCO,LRCX,COST,AMAT,NFLX,PLTR,TXN,KLAC,SNDK,QCOM,MRVL,LIN,PANW,ADI,STX,IDXX,CCEP,KDP,TTWO,MSTR,PYPL,ALNY,AXON,TRI,PAYX,ROP,WDAY,CPRT,GEHC,DXCM,KHC,CTSH,VRSK,INSM,ZS,NQM6,CHTR,USD,NQM6_",
+      "message": "52/104 symbols fetched"
     },
     {
       "dataset": "fmp_summary",
       "provider": "fmp",
       "ok": true,
       "rows": 10,
-      "coverage_ratio": 0.8,
-      "missing_symbols": "AVGO,COST",
-      "message": "8/10 quotes fetched"
+      "coverage_ratio": 0.9,
+      "missing_symbols": "AVGO",
+      "message": "9/10 quotes fetched"
     }
   ],
   "provider_logs": [
@@ -137,8 +137,8 @@
       "provider": "tiingo",
       "method": "daily_prices",
       "symbol": "QQQ",
-      "ok": true,
-      "message": "QQQ: 288 rows"
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/QQQ/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
     },
     {
       "provider": "fred",
@@ -193,8 +193,736 @@
       "provider": "invesco",
       "method": "qqq_holdings",
       "symbol": "QQQ",
+      "ok": true,
+      "message": "QQQ: holdings rows=104 effective_date=2026-06-03"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "NVDA",
       "ok": false,
-      "message": "https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ - 406 Client Error: Not Acceptable for url: https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ; https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&ticker=QQQ - 406 Client Error: Not Acceptable for url: https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&ticker=QQQ; https://www.invesco.com/us/financial-products/etfs/holdings?audienceType=Investor&ticker=QQQ - HTTPSConnectionPool(host='www.invesco.com', port=443): Max retries exceeded with url: /us/financial-products/etfs/holdings?audienceType=Investor&ticker=QQQ (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))"
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/NVDA/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "AAPL",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/AAPL/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "MU",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/MU/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "MSFT",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/MSFT/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "AMZN",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/AMZN/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "AMD",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/AMD/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "AVGO",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/AVGO/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "TSLA",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/TSLA/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "GOOGL",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/GOOGL/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "GOOG",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/GOOG/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "META",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/META/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "WMT",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/WMT/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "INTC",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/INTC/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "CSCO",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/CSCO/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "LRCX",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/LRCX/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "COST",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/COST/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "AMAT",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/AMAT/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "NFLX",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/NFLX/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "PLTR",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/PLTR/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "TXN",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/TXN/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "KLAC",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/KLAC/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "SNDK",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/SNDK/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "QCOM",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/QCOM/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "MRVL",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/MRVL/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "LIN",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/LIN/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "PANW",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/PANW/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "ADI",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/ADI/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "STX",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/STX/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "WDC",
+      "ok": true,
+      "message": "WDC: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "TMUS",
+      "ok": true,
+      "message": "TMUS: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "PEP",
+      "ok": true,
+      "message": "PEP: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "CRWD",
+      "ok": true,
+      "message": "CRWD: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "AMGN",
+      "ok": true,
+      "message": "AMGN: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "APP",
+      "ok": true,
+      "message": "APP: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "GILD",
+      "ok": true,
+      "message": "GILD: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "ASML",
+      "ok": true,
+      "message": "ASML: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "ISRG",
+      "ok": true,
+      "message": "ISRG: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "HON",
+      "ok": true,
+      "message": "HON: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "SHOP",
+      "ok": true,
+      "message": "SHOP: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "BKNG",
+      "ok": true,
+      "message": "BKNG: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "CDNS",
+      "ok": true,
+      "message": "CDNS: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "SBUX",
+      "ok": true,
+      "message": "SBUX: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "VRTX",
+      "ok": true,
+      "message": "VRTX: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "FTNT",
+      "ok": true,
+      "message": "FTNT: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "ADBE",
+      "ok": true,
+      "message": "ADBE: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "MAR",
+      "ok": true,
+      "message": "MAR: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "CEG",
+      "ok": true,
+      "message": "CEG: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "SNPS",
+      "ok": true,
+      "message": "SNPS: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "ADP",
+      "ok": true,
+      "message": "ADP: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "MNST",
+      "ok": true,
+      "message": "MNST: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "CSX",
+      "ok": true,
+      "message": "CSX: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "INTU",
+      "ok": true,
+      "message": "INTU: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "CMCSA",
+      "ok": true,
+      "message": "CMCSA: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "MELI",
+      "ok": true,
+      "message": "MELI: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "MPWR",
+      "ok": true,
+      "message": "MPWR: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "DDOG",
+      "ok": true,
+      "message": "DDOG: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "NXPI",
+      "ok": true,
+      "message": "NXPI: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "MDLZ",
+      "ok": true,
+      "message": "MDLZ: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "ROST",
+      "ok": true,
+      "message": "ROST: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "ORLY",
+      "ok": true,
+      "message": "ORLY: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "CTAS",
+      "ok": true,
+      "message": "CTAS: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "AEP",
+      "ok": true,
+      "message": "AEP: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "LITE",
+      "ok": true,
+      "message": "LITE: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "WBD",
+      "ok": true,
+      "message": "WBD: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "REGN",
+      "ok": true,
+      "message": "REGN: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "BKR",
+      "ok": true,
+      "message": "BKR: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "DASH",
+      "ok": true,
+      "message": "DASH: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "PCAR",
+      "ok": true,
+      "message": "PCAR: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "FANG",
+      "ok": true,
+      "message": "FANG: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "ARM",
+      "ok": true,
+      "message": "ARM: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "PDD",
+      "ok": true,
+      "message": "PDD: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "ABNB",
+      "ok": true,
+      "message": "ABNB: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "FAST",
+      "ok": true,
+      "message": "FAST: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "MCHP",
+      "ok": true,
+      "message": "MCHP: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "EA",
+      "ok": true,
+      "message": "EA: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "ODFL",
+      "ok": true,
+      "message": "ODFL: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "ADSK",
+      "ok": true,
+      "message": "ADSK: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "XEL",
+      "ok": true,
+      "message": "XEL: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "FER",
+      "ok": true,
+      "message": "FER: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "EXC",
+      "ok": true,
+      "message": "EXC: 288 rows"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "IDXX",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/IDXX/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "CCEP",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/CCEP/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "KDP",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/KDP/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "TTWO",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/TTWO/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "MSTR",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/MSTR/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "PYPL",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/PYPL/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "ALNY",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/ALNY/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "AXON",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/AXON/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "TRI",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/TRI/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "PAYX",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/PAYX/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "ROP",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/ROP/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "WDAY",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/WDAY/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "CPRT",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/CPRT/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "GEHC",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/GEHC/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "DXCM",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/DXCM/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "KHC",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/KHC/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "CTSH",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/CTSH/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "VRSK",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/VRSK/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "INSM",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/INSM/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "ZS",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/ZS/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "NQM6",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/NQM6/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "CHTR",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/CHTR/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "USD",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/USD/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
+    },
+    {
+      "provider": "tiingo",
+      "method": "breadth_daily_prices",
+      "symbol": "NQM6_",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/NQM6_/prices?format=json&startDate=2025-04-11&endDate=2026-06-05"
     },
     {
       "provider": "fmp",
@@ -243,7 +971,7 @@
       "method": "quote",
       "symbol": "AVGO",
       "ok": false,
-      "message": "HTTPSConnectionPool(host='financialmodelingprep.com', port=443): Max retries exceeded with url: /stable/quote?symbol=AVGO&apikey=***REDACTED*** (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))"
+      "message": "402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/quote?symbol=AVGO&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
     },
     {
       "provider": "fmp",
@@ -256,8 +984,8 @@
       "provider": "fmp",
       "method": "quote",
       "symbol": "COST",
-      "ok": false,
-      "message": "HTTPSConnectionPool(host='financialmodelingprep.com', port=443): Max retries exceeded with url: /stable/quote?symbol=COST&apikey=***REDACTED*** (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))"
+      "ok": true,
+      "message": "COST: quote rows=1"
     },
     {
       "provider": "fmp",
@@ -270,8 +998,8 @@
       "provider": "fmp",
       "method": "key_metrics",
       "symbol": "AAPL",
-      "ok": false,
-      "message": "HTTPSConnectionPool(host='financialmodelingprep.com', port=443): Max retries exceeded with url: /stable/key-metrics?symbol=AAPL&limit=5&apikey=***REDACTED*** (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))"
+      "ok": true,
+      "message": "AAPL: key_metrics rows=5"
     },
     {
       "provider": "fmp",

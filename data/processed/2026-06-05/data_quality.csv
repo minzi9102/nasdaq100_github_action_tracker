@@ -1,6 +1,6 @@
 ﻿dataset,provider,ok,rows,coverage_ratio,missing_symbols,message
 price_daily,alpha_vantage,True,100,1.0,,QQQ: 100 rows
-price_daily,tiingo,True,288,1.0,,QQQ: 288 rows
+price_daily,tiingo,False,0,0.0,QQQ,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/QQQ/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
 macro_daily,fred,True,365,1.0,,DGS10: 365 rows
 macro_daily,fred,True,365,1.0,,DGS2: 365 rows
 macro_daily,fred,True,365,1.0,,DGS3MO: 365 rows
@@ -8,6 +8,6 @@ macro_daily,fred,True,365,1.0,,DFF: 365 rows
 macro_daily,fred,True,365,1.0,,CPIAUCSL: 365 rows
 macro_daily,fred,True,365,1.0,,PCEPI: 365 rows
 macro_daily,fred,True,365,1.0,,UNRATE: 365 rows
-qqq_holdings,invesco,False,0,0.0,,"https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ - 406 Client Error: Not Acceptable for url: https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ; https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&ticker=QQQ - 406 Client Error: Not Acceptable for url: https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&ticker=QQQ; https://www.invesco.com/us/financial-products/etfs/holdings?audienceType=Investor&ticker=QQQ - HTTPSConnectionPool(host='www.invesco.com', port=443): Max retries exceeded with url: /us/financial-products/etfs/holdings?audienceType=Investor&ticker=QQQ (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))"
-breadth_metrics,tiingo,False,0,0.0,,no holdings symbols available
-fmp_summary,fmp,True,10,0.8,"AVGO,COST",8/10 quotes fetched
+qqq_holdings,invesco,True,104,1.0,,QQQ: holdings rows=104 effective_date=2026-06-03
+breadth_metrics,tiingo,True,8,0.5,"NVDA,AAPL,MU,MSFT,AMZN,AMD,AVGO,TSLA,GOOGL,GOOG,META,WMT,INTC,CSCO,LRCX,COST,AMAT,NFLX,PLTR,TXN,KLAC,SNDK,QCOM,MRVL,LIN,PANW,ADI,STX,IDXX,CCEP,KDP,TTWO,MSTR,PYPL,ALNY,AXON,TRI,PAYX,ROP,WDAY,CPRT,GEHC,DXCM,KHC,CTSH,VRSK,INSM,ZS,NQM6,CHTR,USD,NQM6_",52/104 symbols fetched
+fmp_summary,fmp,True,10,0.9,AVGO,9/10 quotes fetched

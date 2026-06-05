@@ -1,6 +1,6 @@
 ﻿provider,method,symbol,ok,message
 alpha_vantage,daily_adjusted,QQQ,True,QQQ: 100 rows
-tiingo,daily_prices,QQQ,True,QQQ: 288 rows
+tiingo,daily_prices,QQQ,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/QQQ/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
 fred,observations,DGS10,True,DGS10: 365 rows
 fred,observations,DGS2,True,DGS2: 365 rows
 fred,observations,DGS3MO,True,DGS3MO: 365 rows
@@ -8,18 +8,122 @@ fred,observations,DFF,True,DFF: 365 rows
 fred,observations,CPIAUCSL,True,CPIAUCSL: 365 rows
 fred,observations,PCEPI,True,PCEPI: 365 rows
 fred,observations,UNRATE,True,UNRATE: 365 rows
-invesco,qqq_holdings,QQQ,False,"https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ - 406 Client Error: Not Acceptable for url: https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ; https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&ticker=QQQ - 406 Client Error: Not Acceptable for url: https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&ticker=QQQ; https://www.invesco.com/us/financial-products/etfs/holdings?audienceType=Investor&ticker=QQQ - HTTPSConnectionPool(host='www.invesco.com', port=443): Max retries exceeded with url: /us/financial-products/etfs/holdings?audienceType=Investor&ticker=QQQ (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))"
+invesco,qqq_holdings,QQQ,True,QQQ: holdings rows=104 effective_date=2026-06-03
+tiingo,breadth_daily_prices,NVDA,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/NVDA/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,AAPL,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/AAPL/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,MU,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/MU/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,MSFT,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/MSFT/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,AMZN,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/AMZN/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,AMD,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/AMD/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,AVGO,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/AVGO/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,TSLA,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/TSLA/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,GOOGL,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/GOOGL/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,GOOG,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/GOOG/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,META,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/META/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,WMT,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/WMT/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,INTC,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/INTC/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,CSCO,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/CSCO/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,LRCX,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/LRCX/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,COST,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/COST/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,AMAT,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/AMAT/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,NFLX,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/NFLX/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,PLTR,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/PLTR/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,TXN,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/TXN/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,KLAC,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/KLAC/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,SNDK,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/SNDK/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,QCOM,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/QCOM/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,MRVL,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/MRVL/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,LIN,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/LIN/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,PANW,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/PANW/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,ADI,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/ADI/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,STX,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/STX/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,WDC,True,WDC: 288 rows
+tiingo,breadth_daily_prices,TMUS,True,TMUS: 288 rows
+tiingo,breadth_daily_prices,PEP,True,PEP: 288 rows
+tiingo,breadth_daily_prices,CRWD,True,CRWD: 288 rows
+tiingo,breadth_daily_prices,AMGN,True,AMGN: 288 rows
+tiingo,breadth_daily_prices,APP,True,APP: 288 rows
+tiingo,breadth_daily_prices,GILD,True,GILD: 288 rows
+tiingo,breadth_daily_prices,ASML,True,ASML: 288 rows
+tiingo,breadth_daily_prices,ISRG,True,ISRG: 288 rows
+tiingo,breadth_daily_prices,HON,True,HON: 288 rows
+tiingo,breadth_daily_prices,SHOP,True,SHOP: 288 rows
+tiingo,breadth_daily_prices,BKNG,True,BKNG: 288 rows
+tiingo,breadth_daily_prices,CDNS,True,CDNS: 288 rows
+tiingo,breadth_daily_prices,SBUX,True,SBUX: 288 rows
+tiingo,breadth_daily_prices,VRTX,True,VRTX: 288 rows
+tiingo,breadth_daily_prices,FTNT,True,FTNT: 288 rows
+tiingo,breadth_daily_prices,ADBE,True,ADBE: 288 rows
+tiingo,breadth_daily_prices,MAR,True,MAR: 288 rows
+tiingo,breadth_daily_prices,CEG,True,CEG: 288 rows
+tiingo,breadth_daily_prices,SNPS,True,SNPS: 288 rows
+tiingo,breadth_daily_prices,ADP,True,ADP: 288 rows
+tiingo,breadth_daily_prices,MNST,True,MNST: 288 rows
+tiingo,breadth_daily_prices,CSX,True,CSX: 288 rows
+tiingo,breadth_daily_prices,INTU,True,INTU: 288 rows
+tiingo,breadth_daily_prices,CMCSA,True,CMCSA: 288 rows
+tiingo,breadth_daily_prices,MELI,True,MELI: 288 rows
+tiingo,breadth_daily_prices,MPWR,True,MPWR: 288 rows
+tiingo,breadth_daily_prices,DDOG,True,DDOG: 288 rows
+tiingo,breadth_daily_prices,NXPI,True,NXPI: 288 rows
+tiingo,breadth_daily_prices,MDLZ,True,MDLZ: 288 rows
+tiingo,breadth_daily_prices,ROST,True,ROST: 288 rows
+tiingo,breadth_daily_prices,ORLY,True,ORLY: 288 rows
+tiingo,breadth_daily_prices,CTAS,True,CTAS: 288 rows
+tiingo,breadth_daily_prices,AEP,True,AEP: 288 rows
+tiingo,breadth_daily_prices,LITE,True,LITE: 288 rows
+tiingo,breadth_daily_prices,WBD,True,WBD: 288 rows
+tiingo,breadth_daily_prices,REGN,True,REGN: 288 rows
+tiingo,breadth_daily_prices,BKR,True,BKR: 288 rows
+tiingo,breadth_daily_prices,DASH,True,DASH: 288 rows
+tiingo,breadth_daily_prices,PCAR,True,PCAR: 288 rows
+tiingo,breadth_daily_prices,FANG,True,FANG: 288 rows
+tiingo,breadth_daily_prices,ARM,True,ARM: 288 rows
+tiingo,breadth_daily_prices,PDD,True,PDD: 288 rows
+tiingo,breadth_daily_prices,ABNB,True,ABNB: 288 rows
+tiingo,breadth_daily_prices,FAST,True,FAST: 288 rows
+tiingo,breadth_daily_prices,MCHP,True,MCHP: 288 rows
+tiingo,breadth_daily_prices,EA,True,EA: 288 rows
+tiingo,breadth_daily_prices,ODFL,True,ODFL: 288 rows
+tiingo,breadth_daily_prices,ADSK,True,ADSK: 288 rows
+tiingo,breadth_daily_prices,XEL,True,XEL: 288 rows
+tiingo,breadth_daily_prices,FER,True,FER: 288 rows
+tiingo,breadth_daily_prices,EXC,True,EXC: 288 rows
+tiingo,breadth_daily_prices,IDXX,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/IDXX/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,CCEP,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/CCEP/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,KDP,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/KDP/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,TTWO,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/TTWO/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,MSTR,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/MSTR/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,PYPL,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/PYPL/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,ALNY,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/ALNY/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,AXON,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/AXON/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,TRI,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/TRI/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,PAYX,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/PAYX/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,ROP,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/ROP/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,WDAY,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/WDAY/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,CPRT,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/CPRT/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,GEHC,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/GEHC/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,DXCM,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/DXCM/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,KHC,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/KHC/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,CTSH,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/CTSH/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,VRSK,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/VRSK/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,INSM,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/INSM/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,ZS,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/ZS/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,NQM6,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/NQM6/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,CHTR,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/CHTR/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,USD,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/USD/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
+tiingo,breadth_daily_prices,NQM6_,False,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/NQM6_/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
 fmp,quote,AAPL,True,AAPL: quote rows=1
 fmp,quote,MSFT,True,MSFT: quote rows=1
 fmp,quote,NVDA,True,NVDA: quote rows=1
 fmp,quote,AMZN,True,AMZN: quote rows=1
 fmp,quote,META,True,META: quote rows=1
 fmp,quote,GOOGL,True,GOOGL: quote rows=1
-fmp,quote,AVGO,False,"HTTPSConnectionPool(host='financialmodelingprep.com', port=443): Max retries exceeded with url: /stable/quote?symbol=AVGO&apikey=***REDACTED*** (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))"
+fmp,quote,AVGO,False,402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/quote?symbol=AVGO&apikey=%2A%2A%2AREDACTED%2A%2A%2A
 fmp,quote,TSLA,True,TSLA: quote rows=1
-fmp,quote,COST,False,"HTTPSConnectionPool(host='financialmodelingprep.com', port=443): Max retries exceeded with url: /stable/quote?symbol=COST&apikey=***REDACTED*** (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))"
+fmp,quote,COST,True,COST: quote rows=1
 fmp,quote,AMD,True,AMD: quote rows=1
-fmp,key_metrics,AAPL,False,"HTTPSConnectionPool(host='financialmodelingprep.com', port=443): Max retries exceeded with url: /stable/key-metrics?symbol=AAPL&limit=5&apikey=***REDACTED*** (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))"
+fmp,key_metrics,AAPL,True,AAPL: key_metrics rows=5
 fmp,key_metrics,MSFT,True,MSFT: key_metrics rows=5
 fmp,key_metrics,NVDA,True,NVDA: key_metrics rows=5
 fmp,key_metrics,AMZN,True,AMZN: key_metrics rows=5

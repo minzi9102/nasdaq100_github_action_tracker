@@ -1,1 +1,105 @@
 ﻿date,symbol,company_name,weight,sector,source
+2026-06-03,NVDA,NVIDIA Corp,0.08230697,,invesco
+2026-06-03,AAPL,Apple Inc,0.07184254,,invesco
+2026-06-03,MU,Micron Technology Inc,0.05289994,,invesco
+2026-06-03,MSFT,Microsoft Corp,0.050152669999999996,,invesco
+2026-06-03,AMZN,Amazon.com Inc,0.04233125,,invesco
+2026-06-03,AMD,Advanced Micro Devices Inc,0.0385085,,invesco
+2026-06-03,AVGO,Broadcom Inc,0.035834290000000005,,invesco
+2026-06-03,TSLA,Tesla Inc,0.03335118,,invesco
+2026-06-03,GOOGL,Alphabet Inc Class A,0.03295947,,invesco
+2026-06-03,GOOG,Alphabet Inc Class C,0.030508760000000003,,invesco
+2026-06-03,META,Meta Platforms Inc,0.02898119,,invesco
+2026-06-03,WMT,Walmart Inc,0.02487162,,invesco
+2026-06-03,INTC,Intel Corp,0.02451315,,invesco
+2026-06-03,CSCO,Cisco Systems Inc,0.02175607,,invesco
+2026-06-03,LRCX,Lam Research Corp,0.018679920000000003,,invesco
+2026-06-03,COST,Costco Wholesale Corp,0.01858951,,invesco
+2026-06-03,AMAT,Applied Materials Inc,0.01731427,,invesco
+2026-06-03,NFLX,Netflix Inc,0.01497957,,invesco
+2026-06-03,PLTR,Palantir Technologies Inc,0.014181250000000001,,invesco
+2026-06-03,TXN,Texas Instruments Inc,0.012188609999999999,,invesco
+2026-06-03,KLAC,KLA Corp,0.012122820000000001,,invesco
+2026-06-03,SNDK,Sandisk Corp/DE,0.01176511,,invesco
+2026-06-03,QCOM,QUALCOMM Inc,0.01160973,,invesco
+2026-06-03,MRVL,Marvell Technology Inc,0.011437079999999999,,invesco
+2026-06-03,LIN,Linde PLC,0.01023636,,invesco
+2026-06-03,PANW,Palo Alto Networks Inc,0.00995896,,invesco
+2026-06-03,ADI,Analog Devices Inc,0.00932262,,invesco
+2026-06-03,STX,Seagate Technology Holdings PLC,0.00892786,,invesco
+2026-06-03,WDC,Western Digital Corp,0.00876627,,invesco
+2026-06-03,TMUS,T-Mobile US Inc,0.00875057,,invesco
+2026-06-03,PEP,PepsiCo Inc,0.008478010000000001,,invesco
+2026-06-03,CRWD,Crowdstrike Holdings Inc,0.00820247,,invesco
+2026-06-03,AMGN,Amgen Inc,0.00799388,,invesco
+2026-06-03,APP,AppLovin Corp,0.00762857,,invesco
+2026-06-03,GILD,Gilead Sciences Inc,0.006969070000000001,,invesco
+2026-06-03,ASML,ASML Holding NV,0.00660443,,invesco
+2026-06-03,ISRG,Intuitive Surgical Inc,0.00629493,,invesco
+2026-06-03,HON,Honeywell International Inc,0.00620938,,invesco
+2026-06-03,SHOP,Shopify Inc,0.00602631,,invesco
+2026-06-03,BKNG,Booking Holdings Inc,0.00567856,,invesco
+2026-06-03,CDNS,Cadence Design Systems Inc,0.00490247,,invesco
+2026-06-03,SBUX,Starbucks Corp,0.0047545700000000005,,invesco
+2026-06-03,VRTX,Vertex Pharmaceuticals Inc,0.00473565,,invesco
+2026-06-03,FTNT,Fortinet Inc,0.00471699,,invesco
+2026-06-03,ADBE,Adobe Inc,0.0045459,,invesco
+2026-06-03,MAR,Marriott International Inc/MD,0.00435325,,invesco
+2026-06-03,CEG,Constellation Energy Corp,0.004216849999999999,,invesco
+2026-06-03,SNPS,Synopsys Inc,0.00415197,,invesco
+2026-06-03,ADP,Automatic Data Processing Inc,0.00399098,,invesco
+2026-06-03,MNST,Monster Beverage Corp,0.00379091,,invesco
+2026-06-03,CSX,CSX Corp,0.0037698,,invesco
+2026-06-03,INTU,Intuit Inc,0.00374899,,invesco
+2026-06-03,CMCSA,Comcast Corp,0.00367315,,invesco
+2026-06-03,MELI,MercadoLibre Inc,0.00361525,,invesco
+2026-06-03,MPWR,Monolithic Power Systems Inc,0.00361254,,invesco
+2026-06-03,DDOG,Datadog Inc,0.00357871,,invesco
+2026-06-03,NXPI,NXP Semiconductors NV,0.00353986,,invesco
+2026-06-03,MDLZ,Mondelez International Inc,0.00342032,,invesco
+2026-06-03,ROST,Ross Stores Inc,0.00327453,,invesco
+2026-06-03,ORLY,O'Reilly Automotive Inc,0.00318866,,invesco
+2026-06-03,CTAS,Cintas Corp,0.0030486000000000003,,invesco
+2026-06-03,AEP,American Electric Power Co Inc,0.00299524,,invesco
+2026-06-03,LITE,Lumentum Holdings Inc,0.0029148000000000004,,invesco
+2026-06-03,WBD,Warner Bros Discovery Inc,0.00291409,,invesco
+2026-06-03,REGN,Regeneron Pharmaceuticals Inc,0.0028031099999999997,,invesco
+2026-06-03,BKR,Baker Hughes Co,0.0027642,,invesco
+2026-06-03,DASH,DoorDash Inc,0.00275805,,invesco
+2026-06-03,PCAR,PACCAR Inc,0.0026178800000000004,,invesco
+2026-06-03,FANG,Diamondback Energy Inc,0.00258529,,invesco
+2026-06-03,ARM,ARM Holdings PLC,0.00250905,,invesco
+2026-06-03,PDD,PDD Holdings Inc,0.0024825,,invesco
+2026-06-03,ABNB,Airbnb Inc,0.0024626500000000003,,invesco
+2026-06-03,FAST,Fastenal Co,0.00232191,,invesco
+2026-06-03,MCHP,Microchip Technology Inc,0.00228454,,invesco
+2026-06-03,EA,Electronic Arts Inc,0.00220897,,invesco
+2026-06-03,ODFL,Old Dominion Freight Line Inc,0.00214906,,invesco
+2026-06-03,ADSK,Autodesk Inc,0.00211839,,invesco
+2026-06-03,XEL,Xcel Energy Inc,0.0021063699999999998,,invesco
+2026-06-03,FER,Ferrovial NV,0.00210424,,invesco
+2026-06-03,EXC,Exelon Corp,0.00201169,,invesco
+2026-06-03,IDXX,IDEXX Laboratories Inc,0.0019477700000000001,,invesco
+2026-06-03,CCEP,Coca-Cola Europacific Partners PLC,0.00184725,,invesco
+2026-06-03,KDP,Keurig Dr Pepper Inc,0.0018108,,invesco
+2026-06-03,TTWO,Take-Two Interactive Software Inc,0.00174337,,invesco
+2026-06-03,MSTR,Strategy Inc,0.0017299400000000001,,invesco
+2026-06-03,PYPL,PayPal Holdings Inc,0.00171143,,invesco
+2026-06-03,ALNY,Alnylam Pharmaceuticals Inc,0.0016928000000000002,,invesco
+2026-06-03,AXON,Axon Enterprise Inc,0.00168891,,invesco
+2026-06-03,TRI,Thomson Reuters Corp,0.0016066700000000001,,invesco
+2026-06-03,PAYX,Paychex Inc,0.0015417800000000002,,invesco
+2026-06-03,ROP,Roper Technologies Inc,0.0014894399999999999,,invesco
+2026-06-03,WDAY,Workday Inc,0.00136507,,invesco
+2026-06-03,CPRT,Copart Inc,0.0012817100000000001,,invesco
+2026-06-03,GEHC,GE HealthCare Technologies Inc,0.00123333,,invesco
+2026-06-03,DXCM,Dexcom Inc,0.00122183,,invesco
+2026-06-03,KHC,Kraft Heinz Co/The,0.00117538,,invesco
+2026-06-03,CTSH,Cognizant Technology Solutions Corp,0.00111644,,invesco
+2026-06-03,VRSK,Verisk Analytics Inc,0.00107318,,invesco
+2026-06-03,INSM,Insmed Inc,0.00097668,,invesco
+2026-06-03,ZS,Zscaler Inc,0.0009425699999999999,,invesco
+2026-06-03,NQM6,CME E-Mini NASDAQ 100 Index Future,0.0008862299999999999,,invesco
+2026-06-03,CHTR,Charter Communications Inc,0.0007127300000000001,,invesco
+2026-06-03,USD,CASH &amp; EQUIVALENTS,0.00071075,,invesco
+2026-06-03,NQM6_,CME E-Mini NASDAQ 100 Index Future,-0.0008862299999999999,,invesco

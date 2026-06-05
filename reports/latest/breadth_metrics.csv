@@ -1,1 +1,9 @@
 ﻿metric_name,metric_value,denominator,data_date,source,is_missing
+advancing_count,30.0,52,2026-06-04,tiingo,False
+declining_count,21.0,52,2026-06-04,tiingo,False
+advancing_ratio,0.5769230769230769,52,2026-06-04,tiingo,False
+above_20d_ma_ratio,0.5961538461538461,52,2026-06-04,tiingo,False
+above_50d_ma_ratio,0.5769230769230769,52,2026-06-04,tiingo,False
+above_200d_ma_ratio,0.6538461538461539,52,2026-06-04,tiingo,False
+new_high_20d_count,8.0,52,2026-06-04,tiingo,False
+new_low_20d_count,4.0,52,2026-06-04,tiingo,False
