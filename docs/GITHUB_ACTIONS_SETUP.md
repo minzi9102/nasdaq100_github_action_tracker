@@ -46,9 +46,14 @@ Settings -> Secrets and variables -> Actions -> New repository secret
 
 ```text
 reports/latest/model_input_metrics.csv
+reports/latest/manifest.json
+reports/latest/price_daily.csv
 reports/latest/price_metrics.csv
 reports/latest/macro_daily.csv
 reports/latest/macro_metrics.csv
+reports/latest/qqq_holdings.csv
+reports/latest/breadth_metrics.csv
+reports/latest/data_quality.csv
 reports/latest/nasdaq100_qqq_daily_tracker.xlsx
 reports/latest/run_log.csv
 state/latest_manifest.json

@@ -3,9 +3,9 @@
 ## 一、本地测试
 
 ```bash
-python -m venv .venv
+uv venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 cp .env.example .env
 # 在 .env 中填写四个密钥
 python scripts/run_daily.py --as-of auto
@@ -46,8 +46,13 @@ Actions -> Nasdaq-100 QQQ Daily Tracker -> Run workflow
 
 ```text
 reports/latest/model_input_metrics.csv
+reports/latest/price_daily.csv
 reports/latest/price_metrics.csv
 reports/latest/macro_daily.csv
 reports/latest/macro_metrics.csv
+reports/latest/qqq_holdings.csv
+reports/latest/breadth_metrics.csv
+reports/latest/data_quality.csv
+reports/latest/manifest.json
 state/latest_manifest.json
 ```

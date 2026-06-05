@@ -1,0 +1,13 @@
+﻿dataset,provider,ok,rows,coverage_ratio,missing_symbols,message
+price_daily,alpha_vantage,True,100,1.0,,QQQ: 100 rows
+price_daily,tiingo,True,288,1.0,,QQQ: 288 rows
+macro_daily,fred,True,365,1.0,,DGS10: 365 rows
+macro_daily,fred,True,365,1.0,,DGS2: 365 rows
+macro_daily,fred,True,365,1.0,,DGS3MO: 365 rows
+macro_daily,fred,True,365,1.0,,DFF: 365 rows
+macro_daily,fred,True,365,1.0,,CPIAUCSL: 365 rows
+macro_daily,fred,True,365,1.0,,PCEPI: 365 rows
+macro_daily,fred,True,365,1.0,,UNRATE: 365 rows
+qqq_holdings,invesco,False,0,0.0,,"https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ - 406 Client Error: Not Acceptable for url: https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ; https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&ticker=QQQ - 406 Client Error: Not Acceptable for url: https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&ticker=QQQ; https://www.invesco.com/us/financial-products/etfs/holdings?audienceType=Investor&ticker=QQQ - HTTPSConnectionPool(host='www.invesco.com', port=443): Max retries exceeded with url: /us/financial-products/etfs/holdings?audienceType=Investor&ticker=QQQ (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))"
+breadth_metrics,tiingo,False,0,0.0,,no holdings symbols available
+fmp_summary,fmp,True,10,0.8,"AVGO,COST",8/10 quotes fetched

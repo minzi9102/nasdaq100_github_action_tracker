@@ -68,6 +68,41 @@ def build_model_input_metrics(
     return pd.DataFrame(rows, columns=MODEL_INPUT_COLUMNS)
 
 
+def build_model_input_metrics_v2(
+    price_metrics: pd.DataFrame,
+    macro_daily: pd.DataFrame,
+    macro_metrics: pd.DataFrame,
+    fmp_summary: pd.DataFrame,
+    breadth_metrics: pd.DataFrame,
+    data_quality: pd.DataFrame,
+) -> pd.DataFrame:
+    model_input = build_model_input_metrics(price_metrics, macro_daily, macro_metrics, fmp_summary)
+    rows = model_input.values.tolist()
+    if not breadth_metrics.empty:
+        for _, r in breadth_metrics.iterrows():
+            rows.append([
+                r.get("metric_name"),
+                r.get("metric_value"),
+                f"breadth metric; denominator={r.get('denominator')}",
+                r.get("data_date"),
+                r.get("source"),
+                _is_missing(r.get("metric_value")),
+            ])
+    if not data_quality.empty:
+        for _, r in data_quality.iterrows():
+            dataset = r.get("dataset")
+            provider = r.get("provider")
+            rows.append([
+                f"{dataset}_{provider}_coverage_ratio",
+                r.get("coverage_ratio"),
+                f"data quality coverage; ok={r.get('ok')}; rows={r.get('rows')}",
+                pd.Timestamp.today().date().isoformat(),
+                provider,
+                _is_missing(r.get("coverage_ratio")),
+            ])
+    return pd.DataFrame(rows, columns=MODEL_INPUT_COLUMNS)
+
+
 def write_excel(path: Path, sheets: Dict[str, pd.DataFrame]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with pd.ExcelWriter(path, engine="xlsxwriter") as writer:

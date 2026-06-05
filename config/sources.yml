@@ -29,6 +29,15 @@ providers:
     base_url: https://api.tiingo.com/tiingo
     rate_limit_note: 用于日线价格备用源和成分股历史价格计算。
 
+  invesco:
+    enabled: true
+    class_path: qqq_tracker.providers.invesco.InvescoProvider
+    holdings_urls:
+      - https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ
+      - https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&ticker=QQQ
+      - https://www.invesco.com/us/financial-products/etfs/holdings?audienceType=Investor&ticker=QQQ
+    rate_limit_note: 用于 QQQ 官方持仓公开下载；失败时保留上一期并写入数据质量。
+
 outputs:
   commit_outputs_to_repo: true
   latest_dir: reports/latest

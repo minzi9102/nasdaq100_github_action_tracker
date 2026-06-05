@@ -3,6 +3,8 @@ run:
   fetch_alpha_vantage_prices: true
   fetch_tiingo_prices: true
   fetch_fred_macro: true
+  fetch_qqq_holdings: true
+  fetch_breadth_metrics: true
   fetch_fmp_quotes: true
   fetch_fmp_key_metrics: true
   write_excel: true

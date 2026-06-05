@@ -11,6 +11,7 @@
   - FRED：美债收益率、利率、通胀等宏观数据。
   - Financial Modeling Prep：股票报价、基本面、关键指标。
   - Tiingo：QQQ / 成分股日线价格备用源。
+  - Invesco：QQQ 官方持仓公开下载，不需要 API key。
 - GitHub Actions 每日自动运行。
 - 使用 GitHub Secrets 保存 API key，不把密钥写入代码。
 - 自动输出：
@@ -25,16 +26,17 @@
 ### 1. 本地安装
 
 ```bash
-python -m venv .venv
+uv venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 ```
 
 Windows：
 
 ```bat
+uv venv .venv
 .venv\Scripts\activate
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 ```
 
 ### 2. 本地配置密钥
@@ -91,10 +93,15 @@ state/latest_manifest.json
 
 每日运行后，仓库里会更新：
 
+- `reports/latest/manifest.json`
 - `reports/latest/model_input_metrics.csv`
+- `reports/latest/price_daily.csv`
 - `reports/latest/price_metrics.csv`
 - `reports/latest/macro_daily.csv`
 - `reports/latest/macro_metrics.csv`
+- `reports/latest/qqq_holdings.csv`
+- `reports/latest/breadth_metrics.csv`
+- `reports/latest/data_quality.csv`
 - `reports/latest/nasdaq100_qqq_daily_tracker.xlsx`
 - `state/latest_manifest.json`
 

@@ -5,7 +5,7 @@ NVDA,True,1,NVDA: quote rows=1
 AMZN,True,1,AMZN: quote rows=1
 META,True,1,META: quote rows=1
 GOOGL,True,1,GOOGL: quote rows=1
-AVGO,False,0,402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/quote?symbol=AVGO&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+AVGO,False,0,"HTTPSConnectionPool(host='financialmodelingprep.com', port=443): Max retries exceeded with url: /stable/quote?symbol=AVGO&apikey=***REDACTED*** (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))"
 TSLA,True,1,TSLA: quote rows=1
-COST,True,1,COST: quote rows=1
+COST,False,0,"HTTPSConnectionPool(host='financialmodelingprep.com', port=443): Max retries exceeded with url: /stable/quote?symbol=COST&apikey=***REDACTED*** (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)')))"
 AMD,True,1,AMD: quote rows=1
