@@ -32,11 +32,8 @@ providers:
   invesco:
     enabled: true
     class_path: qqq_tracker.providers.invesco.InvescoProvider
-    holdings_urls:
-      - https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ
-      - https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&ticker=QQQ
-      - https://www.invesco.com/us/financial-products/etfs/holdings?audienceType=Investor&ticker=QQQ
-    rate_limit_note: 用于 QQQ 官方持仓公开下载；失败时保留上一期并写入数据质量。
+    holdings_url: https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/QQQ/holdings/fund?idType=ticker&interval=monthly&productType=ETF
+    rate_limit_note: 用于 Invesco QQQ 官方 DNG API 全量持仓；不要附加 loadType=initial，否则只返回前 10 大持仓。
 
 outputs:
   commit_outputs_to_repo: true

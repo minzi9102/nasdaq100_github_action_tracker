@@ -112,21 +112,24 @@ def test_price_daily_standard_columns_and_sorting():
 
 
 def test_invesco_holdings_normalize_standard_columns():
-    provider = InvescoProvider(["https://example.com/holdings.xlsx"])
-    raw = pd.DataFrame([
-        ["Ticker", "Company", "% of Fund", "Sector"],
-        ["AAPL", "Apple Inc.", "8.5%", "Information Technology"],
-        ["MSFT", "Microsoft Corp.", "7.0%", "Information Technology"],
-        ["Cash&Other", "Cash", "0.5%", ""],
-    ])
+    provider = InvescoProvider()
+    payload = {
+        "effectiveDate": "2026-06-03",
+        "totalNumberOfHoldings": 3,
+        "holdings": [
+            {"ticker": "AAPL", "issuerName": "Apple Inc.", "percentageOfTotalNetAssets": 7.184254},
+            {"ticker": "MSFT", "issuerName": "Microsoft Corp.", "percentageOfTotalNetAssets": 5.015267},
+            {"ticker": "", "issuerName": "Cash", "percentageOfTotalNetAssets": 0.5},
+        ],
+    }
 
-    holdings = provider._normalize(raw)  # noqa: SLF001
-    holdings["source"] = "invesco"
+    holdings = provider._normalize_payload(payload)  # noqa: SLF001
     holdings = holdings.reindex(columns=QQQ_HOLDINGS_COLUMNS)
 
     assert list(holdings.columns) == QQQ_HOLDINGS_COLUMNS
     assert holdings["symbol"].tolist() == ["AAPL", "MSFT"]
-    assert holdings["weight"].tolist() == [0.085, 0.07]
+    assert holdings["date"].tolist() == ["2026-06-03", "2026-06-03"]
+    assert holdings["weight"].round(8).tolist() == [0.07184254, 0.05015267]
 
 
 def test_breadth_metrics_are_objective_numeric_fields():

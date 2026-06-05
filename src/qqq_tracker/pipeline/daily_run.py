@@ -92,7 +92,7 @@ def make_providers(settings: Settings) -> Dict[str, object]:
             retry_count=retry_count,
         ),
         "invesco": InvescoProvider(
-            invesco_cfg.get("holdings_urls", []),
+            invesco_cfg.get("holdings_url"),
             timeout=timeout,
             retry_count=retry_count,
         ),

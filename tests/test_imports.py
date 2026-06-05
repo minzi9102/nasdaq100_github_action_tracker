@@ -12,7 +12,7 @@ def test_providers_construct_without_key():
     assert not AlphaVantageProvider(None, "https://example.com").available
     assert not FREDProvider(None, "https://example.com").available
     assert not FMPProvider(None, "https://example.com").available
-    assert not InvescoProvider([]).available
+    assert InvescoProvider().available
     assert not TiingoProvider(None, "https://example.com").available
 
 
