@@ -6,7 +6,7 @@ run:
   fetch_qqq_holdings: true
   fetch_breadth_metrics: true
   fetch_fmp_quotes: true
-  fetch_fmp_key_metrics: true
+  fetch_fmp_key_metrics: false
   write_excel: true
   write_csv: true
   fail_on_missing_all_providers: true

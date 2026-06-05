@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-06-05",
-  "generated_at": "2026-06-05T09:08:47Z",
+  "as_of": "2026-06-06",
+  "generated_at": "2026-06-05T16:24:55Z",
   "latest_files": {
     "excel_report": "reports/latest/nasdaq100_qqq_daily_tracker.xlsx",
     "manifest_json": "reports/latest/manifest.json",
@@ -12,7 +12,9 @@
     "qqq_holdings_csv": "reports/latest/qqq_holdings.csv",
     "qqq_equity_holdings_csv": "reports/latest/qqq_equity_holdings.csv",
     "breadth_metrics_csv": "reports/latest/breadth_metrics.csv",
+    "top_holdings_quotes_csv": "reports/latest/top_holdings_quotes.csv",
     "data_quality_csv": "reports/latest/data_quality.csv",
+    "api_usage_csv": "reports/latest/api_usage.csv",
     "fmp_summary_csv": "reports/latest/fmp_summary.csv",
     "run_log_csv": "reports/latest/run_log.csv"
   },
@@ -188,6 +190,23 @@
       "message": "equity filter applied for breadth stock pool"
     },
     {
+      "dataset": "fmp_summary",
+      "provider": "fmp",
+      "ok": false,
+      "rows": 98,
+      "symbol_coverage_ratio": 0.0,
+      "weight_coverage_ratio": 0.0,
+      "missing_symbols": "NVDA,AAPL,MSFT,MU,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,KLAC,TXN,MRVL,QCOM,SNDK,LIN,PANW,ADI,STX,TMUS,WDC,PEP,AMGN,CRWD,APP,GILD,ISRG,SHOP,HON,BKNG,CDNS,VRTX,FTNT,SBUX,ADBE,MAR,CEG,SNPS,ADP,MNST,CSX,CMCSA,INTU,MELI,NXPI,MPWR,DDOG,MDLZ,ROST,ORLY,CTAS,AEP,LITE,WBD,DASH,BKR,REGN,PCAR,FANG,ABNB,FAST,MCHP,ODFL,EA,ADSK,XEL,FER,EXC,IDXX,CCEP,AXON,KDP,MSTR,ALNY,TTWO,PYPL,TRI,PAYX,ROP,WDAY,CPRT,GEHC,DXCM,KHC,CTSH,VRSK,INSM,ZS,CHTR",
+      "missing_top_weight_symbols": "",
+      "rate_limited": true,
+      "stopped_after_429": true,
+      "remaining_symbols_skipped": 0,
+      "cache_rows_used": 0,
+      "live_rows_fetched": 0,
+      "fallback_provider": "",
+      "message": "0/98 quotes fetched"
+    },
+    {
       "dataset": "breadth_metrics",
       "provider": "fmp+tiingo_cache",
       "ok": true,
@@ -196,30 +215,100 @@
       "weight_coverage_ratio": 0.29478480780539196,
       "missing_symbols": "AAPL,ADI,ALNY,AMAT,AMD,AMZN,AVGO,AXON,CCEP,CHTR,COST,CPRT,CSCO,CTSH,DXCM,GEHC,GOOG,GOOGL,IDXX,INSM,INTC,KDP,KHC,KLAC,LIN,LRCX,META,MRVL,MSFT,MSTR,MU,NFLX,PANW,PAYX,PLTR,PYPL,QCOM,ROP,SNDK,STX,TRI,TSLA,TTWO,TXN,VRSK,WDAY,WMT,ZS",
       "missing_top_weight_symbols": "AAPL,MSFT,MU,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META",
-      "rate_limited": true,
-      "stopped_after_429": true,
-      "remaining_symbols_skipped": 97,
-      "cache_rows_used": 14400,
-      "live_rows_fetched": 0,
-      "fallback_provider": "mixed_fmp+tiingo_history_only",
-      "message": "50/98 symbols with history+quote coverage; coverage insufficient for top-weight symbols"
-    },
-    {
-      "dataset": "fmp_summary",
-      "provider": "fmp",
-      "ok": false,
-      "rows": 10,
-      "symbol_coverage_ratio": 0.0,
-      "weight_coverage_ratio": 0.0,
-      "missing_symbols": "AAPL,MSFT,NVDA,AMZN,META,GOOGL,AVGO,TSLA,COST,AMD",
-      "missing_top_weight_symbols": "",
       "rate_limited": false,
       "stopped_after_429": false,
       "remaining_symbols_skipped": 0,
-      "cache_rows_used": 0,
+      "cache_rows_used": 14400,
       "live_rows_fetched": 0,
-      "fallback_provider": "",
-      "message": "0/10 quotes fetched"
+      "fallback_provider": "tiingo_history_only",
+      "message": "50/98 symbols with history+quote coverage; coverage insufficient for top-weight symbols"
+    }
+  ],
+  "api_usage": [
+    {
+      "run_date": "2026-06-06",
+      "provider": "alpha_vantage",
+      "endpoint": "TIME_SERIES_DAILY_ADJUSTED",
+      "calls_attempted": 1,
+      "calls_success": 1,
+      "calls_failed": 0,
+      "rate_limited": false,
+      "limit_window": "day",
+      "limit_value": 25,
+      "credits_used": 1,
+      "symbols_requested": "QQQ",
+      "symbols_loaded": "QQQ",
+      "stopped_after_429": false,
+      "retry_after_seconds": null,
+      "message": "QQQ: 100 rows"
+    },
+    {
+      "run_date": "2026-06-06",
+      "provider": "fred",
+      "endpoint": "series_observations",
+      "calls_attempted": 7,
+      "calls_success": 7,
+      "calls_failed": 0,
+      "rate_limited": false,
+      "limit_window": "run",
+      "limit_value": 10,
+      "credits_used": 7,
+      "symbols_requested": "DGS10,DGS2,DGS3MO,DFF,CPIAUCSL,PCEPI,UNRATE",
+      "symbols_loaded": "DGS10,DGS2,DGS3MO,DFF,CPIAUCSL,PCEPI,UNRATE",
+      "stopped_after_429": false,
+      "retry_after_seconds": null,
+      "message": "DGS10: DGS10: 365 rows; DGS2: DGS2: 365 rows; DGS3MO: DGS3MO: 365 rows; ..."
+    },
+    {
+      "run_date": "2026-06-06",
+      "provider": "invesco",
+      "endpoint": "qqq_holdings",
+      "calls_attempted": 1,
+      "calls_success": 1,
+      "calls_failed": 0,
+      "rate_limited": false,
+      "limit_window": "run",
+      "limit_value": 3,
+      "credits_used": 1,
+      "symbols_requested": "QQQ",
+      "symbols_loaded": "QQQ",
+      "stopped_after_429": false,
+      "retry_after_seconds": null,
+      "message": "holdings rows=104"
+    },
+    {
+      "run_date": "2026-06-06",
+      "provider": "fmp",
+      "endpoint": "batch_quote",
+      "calls_attempted": 1,
+      "calls_success": 0,
+      "calls_failed": 1,
+      "rate_limited": true,
+      "limit_window": "day",
+      "limit_value": 250,
+      "credits_used": 1,
+      "symbols_requested": "98 symbols",
+      "symbols_loaded": "",
+      "stopped_after_429": true,
+      "retry_after_seconds": null,
+      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=NVDA%2CAAPL%2CMSFT%2CMU%2CAMZN%2CAMD%2CGOOGL%2CTSLA%2CGOOG%2CAVGO%2CMETA%2CWMT%2CINTC%2CCSCO%2CCOST%2CLRCX%2CAMAT%2CNFLX%2CPLTR%2CKLAC%2CTXN%2CMRVL%2CQCOM%2CSNDK%2CLIN&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
+    },
+    {
+      "run_date": "2026-06-06",
+      "provider": "tiingo",
+      "endpoint": "not_called",
+      "calls_attempted": 0,
+      "calls_success": 0,
+      "calls_failed": 0,
+      "rate_limited": false,
+      "limit_window": "hour",
+      "limit_value": 50,
+      "credits_used": 0,
+      "symbols_requested": "",
+      "symbols_loaded": "",
+      "stopped_after_429": false,
+      "retry_after_seconds": null,
+      "message": "provider not called in this daily pipeline run"
     }
   ],
   "provider_logs": [
@@ -287,123 +376,18 @@
       "message": "QQQ: holdings rows=104 effective_date=2026-06-04"
     },
     {
-      "provider": "tiingo",
-      "method": "breadth_daily_prices",
-      "symbol": "NVDA",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/NVDA/prices?format=json&startDate=2026-05-25&endDate=2026-06-05"
-    },
-    {
       "provider": "fmp",
       "method": "batch_quote",
-      "symbol": "ABNB,ADBE,ADP,ADSK,AEP...",
+      "symbol": "98 symbols",
+      "ok": false,
+      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=NVDA%2CAAPL%2CMSFT%2CMU%2CAMZN%2CAMD%2CGOOGL%2CTSLA%2CGOOG%2CAVGO%2CMETA%2CWMT%2CINTC%2CCSCO%2CCOST%2CLRCX%2CAMAT%2CNFLX%2CPLTR%2CKLAC%2CTXN%2CMRVL%2CQCOM%2CSNDK%2CLIN&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
+    },
+    {
+      "provider": "tiingo_cache",
+      "method": "load_cached_history_for_breadth",
+      "symbol": "98 symbols",
       "ok": true,
-      "message": "batch_quote: rows=1; missing=ABNB,ADP,ADSK,AEP,AMGN,APP,BKNG,BKR,CDNS,CEG,CMCSA,CRWD,CSX,CTAS,DASH,DDOG,EA,EXC,FANG,FAST,FER,FTNT,GILD,HON,INTU,ISRG,LITE,MAR,MCHP,MDLZ,MELI,MNST,MPWR,NVDA,NXPI,ODFL,ORLY,PCAR,PEP,REGN,ROST,SBUX,SHOP,SNPS,TMUS,VRTX,WBD,WDC,XEL"
-    },
-    {
-      "provider": "fmp",
-      "method": "quote",
-      "symbol": "AAPL",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=AAPL&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
-    },
-    {
-      "provider": "fmp",
-      "method": "quote",
-      "symbol": "MSFT",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=MSFT&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
-    },
-    {
-      "provider": "fmp",
-      "method": "quote",
-      "symbol": "NVDA",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=NVDA&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
-    },
-    {
-      "provider": "fmp",
-      "method": "quote",
-      "symbol": "AMZN",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=AMZN&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
-    },
-    {
-      "provider": "fmp",
-      "method": "quote",
-      "symbol": "META",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=META&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
-    },
-    {
-      "provider": "fmp",
-      "method": "quote",
-      "symbol": "GOOGL",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=GOOGL&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
-    },
-    {
-      "provider": "fmp",
-      "method": "quote",
-      "symbol": "AVGO",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=AVGO&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
-    },
-    {
-      "provider": "fmp",
-      "method": "quote",
-      "symbol": "TSLA",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=TSLA&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
-    },
-    {
-      "provider": "fmp",
-      "method": "quote",
-      "symbol": "COST",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=COST&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
-    },
-    {
-      "provider": "fmp",
-      "method": "quote",
-      "symbol": "AMD",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=AMD&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
-    },
-    {
-      "provider": "fmp",
-      "method": "key_metrics",
-      "symbol": "AAPL",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/key-metrics?symbol=AAPL&limit=5&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
-    },
-    {
-      "provider": "fmp",
-      "method": "key_metrics",
-      "symbol": "MSFT",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/key-metrics?symbol=MSFT&limit=5&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
-    },
-    {
-      "provider": "fmp",
-      "method": "key_metrics",
-      "symbol": "NVDA",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/key-metrics?symbol=NVDA&limit=5&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
-    },
-    {
-      "provider": "fmp",
-      "method": "key_metrics",
-      "symbol": "AMZN",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/key-metrics?symbol=AMZN&limit=5&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
-    },
-    {
-      "provider": "fmp",
-      "method": "key_metrics",
-      "symbol": "META",
-      "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/key-metrics?symbol=META&limit=5&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
+      "message": "50/98 symbols loaded from local cache/raw seed"
     }
   ]
 }

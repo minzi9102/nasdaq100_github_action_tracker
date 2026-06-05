@@ -57,7 +57,7 @@ class FMPProvider(BaseProvider):
         except Exception as exc:  # noqa: BLE001
             return ProviderResult(self.provider_name, False, pd.DataFrame(), str(exc), {"rate_limited": False, "symbol": symbol})
 
-    def batch_quote(self, symbols: list[str], chunk_size: int = 200) -> ProviderResult:
+    def batch_quote(self, symbols: list[str], chunk_size: int = 200, fallback_to_single: bool = True) -> ProviderResult:
         if not self.available:
             return self.unavailable_result("batch_quote")
         cleaned = [symbol.strip().upper() for symbol in symbols if str(symbol).strip()]
@@ -68,11 +68,15 @@ class FMPProvider(BaseProvider):
         frames: list[pd.DataFrame] = []
         raw_payloads: list[object] = []
         missing_symbols: list[str] = []
+        calls_attempted = 0
+        calls_success = 0
         for offset in range(0, len(cleaned), chunk_size):
             chunk = cleaned[offset : offset + chunk_size]
             params = {"symbol": ",".join(chunk), "apikey": self.api_key}
             try:
+                calls_attempted += 1
                 data = self.request_json(url, params=params)
+                calls_success += 1
                 raw_payloads.append(data)
                 rows = data if isinstance(data, list) else [data]
                 df = pd.DataFrame(rows)
@@ -86,9 +90,29 @@ class FMPProvider(BaseProvider):
                     False,
                     pd.DataFrame(),
                     str(exc),
-                    {"rate_limited": True, "retry_after_seconds": exc.retry_after_seconds, "symbols": chunk},
+                    {
+                        "rate_limited": True,
+                        "retry_after_seconds": exc.retry_after_seconds,
+                        "symbols": chunk,
+                        "calls_attempted": calls_attempted,
+                        "calls_success": calls_success,
+                    },
                 )
             except Exception as exc:  # noqa: BLE001
+                if not fallback_to_single:
+                    return ProviderResult(
+                        self.provider_name,
+                        False,
+                        pd.DataFrame(),
+                        str(exc),
+                        {
+                            "rate_limited": False,
+                            "symbols": chunk,
+                            "missing_symbols": chunk,
+                            "calls_attempted": calls_attempted,
+                            "calls_success": calls_success,
+                        },
+                    )
                 for symbol in chunk:
                     single = self.quote(symbol)
                     if single.ok and not single.data.empty:
@@ -106,5 +130,11 @@ class FMPProvider(BaseProvider):
             ok,
             merged,
             message,
-            {"payloads": raw_payloads, "missing_symbols": missing_symbols, "rate_limited": False},
+            {
+                "payloads": raw_payloads,
+                "missing_symbols": missing_symbols,
+                "rate_limited": False,
+                "calls_attempted": calls_attempted,
+                "calls_success": calls_success,
+            },
         )

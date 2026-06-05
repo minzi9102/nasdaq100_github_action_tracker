@@ -1,0 +1,39 @@
+alpha_vantage:
+  role: qqq_price
+  daily_requests: 25
+  reserve_daily: 5
+  max_calls_per_run: 3
+  min_interval_seconds: 15
+  stop_after_limit_error: true
+
+fred:
+  role: macro
+  max_calls_per_run: 10
+  min_interval_seconds: 1
+  cache_ttl_hours: 24
+
+fmp:
+  role: latest_quote_and_light_fundamentals
+  daily_requests: 250
+  reserve_daily: 50
+  max_calls_per_run: 30
+  prefer_batch: true
+  batch_size: 25
+  stop_after_limit_error: true
+
+tiingo:
+  role: history_cache_primary
+  hourly_requests: 50
+  daily_requests: 1000
+  monthly_bandwidth_gb: 2
+  reserve_hourly: 10
+  reserve_daily: 100
+  max_calls_per_run: 40
+  min_interval_seconds: 2
+  stop_after_429: true
+  respect_retry_after: true
+
+invesco:
+  role: official_qqq_holdings
+  max_calls_per_run: 3
+  cache_on_failure: true

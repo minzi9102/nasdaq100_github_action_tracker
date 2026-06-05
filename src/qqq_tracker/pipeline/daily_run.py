@@ -49,6 +49,20 @@ QQQ_HOLDINGS_COLUMNS = [
 ]
 QQQ_EQUITY_HOLDINGS_COLUMNS = QQQ_HOLDINGS_COLUMNS.copy()
 BREADTH_METRICS_COLUMNS = ["metric_name", "metric_value", "denominator", "data_date", "source", "is_missing"]
+TOP_HOLDINGS_QUOTES_COLUMNS = [
+    "symbol",
+    "company_name",
+    "weight",
+    "price",
+    "change",
+    "changes_percentage",
+    "market_cap",
+    "pe",
+    "eps",
+    "provider",
+    "quote_time",
+    "is_missing",
+]
 DATA_QUALITY_COLUMNS = [
     "dataset",
     "provider",
@@ -64,6 +78,23 @@ DATA_QUALITY_COLUMNS = [
     "cache_rows_used",
     "live_rows_fetched",
     "fallback_provider",
+    "message",
+]
+API_USAGE_COLUMNS = [
+    "run_date",
+    "provider",
+    "endpoint",
+    "calls_attempted",
+    "calls_success",
+    "calls_failed",
+    "rate_limited",
+    "limit_window",
+    "limit_value",
+    "credits_used",
+    "symbols_requested",
+    "symbols_loaded",
+    "stopped_after_429",
+    "retry_after_seconds",
     "message",
 ]
 BREATH_EXCLUDE_SYMBOLS = {"USD"}
@@ -236,6 +267,90 @@ def quality_row(
         "fallback_provider": fallback_provider or "",
         "message": message,
     }
+
+
+def limit_window_and_value(settings: Settings, provider: str) -> tuple[str, object]:
+    cfg = settings.api_limits.get(provider, {})
+    if "hourly_requests" in cfg:
+        return "hour", cfg.get("hourly_requests")
+    if "daily_requests" in cfg:
+        return "day", cfg.get("daily_requests")
+    if "max_calls_per_run" in cfg:
+        return "run", cfg.get("max_calls_per_run")
+    return "run", cfg.get("max_calls_per_run", "")
+
+
+def symbol_list_value(symbols: list[str] | str | None) -> str:
+    if symbols is None:
+        return ""
+    if isinstance(symbols, str):
+        return symbols
+    cleaned = [normalize_symbol(symbol) for symbol in symbols if str(symbol).strip()]
+    if len(cleaned) <= 25:
+        return ",".join(cleaned)
+    return f"{len(cleaned)} symbols"
+
+
+def api_usage_row(
+    settings: Settings,
+    run_date: str,
+    provider: str,
+    endpoint: str,
+    calls_attempted: int,
+    calls_success: int,
+    symbols_requested: list[str] | str | None = None,
+    symbols_loaded: list[str] | str | None = None,
+    rate_limited: bool = False,
+    stopped_after_429: bool = False,
+    retry_after_seconds: float | None = None,
+    message: str = "",
+    credits_used: int | None = None,
+) -> Dict:
+    limit_window, limit_value = limit_window_and_value(settings, provider)
+    calls_failed = max(int(calls_attempted) - int(calls_success), 0)
+    return {
+        "run_date": run_date,
+        "provider": provider,
+        "endpoint": endpoint,
+        "calls_attempted": int(calls_attempted),
+        "calls_success": int(calls_success),
+        "calls_failed": calls_failed,
+        "rate_limited": bool(rate_limited),
+        "limit_window": limit_window,
+        "limit_value": limit_value,
+        "credits_used": int(credits_used if credits_used is not None else calls_attempted),
+        "symbols_requested": symbol_list_value(symbols_requested),
+        "symbols_loaded": symbol_list_value(symbols_loaded),
+        "stopped_after_429": bool(stopped_after_429),
+        "retry_after_seconds": retry_after_seconds,
+        "message": message,
+    }
+
+
+def ensure_api_usage_provider_rows(settings: Settings, run_date: str, rows: list[Dict], providers: list[str]) -> list[Dict]:
+    seen = {row.get("provider") for row in rows}
+    for provider in providers:
+        if provider in seen:
+            continue
+        rows.append(
+            api_usage_row(
+                settings,
+                run_date,
+                provider,
+                "not_called",
+                0,
+                0,
+                message="provider not called in this daily pipeline run",
+            )
+        )
+    return rows
+
+
+def result_rate_limit_meta(result: object) -> tuple[bool, float | None]:
+    raw = getattr(result, "raw", None)
+    if isinstance(raw, dict):
+        return bool(raw.get("rate_limited")), raw.get("retry_after_seconds")
+    return False, None
 
 
 def fred_latest(df: pd.DataFrame) -> tuple[float | None, str | None]:
@@ -511,6 +626,46 @@ def quote_map_from_batch(df: pd.DataFrame) -> dict[str, dict]:
     return {row["symbol"]: row.to_dict() for _, row in quote_df.iterrows()}
 
 
+def first_present(row: dict, names: list[str]) -> object:
+    for name in names:
+        value = row.get(name)
+        if value is not None and not pd.isna(value):
+            return value
+    return None
+
+
+def build_top_holdings_quotes(equity_holdings: pd.DataFrame, quote_map: dict[str, dict], limit: int = 20) -> pd.DataFrame:
+    if equity_holdings.empty:
+        return pd.DataFrame(columns=TOP_HOLDINGS_QUOTES_COLUMNS)
+    holdings = equity_holdings.copy()
+    holdings["symbol"] = holdings["symbol"].map(normalize_symbol)
+    holdings["weight"] = pd.to_numeric(holdings["weight"], errors="coerce").fillna(0.0)
+    holdings = holdings.sort_values(["weight", "symbol"], ascending=[False, True]).head(limit)
+
+    rows: list[dict] = []
+    for _, holding in holdings.iterrows():
+        symbol = holding.get("symbol")
+        quote = quote_map.get(symbol, {})
+        is_missing = not quote
+        rows.append(
+            {
+                "symbol": symbol,
+                "company_name": holding.get("company_name"),
+                "weight": holding.get("weight"),
+                "price": first_present(quote, ["price"]),
+                "change": first_present(quote, ["change"]),
+                "changes_percentage": first_present(quote, ["changesPercentage", "changes_percentage", "changePercentage"]),
+                "market_cap": first_present(quote, ["marketCap", "market_cap"]),
+                "pe": first_present(quote, ["pe", "peRatio"]),
+                "eps": first_present(quote, ["eps"]),
+                "provider": quote.get("source", "fmp") if not is_missing else "",
+                "quote_time": first_present(quote, ["timestamp", "earningsAnnouncement", "date"]),
+                "is_missing": is_missing,
+            }
+        )
+    return pd.DataFrame(rows, columns=TOP_HOLDINGS_QUOTES_COLUMNS)
+
+
 def valid_history_row_count(df: pd.DataFrame) -> int:
     if df.empty or "date" not in df.columns:
         return 0
@@ -686,14 +841,40 @@ def fetch_tiingo_history_for_breadth(
     }
 
 
+def load_cached_history_for_breadth(settings: Settings, symbols: list[str]) -> tuple[dict[str, pd.DataFrame], dict[str, object]]:
+    frames: dict[str, pd.DataFrame] = {}
+    missing: list[str] = []
+    cache_rows_used = 0
+
+    for symbol in symbols:
+        cache_df = load_tiingo_cache(settings, symbol)
+        if cache_df.empty:
+            cache_df = load_tiingo_seed_from_raw(settings, symbol)
+            if not cache_df.empty:
+                write_tiingo_cache(settings, symbol, cache_df)
+        cache_rows_used += len(cache_df)
+        if valid_history_row_count(cache_df) >= 2:
+            frames[symbol] = cache_df
+        else:
+            missing.append(symbol)
+
+    return frames, {
+        "missing_symbols": missing,
+        "rate_limited": False,
+        "stopped_after_429": False,
+        "remaining_symbols_skipped": 0,
+        "cache_rows_used": cache_rows_used,
+        "live_rows_fetched": 0,
+    }
+
+
 def fetch_breadth(
     settings: Settings,
-    providers: Dict[str, object],
     equity_holdings: pd.DataFrame,
     run_date: str,
-    raw_dir: Path,
     logs: list[Dict],
     quality_rows: list[Dict],
+    quote_map: dict[str, dict] | None = None,
 ) -> pd.DataFrame:
     if equity_holdings.empty or "symbol" not in equity_holdings.columns:
         quality_rows.append(
@@ -709,8 +890,7 @@ def fetch_breadth(
         )
         return pd.DataFrame(columns=BREADTH_METRICS_COLUMNS)
 
-    tiingo: TiingoProvider = providers["tiingo"]  # type: ignore[assignment]
-    fmp: FMPProvider = providers["fmp"]  # type: ignore[assignment]
+    quote_map = quote_map or {}
     holdings = equity_holdings.copy()
     holdings["symbol"] = holdings["symbol"].map(normalize_symbol)
     holdings["weight"] = pd.to_numeric(holdings["weight"], errors="coerce").fillna(0.0)
@@ -724,32 +904,25 @@ def fetch_breadth(
     ordered = holdings.sort_values(["has_ready_cache", "cached_history_rows", "weight", "symbol"], ascending=[False, False, False, True])
     symbols = ordered["symbol"].dropna().astype(str).unique().tolist()
 
-    history_frames, history_meta = fetch_tiingo_history_for_breadth(settings, tiingo, symbols, run_date, raw_dir, logs)
+    history_frames, history_meta = load_cached_history_for_breadth(settings, symbols)
     fetched_symbols = sorted(history_frames.keys())
-    quote_result = fmp.batch_quote(fetched_symbols)
     logs.append(
         {
-            "provider": quote_result.name,
-            "method": "batch_quote",
-            "symbol": ",".join(fetched_symbols[:5]) + ("..." if len(fetched_symbols) > 5 else ""),
-            "ok": quote_result.ok,
-            "message": quote_result.message,
+            "provider": "tiingo_cache",
+            "method": "load_cached_history_for_breadth",
+            "symbol": symbol_list_value(symbols),
+            "ok": bool(fetched_symbols),
+            "message": f"{len(fetched_symbols)}/{len(symbols)} symbols loaded from local cache/raw seed",
         }
     )
-    quote_fallback_provider = "fmp"
-    if quote_result.ok and not quote_result.data.empty:
-        write_csv(quote_result.data, raw_dir / "fmp_breadth_batch_quote.csv")
-        quote_map = quote_map_from_batch(quote_result.data)
-    else:
-        quote_map = {}
-        quote_fallback_provider = "tiingo_history_only"
+    quote_fallback_provider = "fmp" if quote_map else "tiingo_history_only"
 
     usable_frames: dict[str, pd.DataFrame] = {}
     missing_symbols = list(dict.fromkeys(history_meta["missing_symbols"]))
     for symbol in fetched_symbols:
         frame = history_frames[symbol]
         quote = quote_map.get(symbol)
-        if quote is None and quote_result.ok:
+        if quote is None and quote_map:
             quote_fallback_provider = "mixed_fmp+tiingo_history_only"
         usable_frames[symbol] = frame
 
@@ -804,6 +977,7 @@ def run_daily(as_of: str = "auto") -> Dict:
 
     logs: List[Dict] = []
     quality_rows: list[Dict] = []
+    api_usage_rows: list[Dict] = []
     price_source_frames: dict[str, list[tuple[str, pd.DataFrame]]] = {}
     price_daily_frames: list[pd.DataFrame] = []
     av_success: dict[str, bool] = {}
@@ -814,6 +988,23 @@ def run_daily(as_of: str = "auto") -> Dict:
             result = av.daily_adjusted(symbol, outputsize=provider_config(settings, "alpha_vantage").get("default_outputsize", "compact"))
             logs.append({"provider": result.name, "method": "daily_adjusted", "symbol": symbol, "ok": result.ok, "message": result.message})
             av_success[symbol] = result.ok
+            rate_limited, retry_after = result_rate_limit_meta(result)
+            api_usage_rows.append(
+                api_usage_row(
+                    settings,
+                    run_date,
+                    result.name,
+                    "TIME_SERIES_DAILY_ADJUSTED",
+                    1 if av.available else 0,
+                    1 if result.ok else 0,
+                    symbols_requested=symbol,
+                    symbols_loaded=symbol if result.ok else "",
+                    rate_limited=rate_limited,
+                    stopped_after_429=rate_limited,
+                    retry_after_seconds=retry_after,
+                    message=result.message,
+                )
+            )
             if result.ok:
                 df = result.data
                 write_csv(df, raw_dir / f"alpha_vantage_{symbol}_daily.csv")
@@ -841,6 +1032,23 @@ def run_daily(as_of: str = "auto") -> Dict:
                 continue
             result = tiingo.daily_prices(symbol, start_date=start, end_date=end)
             logs.append({"provider": result.name, "method": "daily_prices", "symbol": symbol, "ok": result.ok, "message": result.message})
+            rate_limited, retry_after = result_rate_limit_meta(result)
+            api_usage_rows.append(
+                api_usage_row(
+                    settings,
+                    run_date,
+                    result.name,
+                    "daily_prices",
+                    1 if tiingo.available else 0,
+                    1 if result.ok else 0,
+                    symbols_requested=symbol,
+                    symbols_loaded=symbol if result.ok else "",
+                    rate_limited=rate_limited,
+                    stopped_after_429=rate_limited,
+                    retry_after_seconds=retry_after,
+                    message=result.message,
+                )
+            )
             if result.ok:
                 df = result.data
                 write_csv(df, raw_dir / f"tiingo_{symbol}_daily.csv")
@@ -874,10 +1082,20 @@ def run_daily(as_of: str = "auto") -> Dict:
     fred: FREDProvider = providers["fred"]  # type: ignore[assignment]
     if settings.pipeline.get("run", {}).get("fetch_fred_macro", True):
         series_map = settings.fred_series.get("series", {})
+        fred_requested = list(series_map.keys())
+        fred_success: list[str] = []
+        fred_messages: list[str] = []
+        fred_rate_limited = False
+        fred_retry_after = None
         for series_id, name in series_map.items():
             result = fred.observations(series_id, limit=365)
             logs.append({"provider": result.name, "method": "observations", "symbol": series_id, "ok": result.ok, "message": result.message})
+            rate_limited, retry_after = result_rate_limit_meta(result)
+            fred_rate_limited = fred_rate_limited or rate_limited
+            fred_retry_after = retry_after if retry_after is not None else fred_retry_after
+            fred_messages.append(f"{series_id}: {result.message}")
             if result.ok:
+                fred_success.append(series_id)
                 write_csv(result.data, raw_dir / f"fred_{series_id}.csv")
                 fred_frames[series_id] = result.data
                 latest = latest_value(result.data)
@@ -903,6 +1121,22 @@ def run_daily(as_of: str = "auto") -> Dict:
                     message=result.message,
                 )
             )
+        api_usage_rows.append(
+            api_usage_row(
+                settings,
+                run_date,
+                "fred",
+                "series_observations",
+                len(fred_requested) if fred.available else 0,
+                len(fred_success),
+                symbols_requested=fred_requested,
+                symbols_loaded=fred_success,
+                rate_limited=fred_rate_limited,
+                stopped_after_429=fred_rate_limited,
+                retry_after_seconds=fred_retry_after,
+                message="; ".join(fred_messages[:3]) + ("; ..." if len(fred_messages) > 3 else ""),
+            )
+        )
     macro_daily = pd.DataFrame(macro_daily_rows, columns=MACRO_DAILY_COLUMNS)
     macro_metrics = pd.DataFrame(build_macro_metric_rows(fred_frames), columns=MACRO_METRICS_COLUMNS)
     write_csv(macro_daily, processed_dir / "macro_daily.csv")
@@ -911,6 +1145,19 @@ def run_daily(as_of: str = "auto") -> Dict:
     qqq_holdings = pd.DataFrame(columns=QQQ_HOLDINGS_COLUMNS)
     if settings.pipeline.get("run", {}).get("fetch_qqq_holdings", True):
         qqq_holdings = fetch_holdings(settings, providers, logs, quality_rows)
+        api_usage_rows.append(
+            api_usage_row(
+                settings,
+                run_date,
+                "invesco",
+                "qqq_holdings",
+                1,
+                1 if not qqq_holdings.empty else 0,
+                symbols_requested="QQQ",
+                symbols_loaded="QQQ" if not qqq_holdings.empty else "",
+                message=f"holdings rows={len(qqq_holdings)}",
+            )
+        )
     qqq_holdings = qqq_holdings.reindex(columns=QQQ_HOLDINGS_COLUMNS)
     qqq_equity_holdings = build_equity_holdings(qqq_holdings)
     write_csv(qqq_holdings, processed_dir / "qqq_holdings.csv")
@@ -933,23 +1180,60 @@ def run_daily(as_of: str = "auto") -> Dict:
             )
         )
 
-    breadth_metrics = pd.DataFrame(columns=BREADTH_METRICS_COLUMNS)
-    if settings.pipeline.get("run", {}).get("fetch_breadth_metrics", True):
-        breadth_metrics = fetch_breadth(settings, providers, qqq_equity_holdings, run_date, raw_dir, logs, quality_rows)
-    breadth_metrics = breadth_metrics.reindex(columns=BREADTH_METRICS_COLUMNS)
-    write_csv(breadth_metrics, processed_dir / "breadth_metrics.csv")
-
     fmp: FMPProvider = providers["fmp"]  # type: ignore[assignment]
-    fmp_rows = []
+    fmp_summary = pd.DataFrame()
+    quote_map: dict[str, dict] = {}
+    top_holdings_quotes = pd.DataFrame(columns=TOP_HOLDINGS_QUOTES_COLUMNS)
+    fmp_requested_symbols = qqq_equity_holdings["symbol"].dropna().astype(str).map(normalize_symbol).unique().tolist() if not qqq_equity_holdings.empty else []
+    fmp_loaded_symbols: list[str] = []
     key_metric_frames = []
     if settings.pipeline.get("run", {}).get("fetch_fmp_quotes", True):
-        for symbol in settings.symbols.get("fundamental_symbols", []):
-            result = fmp.quote(symbol)
-            logs.append({"provider": result.name, "method": "quote", "symbol": symbol, "ok": result.ok, "message": result.message})
-            if result.ok:
-                write_csv(result.data, raw_dir / f"fmp_{symbol}_quote.csv")
-            fmp_rows.append({"symbol": symbol, "ok": result.ok, "rows": len(result.data), "message": result.message})
-        requested = len(settings.symbols.get("fundamental_symbols", []))
+        batch_size = int(settings.api_limits.get("fmp", {}).get("batch_size", 25))
+        result = fmp.batch_quote(fmp_requested_symbols, chunk_size=batch_size, fallback_to_single=False)
+        logs.append(
+            {
+                "provider": result.name,
+                "method": "batch_quote",
+                "symbol": symbol_list_value(fmp_requested_symbols),
+                "ok": result.ok,
+                "message": result.message,
+            }
+        )
+        rate_limited, retry_after = result_rate_limit_meta(result)
+        raw_meta = result.raw if isinstance(result.raw, dict) else {}
+        fmp_calls_attempted = int(raw_meta.get("calls_attempted", 0))
+        fmp_calls_success = int(raw_meta.get("calls_success", 0))
+        if result.ok and not result.data.empty:
+            write_csv(result.data, raw_dir / "fmp_equity_batch_quote.csv")
+            quote_map = quote_map_from_batch(result.data)
+            fmp_loaded_symbols = sorted(quote_map.keys())
+        api_usage_rows.append(
+            api_usage_row(
+                settings,
+                run_date,
+                result.name,
+                "batch_quote",
+                fmp_calls_attempted,
+                fmp_calls_success,
+                symbols_requested=fmp_requested_symbols,
+                symbols_loaded=fmp_loaded_symbols,
+                rate_limited=rate_limited,
+                stopped_after_429=rate_limited,
+                retry_after_seconds=retry_after,
+                message=result.message,
+            )
+        )
+        fmp_rows = [
+            {
+                "symbol": symbol,
+                "ok": symbol in quote_map,
+                "rows": 1 if symbol in quote_map else 0,
+                "message": "batch_quote loaded" if symbol in quote_map else result.message,
+            }
+            for symbol in fmp_requested_symbols
+        ]
+        fmp_summary = pd.DataFrame(fmp_rows)
+        requested = len(fmp_requested_symbols)
         missing = [r["symbol"] for r in fmp_rows if not r["ok"]]
         quality_rows.append(
             quality_row(
@@ -960,8 +1244,14 @@ def run_daily(as_of: str = "auto") -> Dict:
                 symbol_coverage_ratio=(requested - len(missing)) / requested if requested else 0.0,
                 weight_coverage_ratio=(requested - len(missing)) / requested if requested else 0.0,
                 missing_symbols=missing,
+                rate_limited=rate_limited,
+                stopped_after_429=rate_limited,
                 message=f"{requested - len(missing)}/{requested} quotes fetched",
             )
+        )
+    else:
+        api_usage_rows.append(
+            api_usage_row(settings, run_date, "fmp", "batch_quote", 0, 0, symbols_requested=fmp_requested_symbols, message="fetch_fmp_quotes disabled")
         )
 
     if settings.pipeline.get("run", {}).get("fetch_fmp_key_metrics", True):
@@ -972,15 +1262,28 @@ def run_daily(as_of: str = "auto") -> Dict:
                 df = result.data
                 write_csv(df, raw_dir / f"fmp_{symbol}_key_metrics.csv")
                 key_metric_frames.append(df)
-    fmp_summary = pd.DataFrame(fmp_rows)
+
+    top_holdings_quotes = build_top_holdings_quotes(qqq_equity_holdings, quote_map, limit=20)
+    write_csv(top_holdings_quotes, processed_dir / "top_holdings_quotes.csv")
+
+    breadth_metrics = pd.DataFrame(columns=BREADTH_METRICS_COLUMNS)
+    if settings.pipeline.get("run", {}).get("fetch_breadth_metrics", True):
+        breadth_metrics = fetch_breadth(settings, qqq_equity_holdings, run_date, logs, quality_rows, quote_map)
+    breadth_metrics = breadth_metrics.reindex(columns=BREADTH_METRICS_COLUMNS)
+    write_csv(breadth_metrics, processed_dir / "breadth_metrics.csv")
+
     write_csv(fmp_summary, processed_dir / "fmp_summary.csv")
     key_metrics = pd.concat(key_metric_frames, ignore_index=True) if key_metric_frames else pd.DataFrame()
-    write_csv(key_metrics, processed_dir / "fmp_key_metrics.csv")
+    if not key_metrics.empty:
+        write_csv(key_metrics, processed_dir / "fmp_key_metrics.csv")
 
     logs_df = pd.DataFrame(logs)
     data_quality = pd.DataFrame(quality_rows, columns=DATA_QUALITY_COLUMNS)
+    api_usage_rows = ensure_api_usage_provider_rows(settings, run_date, api_usage_rows, ["alpha_vantage", "fred", "fmp", "tiingo", "invesco"])
+    api_usage = pd.DataFrame(api_usage_rows, columns=API_USAGE_COLUMNS)
     write_csv(logs_df, processed_dir / "run_log.csv")
     write_csv(data_quality, processed_dir / "data_quality.csv")
+    write_csv(api_usage, processed_dir / "api_usage.csv")
 
     model_input_metrics = build_model_input_metrics_v2(price_metrics, macro_daily, macro_metrics, fmp_summary, breadth_metrics, data_quality)
     write_csv(model_input_metrics, processed_dir / "model_input_metrics.csv")
@@ -992,7 +1295,9 @@ def run_daily(as_of: str = "auto") -> Dict:
     write_csv(qqq_holdings, latest_dir / "qqq_holdings.csv")
     write_csv(qqq_equity_holdings, latest_dir / "qqq_equity_holdings.csv")
     write_csv(breadth_metrics, latest_dir / "breadth_metrics.csv")
+    write_csv(top_holdings_quotes, latest_dir / "top_holdings_quotes.csv")
     write_csv(data_quality, latest_dir / "data_quality.csv")
+    write_csv(api_usage, latest_dir / "api_usage.csv")
     write_csv(fmp_summary, latest_dir / "fmp_summary.csv")
     write_csv(logs_df, latest_dir / "run_log.csv")
 
@@ -1007,9 +1312,10 @@ def run_daily(as_of: str = "auto") -> Dict:
             "QQQ持仓": qqq_holdings,
             "QQQ股票池": qqq_equity_holdings,
             "市场广度": breadth_metrics,
+            "前20持仓报价": top_holdings_quotes,
             "数据质量": data_quality,
+            "API调用": api_usage,
             "FMP可用性": fmp_summary,
-            "FMP关键指标": key_metrics,
             "模型输入指标": model_input_metrics,
             "运行日志": logs_df,
         },
@@ -1032,11 +1338,14 @@ def run_daily(as_of: str = "auto") -> Dict:
             "qqq_holdings_csv": rel_path(latest_dir / "qqq_holdings.csv", settings.paths.root),
             "qqq_equity_holdings_csv": rel_path(latest_dir / "qqq_equity_holdings.csv", settings.paths.root),
             "breadth_metrics_csv": rel_path(latest_dir / "breadth_metrics.csv", settings.paths.root),
+            "top_holdings_quotes_csv": rel_path(latest_dir / "top_holdings_quotes.csv", settings.paths.root),
             "data_quality_csv": rel_path(latest_dir / "data_quality.csv", settings.paths.root),
+            "api_usage_csv": rel_path(latest_dir / "api_usage.csv", settings.paths.root),
             "fmp_summary_csv": rel_path(latest_dir / "fmp_summary.csv", settings.paths.root),
             "run_log_csv": rel_path(latest_dir / "run_log.csv", settings.paths.root),
         },
         "quality_summary": data_quality.to_dict(orient="records"),
+        "api_usage": api_usage.to_dict(orient="records"),
         "provider_logs": logs,
     }
     write_json(manifest, latest_dir / "manifest.json")

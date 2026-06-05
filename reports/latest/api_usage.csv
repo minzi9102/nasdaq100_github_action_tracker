@@ -1,0 +1,6 @@
+﻿run_date,provider,endpoint,calls_attempted,calls_success,calls_failed,rate_limited,limit_window,limit_value,credits_used,symbols_requested,symbols_loaded,stopped_after_429,retry_after_seconds,message
+2026-06-06,alpha_vantage,TIME_SERIES_DAILY_ADJUSTED,1,1,0,False,day,25,1,QQQ,QQQ,False,,QQQ: 100 rows
+2026-06-06,fred,series_observations,7,7,0,False,run,10,7,"DGS10,DGS2,DGS3MO,DFF,CPIAUCSL,PCEPI,UNRATE","DGS10,DGS2,DGS3MO,DFF,CPIAUCSL,PCEPI,UNRATE",False,,DGS10: DGS10: 365 rows; DGS2: DGS2: 365 rows; DGS3MO: DGS3MO: 365 rows; ...
+2026-06-06,invesco,qqq_holdings,1,1,0,False,run,3,1,QQQ,QQQ,False,,holdings rows=104
+2026-06-06,fmp,batch_quote,1,0,1,True,day,250,1,98 symbols,,True,,429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=NVDA%2CAAPL%2CMSFT%2CMU%2CAMZN%2CAMD%2CGOOGL%2CTSLA%2CGOOG%2CAVGO%2CMETA%2CWMT%2CINTC%2CCSCO%2CCOST%2CLRCX%2CAMAT%2CNFLX%2CPLTR%2CKLAC%2CTXN%2CMRVL%2CQCOM%2CSNDK%2CLIN&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+2026-06-06,tiingo,not_called,0,0,0,False,hour,50,0,,,False,,provider not called in this daily pipeline run

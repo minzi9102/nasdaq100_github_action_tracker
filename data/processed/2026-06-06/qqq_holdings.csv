@@ -1,0 +1,105 @@
+﻿date,symbol,company_name,weight,sector,security_type_code,security_type_name,source
+2026-06-04,NVDA,NVIDIA Corp,0.08433591,,COM,Common Stock,invesco
+2026-06-04,AAPL,Apple Inc,0.07244039,,COM,Common Stock,invesco
+2026-06-04,MSFT,Microsoft Corp,0.05049571,,COM,Common Stock,invesco
+2026-06-04,MU,Micron Technology Inc,0.04905769,,COM,Common Stock,invesco
+2026-06-04,AMZN,Amazon.com Inc,0.04319211,,COM,Common Stock,invesco
+2026-06-04,AMD,Advanced Micro Devices Inc,0.03732949,,COM,Common Stock,invesco
+2026-06-04,GOOGL,Alphabet Inc Class A,0.034348369999999996,,COM,Common Stock,invesco
+2026-06-04,TSLA,Tesla Inc,0.03310853,,COM,Common Stock,invesco
+2026-06-04,GOOG,Alphabet Inc Class C,0.03183849,,COM,Common Stock,invesco
+2026-06-04,AVGO,Broadcom Inc,0.0314861,,COM,Common Stock,invesco
+2026-06-04,META,Meta Platforms Inc,0.02934593,,COM,Common Stock,invesco
+2026-06-04,WMT,Walmart Inc,0.02518224,,COM,Common Stock,invesco
+2026-06-04,INTC,Intel Corp,0.0244368,,COM,Common Stock,invesco
+2026-06-04,CSCO,Cisco Systems Inc,0.022473809999999997,,COM,Common Stock,invesco
+2026-06-04,COST,Costco Wholesale Corp,0.01889016,,COM,Common Stock,invesco
+2026-06-04,LRCX,Lam Research Corp,0.01837787,,COM,Common Stock,invesco
+2026-06-04,AMAT,Applied Materials Inc,0.01743618,,COM,Common Stock,invesco
+2026-06-04,NFLX,Netflix Inc,0.01506454,,COM,Common Stock,invesco
+2026-06-04,PLTR,Palantir Technologies Inc,0.01420458,,COM,Common Stock,invesco
+2026-06-04,KLAC,KLA Corp,0.01221992,,COM,Common Stock,invesco
+2026-06-04,TXN,Texas Instruments Inc,0.01212391,,COM,Common Stock,invesco
+2026-06-04,MRVL,Marvell Technology Inc,0.01205961,,COM,Common Stock,invesco
+2026-06-04,QCOM,QUALCOMM Inc,0.01136552,,COM,Common Stock,invesco
+2026-06-04,SNDK,Sandisk Corp,0.0113623,,COM,Common Stock,invesco
+2026-06-04,LIN,Linde PLC,0.01031936,,COM,Common Stock,invesco
+2026-06-04,PANW,Palo Alto Networks Inc,0.00996841,,COM,Common Stock,invesco
+2026-06-04,ADI,Analog Devices Inc,0.009180559999999999,,COM,Common Stock,invesco
+2026-06-04,STX,Seagate Technology Holdings PLC,0.00883386,,COM,Common Stock,invesco
+2026-06-04,TMUS,T-Mobile US Inc,0.00858223,,COM,Common Stock,invesco
+2026-06-04,WDC,Western Digital Corp,0.00853566,,COM,Common Stock,invesco
+2026-06-04,PEP,PepsiCo Inc,0.0084986,,COM,Common Stock,invesco
+2026-06-04,AMGN,Amgen Inc,0.00820917,,COM,Common Stock,invesco
+2026-06-04,CRWD,Crowdstrike Holdings Inc,0.00793041,,COM,Common Stock,invesco
+2026-06-04,APP,AppLovin Corp,0.00750741,,COM,Common Stock,invesco
+2026-06-04,GILD,Gilead Sciences Inc,0.007015479999999999,,COM,Common Stock,invesco
+2026-06-04,ASML,ASML Holding NV,0.00675823,,DRNY,American Depository Receipt - NY,invesco
+2026-06-04,ISRG,Intuitive Surgical Inc,0.00650666,,COM,Common Stock,invesco
+2026-06-04,SHOP,Shopify Inc,0.00622379,,COM,Common Stock,invesco
+2026-06-04,HON,Honeywell International Inc,0.006085159999999999,,COM,Common Stock,invesco
+2026-06-04,BKNG,Booking Holdings Inc,0.00580184,,COM,Common Stock,invesco
+2026-06-04,CDNS,Cadence Design Systems Inc,0.0049723,,COM,Common Stock,invesco
+2026-06-04,VRTX,Vertex Pharmaceuticals Inc,0.00490908,,COM,Common Stock,invesco
+2026-06-04,FTNT,Fortinet Inc,0.0048446800000000005,,COM,Common Stock,invesco
+2026-06-04,SBUX,Starbucks Corp,0.00469198,,COM,Common Stock,invesco
+2026-06-04,ADBE,Adobe Inc,0.00460832,,COM,Common Stock,invesco
+2026-06-04,MAR,Marriott International Inc/MD,0.00447488,,COM,Common Stock,invesco
+2026-06-04,CEG,Constellation Energy Corp,0.00419671,,COM,Common Stock,invesco
+2026-06-04,SNPS,Synopsys Inc,0.00414381,,COM,Common Stock,invesco
+2026-06-04,ADP,Automatic Data Processing Inc,0.00407436,,COM,Common Stock,invesco
+2026-06-04,MNST,Monster Beverage Corp,0.00378915,,COM,Common Stock,invesco
+2026-06-04,CSX,CSX Corp,0.00377221,,COM,Common Stock,invesco
+2026-06-04,CMCSA,Comcast Corp,0.00366235,,COM,Common Stock,invesco
+2026-06-04,INTU,Intuit Inc,0.00365394,,COM,Common Stock,invesco
+2026-06-04,MELI,MercadoLibre Inc,0.00362562,,COM,Common Stock,invesco
+2026-06-04,NXPI,NXP Semiconductors NV,0.00356195,,COM,Common Stock,invesco
+2026-06-04,MPWR,Monolithic Power Systems Inc,0.00355117,,COM,Common Stock,invesco
+2026-06-04,DDOG,Datadog Inc,0.00350054,,COM,Common Stock,invesco
+2026-06-04,MDLZ,Mondelez International Inc,0.0034200999999999997,,COM,Common Stock,invesco
+2026-06-04,ROST,Ross Stores Inc,0.0032977099999999997,,COM,Common Stock,invesco
+2026-06-04,ORLY,O'Reilly Automotive Inc,0.0032426,,COM,Common Stock,invesco
+2026-06-04,CTAS,Cintas Corp,0.00315604,,COM,Common Stock,invesco
+2026-06-04,AEP,American Electric Power Co Inc,0.00304572,,COM,Common Stock,invesco
+2026-06-04,LITE,Lumentum Holdings Inc,0.00295203,,COM,Common Stock,invesco
+2026-06-04,WBD,Warner Bros Discovery Inc,0.00292919,,COM,Common Stock,invesco
+2026-06-04,DASH,DoorDash Inc,0.0028708,,COM,Common Stock,invesco
+2026-06-04,BKR,Baker Hughes Co,0.00285806,,COM,Common Stock,invesco
+2026-06-04,REGN,Regeneron Pharmaceuticals Inc,0.00285778,,COM,Common Stock,invesco
+2026-06-04,PCAR,PACCAR Inc,0.0027162199999999997,,COM,Common Stock,invesco
+2026-06-04,PDD,PDD Holdings Inc,0.00250938,,ADR,American Depository Receipt,invesco
+2026-06-04,FANG,Diamondback Energy Inc,0.00250428,,COM,Common Stock,invesco
+2026-06-04,ABNB,Airbnb Inc,0.00247781,,COM,Common Stock,invesco
+2026-06-04,ARM,ARM Holdings PLC,0.00240944,,ADR,American Depository Receipt,invesco
+2026-06-04,FAST,Fastenal Co,0.0023691000000000003,,COM,Common Stock,invesco
+2026-06-04,MCHP,Microchip Technology Inc,0.00229042,,COM,Common Stock,invesco
+2026-06-04,ODFL,Old Dominion Freight Line Inc,0.00224665,,COM,Common Stock,invesco
+2026-06-04,EA,Electronic Arts Inc,0.00222884,,COM,Common Stock,invesco
+2026-06-04,ADSK,Autodesk Inc,0.00216683,,COM,Common Stock,invesco
+2026-06-04,XEL,Xcel Energy Inc,0.00212767,,COM,Common Stock,invesco
+2026-06-04,FER,Ferrovial NV,0.00211733,,COM,Common Stock,invesco
+2026-06-04,EXC,Exelon Corp,0.00202076,,COM,Common Stock,invesco
+2026-06-04,IDXX,IDEXX Laboratories Inc,0.00197185,,COM,Common Stock,invesco
+2026-06-04,CCEP,Coca-Cola Europacific Partners PLC,0.00184898,,COM,Common Stock,invesco
+2026-06-04,AXON,Axon Enterprise Inc,0.00180951,,COM,Common Stock,invesco
+2026-06-04,KDP,Keurig Dr Pepper Inc,0.0017909900000000001,,COM,Common Stock,invesco
+2026-06-04,MSTR,Strategy Inc,0.0017777200000000002,,COM,Common Stock,invesco
+2026-06-04,ALNY,Alnylam Pharmaceuticals Inc,0.00176589,,COM,Common Stock,invesco
+2026-06-04,TTWO,Take-Two Interactive Software Inc,0.00175931,,COM,Common Stock,invesco
+2026-06-04,PYPL,PayPal Holdings Inc,0.0017316,,COM,Common Stock,invesco
+2026-06-04,TRI,Thomson Reuters Corp,0.0016593299999999999,,COM,Common Stock,invesco
+2026-06-04,PAYX,Paychex Inc,0.0015659799999999998,,COM,Common Stock,invesco
+2026-06-04,ROP,Roper Technologies Inc,0.0014976100000000001,,COM,Common Stock,invesco
+2026-06-04,WDAY,Workday Inc,0.00138157,,COM,Common Stock,invesco
+2026-06-04,CPRT,Copart Inc,0.00130618,,COM,Common Stock,invesco
+2026-06-04,GEHC,GE HealthCare Technologies Inc,0.00127529,,COM,Common Stock,invesco
+2026-06-04,DXCM,Dexcom Inc,0.00122513,,COM,Common Stock,invesco
+2026-06-04,KHC,Kraft Heinz Co/The,0.0011664099999999999,,COM,Common Stock,invesco
+2026-06-04,CTSH,Cognizant Technology Solutions Corp,0.00111991,,COM,Common Stock,invesco
+2026-06-04,VRSK,Verisk Analytics Inc,0.00108884,,COM,Common Stock,invesco
+2026-06-04,INSM,Insmed Inc,0.00099176,,COM,Common Stock,invesco
+2026-06-04,ZS,Zscaler Inc,0.00095373,,COM,Common Stock,invesco
+2026-06-04,NQM6,CME E-Mini NASDAQ 100 Index Future,0.00088434,,IFUT,Index Future,invesco
+2026-06-04,CHTR,Charter Communications Inc,0.0007166500000000001,,COM,Common Stock,invesco
+2026-06-04,USD,CASH &amp; EQUIVALENTS,0.00071505,,CURR,Currency,invesco
+2026-06-04,NQM6_,CME E-Mini NASDAQ 100 Index Future,-0.00088434,,SYN,Synthetic Cash,invesco

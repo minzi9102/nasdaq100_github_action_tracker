@@ -1,14 +1,20 @@
 import pandas as pd
+from types import SimpleNamespace
 
 from qqq_tracker.pipeline.daily_run import (
+    API_USAGE_COLUMNS,
     BREADTH_METRICS_COLUMNS,
     DATA_QUALITY_COLUMNS,
     PRICE_DAILY_COLUMNS,
     QQQ_EQUITY_HOLDINGS_COLUMNS,
     QQQ_HOLDINGS_COLUMNS,
+    TOP_HOLDINGS_QUOTES_COLUMNS,
+    api_usage_row,
     build_breadth_metrics,
     build_equity_holdings,
     build_macro_metric_rows,
+    build_top_holdings_quotes,
+    fetch_breadth,
     merge_price_history,
     normalize_price_daily,
     quality_row,
@@ -196,6 +202,126 @@ def test_breadth_metrics_use_quote_overlay_but_remain_objective():
         "new_low_20d_count",
     }
     assert metrics.loc[metrics["metric_name"] == "advancing_count", "metric_value"].iloc[0] == 1
+
+
+def test_fetch_breadth_daily_mode_uses_cache_only(monkeypatch, tmp_path):
+    settings = SimpleNamespace(
+        paths=SimpleNamespace(
+            tiingo_price_cache_dir=tmp_path / "cache",
+            raw_dir=tmp_path / "raw",
+        )
+    )
+    settings.paths.tiingo_price_cache_dir.mkdir(parents=True)
+    settings.paths.raw_dir.mkdir(parents=True)
+    cache = pd.DataFrame(
+        {
+            "date": pd.date_range("2025-01-01", periods=220, freq="B").astype(str),
+            "adjClose": range(100, 320),
+            "symbol": ["AAPL"] * 220,
+            "source": ["tiingo"] * 220,
+        }
+    )
+    cache.to_csv(settings.paths.tiingo_price_cache_dir / "AAPL.csv", index=False)
+    holdings = pd.DataFrame([{"symbol": "AAPL", "company_name": "Apple", "weight": 0.1}])
+
+    def fail_if_live_tiingo_called(*args, **kwargs):  # noqa: ANN001, ARG001
+        raise AssertionError("daily breadth must not call Tiingo live history")
+
+    monkeypatch.setattr("qqq_tracker.pipeline.daily_run.fetch_tiingo_history_for_breadth", fail_if_live_tiingo_called)
+
+    quality_rows = []
+    metrics = fetch_breadth(settings, holdings, "2026-06-05", [], quality_rows, {"AAPL": {"price": 321.0, "previousClose": 320.0}})
+
+    assert list(metrics.columns) == BREADTH_METRICS_COLUMNS
+    assert metrics.loc[metrics["metric_name"] == "advancing_count", "denominator"].iloc[0] == 1
+    assert quality_rows[0]["rate_limited"] is False
+    assert quality_rows[0]["stopped_after_429"] is False
+
+
+def test_fetch_breadth_missing_cache_still_records_quality(tmp_path):
+    settings = SimpleNamespace(
+        paths=SimpleNamespace(
+            tiingo_price_cache_dir=tmp_path / "cache",
+            raw_dir=tmp_path / "raw",
+        )
+    )
+    settings.paths.tiingo_price_cache_dir.mkdir(parents=True)
+    settings.paths.raw_dir.mkdir(parents=True)
+    holdings = pd.DataFrame(
+        [
+            {"symbol": "AAPL", "company_name": "Apple", "weight": 0.7},
+            {"symbol": "MSFT", "company_name": "Microsoft", "weight": 0.3},
+        ]
+    )
+
+    quality_rows = []
+    metrics = fetch_breadth(settings, holdings, "2026-06-05", [], quality_rows, {})
+
+    assert set(metrics["metric_name"]) == {
+        "advancing_count",
+        "declining_count",
+        "advancing_ratio",
+        "above_20d_ma_ratio",
+        "above_50d_ma_ratio",
+        "above_200d_ma_ratio",
+        "new_high_20d_count",
+        "new_low_20d_count",
+    }
+    assert quality_rows[0]["symbol_coverage_ratio"] == 0.0
+    assert quality_rows[0]["weight_coverage_ratio"] == 0.0
+    assert quality_rows[0]["missing_top_weight_symbols"] == "AAPL,MSFT"
+
+
+def test_top_holdings_quotes_uses_batch_quote_map():
+    holdings = pd.DataFrame(
+        [
+            {"symbol": "AAPL", "company_name": "Apple", "weight": 0.7},
+            {"symbol": "MSFT", "company_name": "Microsoft", "weight": 0.3},
+        ]
+    )
+    quote_map = {
+        "AAPL": {
+            "price": 200.0,
+            "change": 1.5,
+            "changesPercentage": 0.75,
+            "marketCap": 3_000_000,
+            "pe": 30.0,
+            "eps": 6.0,
+            "source": "fmp",
+            "timestamp": 123456,
+        }
+    }
+
+    quotes = build_top_holdings_quotes(holdings, quote_map, limit=2)
+
+    assert list(quotes.columns) == TOP_HOLDINGS_QUOTES_COLUMNS
+    assert quotes.loc[quotes["symbol"] == "AAPL", "provider"].iloc[0] == "fmp"
+    assert bool(quotes.loc[quotes["symbol"] == "MSFT", "is_missing"].iloc[0]) is True
+
+
+def test_api_usage_row_columns_and_429_metadata():
+    settings = SimpleNamespace(api_limits={"tiingo": {"hourly_requests": 50}})
+
+    row = api_usage_row(
+        settings,
+        "2026-06-05",
+        "tiingo",
+        "daily_prices",
+        40,
+        39,
+        symbols_requested=["AAPL", "MSFT"],
+        symbols_loaded=["AAPL"],
+        rate_limited=True,
+        stopped_after_429=True,
+        retry_after_seconds=3600,
+        message="429 received",
+    )
+    df = pd.DataFrame([row], columns=API_USAGE_COLUMNS)
+
+    assert list(df.columns) == API_USAGE_COLUMNS
+    assert bool(df.loc[0, "rate_limited"]) is True
+    assert bool(df.loc[0, "stopped_after_429"]) is True
+    assert df.loc[0, "retry_after_seconds"] == 3600
 
 
 def test_data_quality_row_records_extended_coverage_fields():

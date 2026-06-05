@@ -6,6 +6,7 @@ from qqq_tracker.providers.base import sanitize_error_message
 def test_settings_loads():
     settings = Settings()
     assert "providers" in settings.sources
+    assert "fmp" in settings.api_limits
 
 
 def test_providers_construct_without_key():

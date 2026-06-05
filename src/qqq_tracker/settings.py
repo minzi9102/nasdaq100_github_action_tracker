@@ -39,6 +39,7 @@ class Settings:
         self.symbols = load_yaml(self.paths.config_dir / "symbols.yml")
         self.fred_series = load_yaml(self.paths.config_dir / "fred_series.yml")
         self.pipeline = load_yaml(self.paths.config_dir / "pipeline.yml")
+        self.api_limits = load_yaml(self.paths.config_dir / "api_limits.yml")
 
     def get_secret(self, env_name: str) -> str | None:
         value = os.getenv(env_name)

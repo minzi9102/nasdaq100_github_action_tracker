@@ -1,0 +1,9 @@
+﻿metric_name,metric_value,denominator,data_date,source,is_missing
+advancing_count,29.0,50,2026-06-04,fmp+tiingo_cache,False
+declining_count,20.0,50,2026-06-04,fmp+tiingo_cache,False
+advancing_ratio,0.58,50,2026-06-04,fmp+tiingo_cache,False
+above_20d_ma_ratio,0.58,50,2026-06-04,fmp+tiingo_cache,False
+above_50d_ma_ratio,0.58,50,2026-06-04,fmp+tiingo_cache,False
+above_200d_ma_ratio,0.66,50,2026-06-04,fmp+tiingo_cache,False
+new_high_20d_count,7.0,50,2026-06-04,fmp+tiingo_cache,False
+new_low_20d_count,4.0,50,2026-06-04,fmp+tiingo_cache,False
