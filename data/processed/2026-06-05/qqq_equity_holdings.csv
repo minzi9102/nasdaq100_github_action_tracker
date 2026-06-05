@@ -34,7 +34,6 @@
 2026-06-04,CRWD,Crowdstrike Holdings Inc,0.00793041,,COM,Common Stock,invesco
 2026-06-04,APP,AppLovin Corp,0.00750741,,COM,Common Stock,invesco
 2026-06-04,GILD,Gilead Sciences Inc,0.007015479999999999,,COM,Common Stock,invesco
-2026-06-04,ASML,ASML Holding NV,0.00675823,,DRNY,American Depository Receipt - NY,invesco
 2026-06-04,ISRG,Intuitive Surgical Inc,0.00650666,,COM,Common Stock,invesco
 2026-06-04,SHOP,Shopify Inc,0.00622379,,COM,Common Stock,invesco
 2026-06-04,HON,Honeywell International Inc,0.006085159999999999,,COM,Common Stock,invesco
@@ -67,10 +66,8 @@
 2026-06-04,BKR,Baker Hughes Co,0.00285806,,COM,Common Stock,invesco
 2026-06-04,REGN,Regeneron Pharmaceuticals Inc,0.00285778,,COM,Common Stock,invesco
 2026-06-04,PCAR,PACCAR Inc,0.0027162199999999997,,COM,Common Stock,invesco
-2026-06-04,PDD,PDD Holdings Inc,0.00250938,,ADR,American Depository Receipt,invesco
 2026-06-04,FANG,Diamondback Energy Inc,0.00250428,,COM,Common Stock,invesco
 2026-06-04,ABNB,Airbnb Inc,0.00247781,,COM,Common Stock,invesco
-2026-06-04,ARM,ARM Holdings PLC,0.00240944,,ADR,American Depository Receipt,invesco
 2026-06-04,FAST,Fastenal Co,0.0023691000000000003,,COM,Common Stock,invesco
 2026-06-04,MCHP,Microchip Technology Inc,0.00229042,,COM,Common Stock,invesco
 2026-06-04,ODFL,Old Dominion Freight Line Inc,0.00224665,,COM,Common Stock,invesco
@@ -99,7 +96,4 @@
 2026-06-04,VRSK,Verisk Analytics Inc,0.00108884,,COM,Common Stock,invesco
 2026-06-04,INSM,Insmed Inc,0.00099176,,COM,Common Stock,invesco
 2026-06-04,ZS,Zscaler Inc,0.00095373,,COM,Common Stock,invesco
-2026-06-04,NQM6,CME E-Mini NASDAQ 100 Index Future,0.00088434,,IFUT,Index Future,invesco
 2026-06-04,CHTR,Charter Communications Inc,0.0007166500000000001,,COM,Common Stock,invesco
-2026-06-04,USD,CASH &amp; EQUIVALENTS,0.00071505,,CURR,Currency,invesco
-2026-06-04,NQM6_,CME E-Mini NASDAQ 100 Index Future,-0.00088434,,SYN,Synthetic Cash,invesco

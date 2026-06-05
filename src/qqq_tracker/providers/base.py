@@ -22,6 +22,12 @@ class APIError(RuntimeError):
     pass
 
 
+class RateLimitError(APIError):
+    def __init__(self, message: str, retry_after_seconds: float | None = None) -> None:
+        super().__init__(message)
+        self.retry_after_seconds = retry_after_seconds
+
+
 SECRET_QUERY_KEYS = {"apikey", "api_key", "token", "access_token"}
 
 
@@ -72,8 +78,17 @@ class BaseProvider:
         for attempt in range(self.retry_count + 1):
             try:
                 r = requests.get(url, params=params, headers=headers, timeout=self.timeout)
+                if r.status_code == 429:
+                    retry_after = self._parse_retry_after_seconds(r.headers.get("Retry-After"))
+                    message = sanitize_error_message(
+                        f"429 Client Error: Too Many Requests for url: {r.url}",
+                        [self.api_key],
+                    )
+                    raise RateLimitError(message, retry_after_seconds=retry_after)
                 r.raise_for_status()
                 return r.json()
+            except RateLimitError:
+                raise
             except Exception as exc:  # noqa: BLE001
                 last_error = exc
                 if attempt < self.retry_count:
@@ -82,3 +97,11 @@ class BaseProvider:
 
     def unavailable_result(self, method: str) -> ProviderResult:
         return ProviderResult(self.provider_name, False, pd.DataFrame(), f"{method}: missing API key")
+
+    def _parse_retry_after_seconds(self, value: str | None) -> float | None:
+        if not value:
+            return None
+        try:
+            return float(value)
+        except ValueError:
+            return None

@@ -86,9 +86,20 @@ class InvescoProvider(BaseProvider):
     def _normalize_payload(self, payload: dict[str, Any]) -> pd.DataFrame:
         holdings = payload.get("holdings") or []
         if not holdings:
-            return pd.DataFrame(columns=["date", "symbol", "company_name", "weight", "sector", "source"])
+            return pd.DataFrame(
+                columns=[
+                    "date",
+                    "symbol",
+                    "company_name",
+                    "weight",
+                    "sector",
+                    "security_type_code",
+                    "security_type_name",
+                    "source",
+                ]
+            )
         df = pd.DataFrame(holdings)
-        for col in ["ticker", "issuerName", "percentageOfTotalNetAssets"]:
+        for col in ["ticker", "issuerName", "percentageOfTotalNetAssets", "securityTypeCode", "securityTypeName"]:
             if col not in df.columns:
                 df[col] = None
         out = pd.DataFrame()
@@ -97,8 +108,28 @@ class InvescoProvider(BaseProvider):
         out["company_name"] = df["issuerName"].astype(str).str.strip()
         out["weight"] = pd.to_numeric(df["percentageOfTotalNetAssets"], errors="coerce") / 100.0
         out["sector"] = ""
+        out["security_type_code"] = df["securityTypeCode"].astype("string").str.strip().str.upper()
+        out["security_type_name"] = df["securityTypeName"].astype("string").str.strip()
         out["source"] = self.provider_name
-        out = out.replace({"symbol": {"NAN": None, "NONE": None, "": None}, "company_name": {"nan": None, "None": None, "": None}})
+        out = out.replace(
+            {
+                "symbol": {"NAN": None, "NONE": None, "": None},
+                "company_name": {"nan": None, "None": None, "": None},
+                "security_type_code": {"<NA>": None, "NAN": None, "NONE": None, "": None},
+                "security_type_name": {"<NA>": None, "nan": None, "None": None, "": None},
+            }
+        )
         out = out[out["symbol"].notna() & out["company_name"].notna() & out["weight"].notna()].copy()
         out = out.drop_duplicates(subset=["symbol"]).sort_values(["weight", "symbol"], ascending=[False, True]).reset_index(drop=True)
-        return out[["date", "symbol", "company_name", "weight", "sector", "source"]]
+        return out[
+            [
+                "date",
+                "symbol",
+                "company_name",
+                "weight",
+                "sector",
+                "security_type_code",
+                "security_type_name",
+                "source",
+            ]
+        ]

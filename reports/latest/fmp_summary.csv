@@ -1,11 +1,11 @@
 ﻿symbol,ok,rows,message
-AAPL,True,1,AAPL: quote rows=1
-MSFT,True,1,MSFT: quote rows=1
-NVDA,True,1,NVDA: quote rows=1
-AMZN,True,1,AMZN: quote rows=1
-META,True,1,META: quote rows=1
-GOOGL,True,1,GOOGL: quote rows=1
-AVGO,False,0,402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/quote?symbol=AVGO&apikey=%2A%2A%2AREDACTED%2A%2A%2A
-TSLA,True,1,TSLA: quote rows=1
-COST,True,1,COST: quote rows=1
-AMD,True,1,AMD: quote rows=1
+AAPL,False,0,429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=AAPL&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+MSFT,False,0,429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=MSFT&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+NVDA,False,0,429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=NVDA&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+AMZN,False,0,429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=AMZN&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+META,False,0,429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=META&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+GOOGL,False,0,429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=GOOGL&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+AVGO,False,0,429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=AVGO&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+TSLA,False,0,429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=TSLA&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+COST,False,0,429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=COST&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+AMD,False,0,429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=AMD&apikey=%2A%2A%2AREDACTED%2A%2A%2A

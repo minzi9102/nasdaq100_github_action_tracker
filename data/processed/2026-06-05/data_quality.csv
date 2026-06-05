@@ -1,13 +1,13 @@
-﻿dataset,provider,ok,rows,coverage_ratio,missing_symbols,message
-price_daily,alpha_vantage,True,100,1.0,,QQQ: 100 rows
-price_daily,tiingo,False,0,0.0,QQQ,429 Client Error: Too Many Requests for url: https://api.tiingo.com/tiingo/daily/QQQ/prices?format=json&startDate=2025-04-11&endDate=2026-06-05
-macro_daily,fred,True,365,1.0,,DGS10: 365 rows
-macro_daily,fred,True,365,1.0,,DGS2: 365 rows
-macro_daily,fred,True,365,1.0,,DGS3MO: 365 rows
-macro_daily,fred,True,365,1.0,,DFF: 365 rows
-macro_daily,fred,True,365,1.0,,CPIAUCSL: 365 rows
-macro_daily,fred,True,365,1.0,,PCEPI: 365 rows
-macro_daily,fred,True,365,1.0,,UNRATE: 365 rows
-qqq_holdings,invesco,True,104,1.0,,QQQ: holdings rows=104 effective_date=2026-06-03
-breadth_metrics,tiingo,True,8,0.5,"NVDA,AAPL,MU,MSFT,AMZN,AMD,AVGO,TSLA,GOOGL,GOOG,META,WMT,INTC,CSCO,LRCX,COST,AMAT,NFLX,PLTR,TXN,KLAC,SNDK,QCOM,MRVL,LIN,PANW,ADI,STX,IDXX,CCEP,KDP,TTWO,MSTR,PYPL,ALNY,AXON,TRI,PAYX,ROP,WDAY,CPRT,GEHC,DXCM,KHC,CTSH,VRSK,INSM,ZS,NQM6,CHTR,USD,NQM6_",52/104 symbols fetched
-fmp_summary,fmp,True,10,0.9,AVGO,9/10 quotes fetched
+﻿dataset,provider,ok,rows,symbol_coverage_ratio,weight_coverage_ratio,missing_symbols,missing_top_weight_symbols,rate_limited,stopped_after_429,remaining_symbols_skipped,cache_rows_used,live_rows_fetched,fallback_provider,message
+price_daily,alpha_vantage,True,100,1.0,1.0,,,False,False,0,0,0,,QQQ: 100 rows
+macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,DGS10: 365 rows
+macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,DGS2: 365 rows
+macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,DGS3MO: 365 rows
+macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,DFF: 365 rows
+macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,CPIAUCSL: 365 rows
+macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,PCEPI: 365 rows
+macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,UNRATE: 365 rows
+qqq_holdings,invesco,True,104,1.0,1.0,,,False,False,0,0,0,,QQQ: holdings rows=104 effective_date=2026-06-04
+qqq_equity_holdings,invesco_filter,True,98,0.9423076923076923,0.9876091402011571,"ARM,ASML,NQM6,NQM6_,PDD,USD",,False,False,0,0,0,,equity filter applied for breadth stock pool
+breadth_metrics,fmp+tiingo_cache,True,8,0.5102040816326531,0.29478480780539196,"AAPL,ADI,ALNY,AMAT,AMD,AMZN,AVGO,AXON,CCEP,CHTR,COST,CPRT,CSCO,CTSH,DXCM,GEHC,GOOG,GOOGL,IDXX,INSM,INTC,KDP,KHC,KLAC,LIN,LRCX,META,MRVL,MSFT,MSTR,MU,NFLX,PANW,PAYX,PLTR,PYPL,QCOM,ROP,SNDK,STX,TRI,TSLA,TTWO,TXN,VRSK,WDAY,WMT,ZS","AAPL,MSFT,MU,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META",True,True,97,14400,0,mixed_fmp+tiingo_history_only,50/98 symbols with history+quote coverage; coverage insufficient for top-weight symbols
+fmp_summary,fmp,False,10,0.0,0.0,"AAPL,MSFT,NVDA,AMZN,META,GOOGL,AVGO,TSLA,COST,AMD",,False,False,0,0,0,,0/10 quotes fetched

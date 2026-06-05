@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from .base import BaseProvider, ProviderResult
+from .base import BaseProvider, ProviderResult, RateLimitError
 
 
 class TiingoProvider(BaseProvider):
@@ -28,5 +28,13 @@ class TiingoProvider(BaseProvider):
                 if "date" in df.columns:
                     df["date"] = pd.to_datetime(df["date"]).dt.date.astype(str)
             return ProviderResult(self.provider_name, True, df, f"{ticker}: {len(df)} rows", data)
+        except RateLimitError as exc:
+            return ProviderResult(
+                self.provider_name,
+                False,
+                pd.DataFrame(),
+                str(exc),
+                {"rate_limited": True, "retry_after_seconds": exc.retry_after_seconds, "symbol": ticker},
+            )
         except Exception as exc:  # noqa: BLE001
-            return ProviderResult(self.provider_name, False, pd.DataFrame(), str(exc))
+            return ProviderResult(self.provider_name, False, pd.DataFrame(), str(exc), {"rate_limited": False, "symbol": ticker})

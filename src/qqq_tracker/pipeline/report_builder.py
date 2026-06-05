@@ -93,12 +93,28 @@ def build_model_input_metrics_v2(
             dataset = r.get("dataset")
             provider = r.get("provider")
             rows.append([
-                f"{dataset}_{provider}_coverage_ratio",
-                r.get("coverage_ratio"),
-                f"data quality coverage; ok={r.get('ok')}; rows={r.get('rows')}",
+                f"{dataset}_{provider}_symbol_coverage_ratio",
+                r.get("symbol_coverage_ratio"),
+                f"data quality symbol coverage; ok={r.get('ok')}; rows={r.get('rows')}",
                 pd.Timestamp.today().date().isoformat(),
                 provider,
-                _is_missing(r.get("coverage_ratio")),
+                _is_missing(r.get("symbol_coverage_ratio")),
+            ])
+            rows.append([
+                f"{dataset}_{provider}_weight_coverage_ratio",
+                r.get("weight_coverage_ratio"),
+                f"data quality weight coverage; rate_limited={r.get('rate_limited')}; fallback_provider={r.get('fallback_provider')}",
+                pd.Timestamp.today().date().isoformat(),
+                provider,
+                _is_missing(r.get("weight_coverage_ratio")),
+            ])
+            rows.append([
+                f"{dataset}_{provider}_rate_limited",
+                float(bool(r.get("rate_limited"))),
+                f"1 means provider hit 429 and breadth stopped_after_429={r.get('stopped_after_429')}",
+                pd.Timestamp.today().date().isoformat(),
+                provider,
+                False,
             ])
     return pd.DataFrame(rows, columns=MODEL_INPUT_COLUMNS)
 

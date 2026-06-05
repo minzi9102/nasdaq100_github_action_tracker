@@ -24,6 +24,8 @@ class ProjectPaths:
     config_dir: Path = ROOT / "config"
     raw_dir: Path = ROOT / "data" / "raw"
     processed_dir: Path = ROOT / "data" / "processed"
+    cache_dir: Path = ROOT / "data" / "cache"
+    tiingo_price_cache_dir: Path = ROOT / "data" / "cache" / "prices" / "tiingo"
     reports_latest_dir: Path = ROOT / "reports" / "latest"
     reports_archive_dir: Path = ROOT / "reports" / "archive"
     state_dir: Path = ROOT / "state"
@@ -48,6 +50,8 @@ class Settings:
         for p in [
             self.paths.raw_dir,
             self.paths.processed_dir,
+            self.paths.cache_dir,
+            self.paths.tiingo_price_cache_dir,
             self.paths.reports_latest_dir,
             self.paths.reports_archive_dir,
             self.paths.state_dir,
