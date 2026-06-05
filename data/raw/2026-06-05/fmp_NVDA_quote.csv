@@ -1,0 +1,2 @@
+﻿symbol,name,price,changePercentage,change,volume,dayLow,dayHigh,yearHigh,yearLow,marketCap,priceAvg50,priceAvg200,exchange,open,previousClose,timestamp,source
+NVDA,NVIDIA Corporation,218.66,1.82072,3.91,167707274,210.97,221.6,236.54,138.83,5296163860000,202.0494,188.24255,NASDAQ,213.905,214.75,1780603200,fmp

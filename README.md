@@ -2,7 +2,7 @@
 
 这是一个可部署到 GitHub Actions 的纳斯达克100 / QQQ 每日数据收集项目。
 
-目标：每天自动读取 Alpha Vantage、FRED、Financial Modeling Prep、Tiingo 四类接口，生成结构化数据、Excel 报表和 AI 可读分析摘要，并把最新结果保存到仓库中，方便后续把 GitHub 仓库链接交给 ChatGPT 读取分析。
+目标：每天自动读取 Alpha Vantage、FRED、Financial Modeling Prep、Tiingo 四类接口，生成结构化数据、Excel 报表和模型输入指标文件，并把最新结果保存到仓库中，方便后续把 GitHub 仓库链接交给 ChatGPT 读取分析。
 
 ## 功能
 
@@ -16,7 +16,7 @@
 - 自动输出：
   - `data/raw/YYYY-MM-DD/`：原始接口数据。
   - `data/processed/YYYY-MM-DD/`：标准化数据。
-  - `reports/latest/`：最新日报、Excel、AI 输入摘要。
+  - `reports/latest/`：最新指标文件和 Excel 数据汇总。
   - `state/latest_manifest.json`：最新输出文件清单。
 - 便于扩展：新增数据接口只需要实现一个 provider 类，并在 `config/sources.yml` 中注册。
 
@@ -91,14 +91,16 @@ state/latest_manifest.json
 
 每日运行后，仓库里会更新：
 
-- `reports/latest/analysis_summary.md`
-- `reports/latest/ai_input.csv`
+- `reports/latest/model_input_metrics.csv`
+- `reports/latest/price_metrics.csv`
+- `reports/latest/macro_daily.csv`
+- `reports/latest/macro_metrics.csv`
 - `reports/latest/nasdaq100_qqq_daily_tracker.xlsx`
 - `state/latest_manifest.json`
 
 以后你可以把 GitHub 仓库链接发给 ChatGPT，并说：
 
-> 请读取这个仓库里的 `reports/latest/analysis_summary.md` 和 `reports/latest/ai_input.csv`，根据项目规则分析今天的纳斯达克100 / QQQ 状态。
+> 请读取这个仓库里的 `reports/latest/model_input_metrics.csv`、`reports/latest/price_metrics.csv`、`reports/latest/macro_daily.csv`、`reports/latest/macro_metrics.csv` 和 `state/latest_manifest.json`，基于客观指标分析今天的纳斯达克100 / QQQ。
 
 如果你启用了 GitHub 连接器或把仓库文件上传给 ChatGPT，我就可以读取并分析这些文件。
 

@@ -1,0 +1,2 @@
+﻿symbol,name,price,changePercentage,change,volume,dayLow,dayHigh,yearHigh,yearLow,marketCap,priceAvg50,priceAvg200,exchange,open,previousClose,timestamp,source
+GOOGL,Alphabet Inc.,372.19,3.67698,13.2,42891063,358.21,373.2499,408.61,162,4501589774352,351.3152,302.3632,NASDAQ,358.85,358.99,1780603200,fmp

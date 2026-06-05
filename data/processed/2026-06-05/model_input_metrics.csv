@@ -1,0 +1,31 @@
+﻿metric_name,metric_value,unit_or_method,data_date,source,is_missing
+QQQ_latest_close,740.61,latest adjusted close,2026-06-04,alpha_vantage,False
+QQQ_return_20d,0.06444658435977413,20 trading day return,2026-06-04,alpha_vantage,False
+QQQ_return_60d,0.21856952465570867,60 trading day return,2026-06-04,alpha_vantage,False
+QQQ_vol_20d,0.14843397987581194,20 trading day annualized volatility,2026-06-04,alpha_vantage,False
+QQQ_current_drawdown,-0.007438082984882577,current drawdown from period high,2026-06-04,alpha_vantage,False
+QQQ_max_drawdown,-0.11834749376204168,maximum drawdown over fetched period,2026-06-04,alpha_vantage,False
+QQQ_ma_50,665.4643999999998,50 trading day moving average,2026-06-04,alpha_vantage,False
+QQQ_ma_200,,200 trading day moving average,2026-06-04,alpha_vantage,True
+DGS10_latest_value,4.49,latest FRED observation value,2026-06-03,FRED,False
+DGS2_latest_value,4.08,latest FRED observation value,2026-06-03,FRED,False
+DGS3MO_latest_value,3.78,latest FRED observation value,2026-06-03,FRED,False
+DFF_latest_value,3.62,latest FRED observation value,2026-06-03,FRED,False
+CPIAUCSL_latest_value,332.407,latest FRED observation value,2026-04-01,FRED,False
+PCEPI_latest_value,130.902,latest FRED observation value,2026-04-01,FRED,False
+UNRATE_latest_value,4.3,latest FRED observation value,2026-04-01,FRED,False
+DGS10_latest_value,4.49,percent yield,2026-06-03,FRED,False
+DGS10_1M_CHANGE,0.040000000000000036,current value minus value 21 observations ago,2026-06-03,FRED,False
+DGS2_DGS10_SPREAD,-0.41000000000000014,2-year yield minus 10-year yield,2026-06-03,FRED,False
+DGS10_DGS2_SPREAD,0.41000000000000014,10-year yield minus 2-year yield,2026-06-03,FRED,False
+DGS10_DGS2_SPREAD_1M_CHANGE,-0.08999999999999986,current 10y-2y spread minus spread 21 observations ago,2026-06-03,FRED,False
+CPIAUCSL_RECENT_PCT_CHANGE_1,0.0026700307420970404,CPI近3次变化; pct_change between consecutive observations,2026-04-01,FRED,False
+CPIAUCSL_RECENT_PCT_CHANGE_2,0.008651438343614481,CPI近3次变化; pct_change between consecutive observations,2026-04-01,FRED,False
+CPIAUCSL_RECENT_PCT_CHANGE_3,0.0064003778463364025,CPI近3次变化; pct_change between consecutive observations,2026-04-01,FRED,False
+CPIAUCSL_LATEST_PCT_CHANGE,0.0064003778463364025,CPI近3次变化; latest pct_change between consecutive observations,2026-04-01,FRED,False
+PCEPI_RECENT_PCT_CHANGE_1,0.004015441621060045,PCE近3次变化; pct_change between consecutive observations,2026-04-01,FRED,False
+PCEPI_RECENT_PCT_CHANGE_2,0.006647621988882024,PCE近3次变化; pct_change between consecutive observations,2026-04-01,FRED,False
+PCEPI_RECENT_PCT_CHANGE_3,0.003995981009502714,PCE近3次变化; pct_change between consecutive observations,2026-04-01,FRED,False
+PCEPI_LATEST_PCT_CHANGE,0.003995981009502714,PCE近3次变化; latest pct_change between consecutive observations,2026-04-01,FRED,False
+UNRATE_3_OBSERVATION_CHANGE,0.0,current unemployment rate minus value 3 observations ago,2026-04-01,FRED,False
+fmp_quote_available_ratio,0.9,successful quote responses / requested symbols,2026-06-05,FMP,False

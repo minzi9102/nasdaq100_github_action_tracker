@@ -6,78 +6,66 @@ from typing import Dict
 import pandas as pd
 
 
-def build_ai_input(price_summary: pd.DataFrame, macro_summary: pd.DataFrame, fmp_summary: pd.DataFrame) -> pd.DataFrame:
+MODEL_INPUT_COLUMNS = ["metric_name", "metric_value", "unit_or_method", "data_date", "source", "is_missing"]
+
+
+def _is_missing(value: object) -> bool:
+    return bool(pd.isna(value))
+
+
+def build_model_input_metrics(
+    price_metrics: pd.DataFrame,
+    macro_daily: pd.DataFrame,
+    macro_metrics: pd.DataFrame,
+    fmp_summary: pd.DataFrame,
+) -> pd.DataFrame:
     rows = []
-    if not price_summary.empty:
-        for _, r in price_summary.iterrows():
+    if not price_metrics.empty:
+        for _, r in price_metrics.iterrows():
+            symbol = r.get("symbol")
+            source = r.get("source")
+            date = r.get("date")
             rows.extend([
-                ["价格", f"{r['symbol']} 20日收益率", r.get("return_20d"), ">=0绿色，-5%到0黄色，<-5%红色", r.get("signal_return_20d"), r.get("date"), "价格趋势", r.get("source")],
-                ["价格", f"{r['symbol']} 60日收益率", r.get("return_60d"), ">=0绿色，-10%到0黄色，<-10%红色", r.get("signal_return_60d"), r.get("date"), "中期趋势", r.get("source")],
-                ["风险", f"{r['symbol']} 20日年化波动率", r.get("vol_20d"), "<25%绿色，25%-35%黄色，>35%红色", r.get("signal_vol_20d"), r.get("date"), "波动风险", r.get("source")],
-                ["风险", f"{r['symbol']} 当前回撤", r.get("current_drawdown"), ">-10%绿色，-10%到-15%黄色，<-15%红色", r.get("signal_drawdown"), r.get("date"), "回撤风险", r.get("source")],
+                [f"{symbol}_latest_close", r.get("latest_close"), "latest adjusted close", date, source, _is_missing(r.get("latest_close"))],
+                [f"{symbol}_return_20d", r.get("return_20d"), "20 trading day return", date, source, _is_missing(r.get("return_20d"))],
+                [f"{symbol}_return_60d", r.get("return_60d"), "60 trading day return", date, source, _is_missing(r.get("return_60d"))],
+                [f"{symbol}_vol_20d", r.get("vol_20d"), "20 trading day annualized volatility", date, source, _is_missing(r.get("vol_20d"))],
+                [f"{symbol}_current_drawdown", r.get("current_drawdown"), "current drawdown from period high", date, source, _is_missing(r.get("current_drawdown"))],
+                [f"{symbol}_max_drawdown", r.get("max_drawdown"), "maximum drawdown over fetched period", date, source, _is_missing(r.get("max_drawdown"))],
+                [f"{symbol}_ma_50", r.get("ma_50"), "50 trading day moving average", date, source, _is_missing(r.get("ma_50"))],
+                [f"{symbol}_ma_200", r.get("ma_200"), "200 trading day moving average", date, source, _is_missing(r.get("ma_200"))],
             ])
-    if not macro_summary.empty:
-        for _, r in macro_summary.iterrows():
-            category = "宏观原始" if r.get("status") == "信息" else "宏观"
+    if not macro_daily.empty:
+        for _, r in macro_daily.iterrows():
             rows.append([
-                category,
-                r.get("name") or r.get("series_id"),
+                f"{r.get('series_id')}_latest_value",
                 r.get("latest_value"),
-                r.get("threshold", "用于方向判断"),
-                r.get("status", "信息"),
+                "latest FRED observation value",
                 r.get("latest_date"),
-                r.get("direction", "宏观环境"),
-                "FRED",
+                r.get("source"),
+                _is_missing(r.get("latest_value")),
+            ])
+    if not macro_metrics.empty:
+        for _, r in macro_metrics.iterrows():
+            rows.append([
+                r.get("metric_name"),
+                r.get("metric_value"),
+                r.get("unit_or_method"),
+                r.get("data_date"),
+                r.get("source"),
+                _is_missing(r.get("metric_value")),
             ])
     if not fmp_summary.empty:
         available_ratio = fmp_summary["ok"].mean() if "ok" in fmp_summary.columns and len(fmp_summary) else None
-        status = "绿色" if available_ratio and available_ratio >= 0.8 else "黄色" if available_ratio and available_ratio >= 0.5 else "灰色"
-        rows.append(["基本面", "FMP报价可用率", available_ratio, ">=80%绿色，50%-80%黄色，<50%灰色", status, pd.Timestamp.today().date().isoformat(), "基本面数据质量", "FMP"])
-    return pd.DataFrame(rows, columns=["指标类别", "指标名称", "当前值", "阈值/比较基准", "状态", "数据日期", "方向/解读", "来源"])
-
-
-def build_analysis_summary(ai_input: pd.DataFrame) -> pd.DataFrame:
-    if ai_input.empty:
-        return pd.DataFrame([["综合风险状态", "灰色", "AI输入层为空，无法判断"]], columns=["项目", "结果", "说明"])
-    counts = ai_input["状态"].value_counts().to_dict()
-    red = counts.get("红色", 0)
-    yellow = counts.get("黄色", 0)
-    gray = counts.get("灰色", 0)
-    if red >= 2:
-        overall = "红色"
-        action = "暂停新增，触发复核。"
-    elif red == 1 or yellow >= 3:
-        overall = "黄色"
-        action = "小额定投或持有观察，不追涨。"
-    elif gray > 0:
-        overall = "黄色"
-        action = "核心数据基本可用，但需保留数据质量限制。"
-    else:
-        overall = "绿色"
-        action = "可按计划执行，但仍需遵守仓位上限。"
-    return pd.DataFrame([
-        ["综合风险状态", overall, action],
-        ["数据质量", "较完整" if gray == 0 else "基本可用", f"绿色{counts.get('绿色',0)}项，黄色{yellow}项，红色{red}项，灰色{gray}项。"],
-        ["是否允许强化买入", "否" if overall != "绿色" else "仍需仓位确认", "本项目不输出无条件买入；所有动作受仓位和风险约束。"],
-    ], columns=["项目", "结果", "说明"])
-
-
-def build_markdown_summary(as_of: str, ai_input: pd.DataFrame, analysis: pd.DataFrame, manifest_path: str) -> str:
-    lines = [
-        f"# Nasdaq-100 / QQQ Daily Tracker Summary - {as_of}",
-        "",
-        "本文件供 ChatGPT 或人工复核读取。不要在本文件中保存 API key。",
-        "",
-        "## 分析判断层",
-        "",
-    ]
-    for _, r in analysis.iterrows():
-        lines.append(f"- **{r['项目']}**：{r['结果']}。{r['说明']}")
-    lines += ["", "## AI输入层", ""]
-    for _, r in ai_input.iterrows():
-        lines.append(f"- {r['指标类别']} / {r['指标名称']}：{r['当前值']}，状态={r['状态']}，来源={r['来源']}。")
-    lines += ["", "## 文件清单", "", f"见 `{manifest_path}`。"]
-    return "\n".join(lines) + "\n"
+        rows.append([
+            "fmp_quote_available_ratio",
+            available_ratio,
+            "successful quote responses / requested symbols",
+            pd.Timestamp.today().date().isoformat(),
+            "FMP",
+            _is_missing(available_ratio),
+        ])
+    return pd.DataFrame(rows, columns=MODEL_INPUT_COLUMNS)
 
 
 def write_excel(path: Path, sheets: Dict[str, pd.DataFrame]) -> None:

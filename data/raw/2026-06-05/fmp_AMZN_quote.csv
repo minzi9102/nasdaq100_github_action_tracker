@@ -1,0 +1,2 @@
+﻿symbol,name,price,changePercentage,change,volume,dayLow,dayHigh,yearHigh,yearLow,marketCap,priceAvg50,priceAvg200,exchange,open,previousClose,timestamp,source
+AMZN,"Amazon.com, Inc.",253.79,1.50788,3.77,35528228,251.75,255.83,278.56,196,2730044409000,249.5402,231.9267,NASDAQ,253.32,250.02,1780603200,fmp

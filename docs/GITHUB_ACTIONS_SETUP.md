@@ -45,8 +45,10 @@ Settings -> Secrets and variables -> Actions -> New repository secret
 每日运行后会自动提交：
 
 ```text
-reports/latest/analysis_summary.md
-reports/latest/ai_input.csv
+reports/latest/model_input_metrics.csv
+reports/latest/price_metrics.csv
+reports/latest/macro_daily.csv
+reports/latest/macro_metrics.csv
 reports/latest/nasdaq100_qqq_daily_tracker.xlsx
 reports/latest/run_log.csv
 state/latest_manifest.json

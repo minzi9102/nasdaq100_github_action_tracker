@@ -8,7 +8,7 @@ from typing import Dict, List
 
 import pandas as pd
 
-from qqq_tracker.io import write_csv, write_json, write_markdown
+from qqq_tracker.io import write_csv, write_json
 from qqq_tracker.providers import AlphaVantageProvider, FMPProvider, FREDProvider, TiingoProvider
 from qqq_tracker.settings import Settings
 
@@ -18,11 +18,24 @@ from .calculations import (
     latest_value,
     moving_average,
     pct_change_from_close,
-    signal_gte,
-    signal_lte,
-    signal_price_return,
 )
-from .report_builder import build_ai_input, build_analysis_summary, build_markdown_summary, write_excel
+from .report_builder import build_model_input_metrics, write_excel
+
+PRICE_METRICS_COLUMNS = [
+    "symbol",
+    "source",
+    "date",
+    "latest_close",
+    "return_20d",
+    "return_60d",
+    "vol_20d",
+    "current_drawdown",
+    "max_drawdown",
+    "ma_50",
+    "ma_200",
+]
+MACRO_DAILY_COLUMNS = ["series_id", "name", "latest_date", "latest_value", "source"]
+MACRO_METRICS_COLUMNS = ["metric_name", "metric_value", "unit_or_method", "data_date", "source"]
 
 
 def as_of_date(value: str) -> str:
@@ -76,7 +89,7 @@ def make_providers(settings: Settings) -> Dict[str, object]:
     }
 
 
-def summarize_price(symbol: str, df: pd.DataFrame, source: str, thresholds: Dict) -> Dict:
+def summarize_price(symbol: str, df: pd.DataFrame, source: str) -> Dict:
     if df.empty:
         return {
             "symbol": symbol,
@@ -90,10 +103,6 @@ def summarize_price(symbol: str, df: pd.DataFrame, source: str, thresholds: Dict
             "max_drawdown": None,
             "ma_50": None,
             "ma_200": None,
-            "signal_return_20d": "灰色",
-            "signal_return_60d": "灰色",
-            "signal_vol_20d": "灰色",
-            "signal_drawdown": "灰色",
         }
     d = df.sort_values("date").copy()
     price_col = "adjusted_close" if "adjusted_close" in d.columns else "adjClose" if "adjClose" in d.columns else "close"
@@ -102,7 +111,6 @@ def summarize_price(symbol: str, df: pd.DataFrame, source: str, thresholds: Dict
     r20 = pct_change_from_close(d, 20, price_col=price_col)
     r60 = pct_change_from_close(d, 60, price_col=price_col)
     v20 = annualized_vol(d, 20, price_col=price_col)
-    price_thresholds = thresholds.get("price", {})
     return {
         "symbol": symbol,
         "source": source,
@@ -115,10 +123,6 @@ def summarize_price(symbol: str, df: pd.DataFrame, source: str, thresholds: Dict
         "max_drawdown": dd.get("max_drawdown"),
         "ma_50": moving_average(d, 50, price_col=price_col),
         "ma_200": moving_average(d, 200, price_col=price_col),
-        "signal_return_20d": signal_price_return(r20, **price_thresholds.get("qqq_20d_return", {"green_gte": 0, "yellow_gte": -0.05})),
-        "signal_return_60d": signal_price_return(r60, **price_thresholds.get("qqq_60d_return", {"green_gte": 0, "yellow_gte": -0.10})),
-        "signal_vol_20d": signal_lte(v20, **price_thresholds.get("qqq_20d_vol", {"green_lte": 0.25, "yellow_lte": 0.35})),
-        "signal_drawdown": signal_gte(dd.get("current_drawdown"), **price_thresholds.get("current_drawdown", {"green_gte": -0.10, "yellow_gte": -0.15})),
     }
 
 
@@ -149,48 +153,7 @@ def fred_recent_pct_changes(df: pd.DataFrame, periods: int = 3) -> list[float]:
     return [float(x) for x in values.pct_change().dropna().tail(periods)]
 
 
-def macro_signal_yield_level(value: float | None) -> str:
-    if value is None:
-        return "灰色"
-    if value >= 5.0:
-        return "红色"
-    if value >= 4.25:
-        return "黄色"
-    return "绿色"
-
-
-def macro_signal_rising_change(value: float | None, yellow_gte: float, red_gte: float) -> str:
-    if value is None:
-        return "灰色"
-    if value >= red_gte:
-        return "红色"
-    if value >= yellow_gte:
-        return "黄色"
-    return "绿色"
-
-
-def macro_signal_yield_spread(spread: float | None, one_month_change: float | None) -> str:
-    if spread is None:
-        return "灰色"
-    if spread <= -0.50 or (one_month_change is not None and spread < 0 and one_month_change <= -0.25):
-        return "红色"
-    if spread < 0 or (one_month_change is not None and one_month_change <= -0.10):
-        return "黄色"
-    return "绿色"
-
-
-def macro_signal_three_changes(changes: list[float]) -> str:
-    if len(changes) < 3:
-        return "灰色"
-    increasing = changes[0] < changes[1] < changes[2]
-    if increasing and changes[2] > 0:
-        return "红色"
-    if changes[1] < changes[2] and changes[2] > 0:
-        return "黄色"
-    return "绿色"
-
-
-def build_macro_signal_rows(fred_frames: Dict[str, pd.DataFrame]) -> list[Dict]:
+def build_macro_metric_rows(fred_frames: Dict[str, pd.DataFrame]) -> list[Dict]:
     rows: list[Dict] = []
     dgs10_value, dgs10_date = fred_latest(fred_frames.get("DGS10", pd.DataFrame()))
     dgs10_prior = fred_prior_value(fred_frames.get("DGS10", pd.DataFrame()), 21)
@@ -203,58 +166,70 @@ def build_macro_signal_rows(fred_frames: Dict[str, pd.DataFrame]) -> list[Dict]:
 
     rows.extend([
         {
-            "series_id": "DGS10_LEVEL_SIGNAL",
-            "name": "美国10年期国债收益率水平",
-            "latest_date": dgs10_date,
-            "latest_value": dgs10_value,
-            "status": macro_signal_yield_level(dgs10_value),
-            "threshold": "<4.25%绿色，4.25%-5%黄色，>=5%红色",
-            "direction": "长期利率压力",
+            "metric_name": "DGS10_latest_value",
+            "metric_value": dgs10_value,
+            "unit_or_method": "percent yield",
+            "data_date": dgs10_date,
+            "source": "FRED",
         },
         {
-            "series_id": "DGS10_1M_CHANGE_SIGNAL",
-            "name": "美国10年期国债收益率1月变化",
-            "latest_date": dgs10_date,
-            "latest_value": dgs10_change,
-            "status": macro_signal_rising_change(dgs10_change, 0.15, 0.30),
-            "threshold": "<0.15个百分点绿色，0.15-0.30黄色，>=0.30红色",
-            "direction": "长期利率上行速度",
+            "metric_name": "DGS10_1M_CHANGE",
+            "metric_value": dgs10_change,
+            "unit_or_method": "current value minus value 21 observations ago",
+            "data_date": dgs10_date,
+            "source": "FRED",
         },
         {
-            "series_id": "DGS10_DGS2_SPREAD_SIGNAL",
-            "name": "2年/10年利差",
-            "latest_date": dgs10_date or dgs2_date,
-            "latest_value": spread,
-            "status": macro_signal_yield_spread(spread, spread_change),
-            "threshold": "正利差绿色，倒挂黄色，深度倒挂或倒挂加深红色",
-            "direction": "收益率曲线压力",
+            "metric_name": "DGS2_DGS10_SPREAD",
+            "metric_value": dgs2_value - dgs10_value if dgs10_value is not None and dgs2_value is not None else None,
+            "unit_or_method": "2-year yield minus 10-year yield",
+            "data_date": dgs10_date or dgs2_date,
+            "source": "FRED",
+        },
+        {
+            "metric_name": "DGS10_DGS2_SPREAD",
+            "metric_value": spread,
+            "unit_or_method": "10-year yield minus 2-year yield",
+            "data_date": dgs10_date or dgs2_date,
+            "source": "FRED",
+        },
+        {
+            "metric_name": "DGS10_DGS2_SPREAD_1M_CHANGE",
+            "metric_value": spread_change,
+            "unit_or_method": "current 10y-2y spread minus spread 21 observations ago",
+            "data_date": dgs10_date or dgs2_date,
+            "source": "FRED",
         },
     ])
 
     for series_id, label in [("CPIAUCSL", "CPI近3次变化"), ("PCEPI", "PCE近3次变化")]:
-        value, latest_date = fred_latest(fred_frames.get(series_id, pd.DataFrame()))
+        _, latest_date = fred_latest(fred_frames.get(series_id, pd.DataFrame()))
         changes = fred_recent_pct_changes(fred_frames.get(series_id, pd.DataFrame()), 3)
+        for idx, change in enumerate(changes, start=max(1, len(changes) - 2)):
+            rows.append({
+                "metric_name": f"{series_id}_RECENT_PCT_CHANGE_{idx}",
+                "metric_value": change,
+                "unit_or_method": f"{label}; pct_change between consecutive observations",
+                "data_date": latest_date,
+                "source": "FRED",
+            })
         rows.append({
-            "series_id": f"{series_id}_3_CHANGE_SIGNAL",
-            "name": label,
-            "latest_date": latest_date,
-            "latest_value": changes[-1] if changes else None,
-            "status": macro_signal_three_changes(changes),
-            "threshold": "近3次环比变化连续上行且最新为正红色，最新上行黄色，否则绿色",
-            "direction": f"通胀压力，最新指数={value}" if value is not None else "通胀压力",
+            "metric_name": f"{series_id}_LATEST_PCT_CHANGE",
+            "metric_value": changes[-1] if changes else None,
+            "unit_or_method": f"{label}; latest pct_change between consecutive observations",
+            "data_date": latest_date,
+            "source": "FRED",
         })
 
     unrate_value, unrate_date = fred_latest(fred_frames.get("UNRATE", pd.DataFrame()))
     unrate_prior = fred_prior_value(fred_frames.get("UNRATE", pd.DataFrame()), 3)
     unrate_change = unrate_value - unrate_prior if unrate_value is not None and unrate_prior is not None else None
     rows.append({
-        "series_id": "UNRATE_3M_CHANGE_SIGNAL",
-        "name": "失业率3个月变化",
-        "latest_date": unrate_date,
-        "latest_value": unrate_change,
-        "status": macro_signal_rising_change(unrate_change, 0.30, 0.50),
-        "threshold": "<0.30个百分点绿色，0.30-0.50黄色，>=0.50红色",
-        "direction": f"就业降温速度，最新失业率={unrate_value}" if unrate_value is not None else "就业降温速度",
+        "metric_name": "UNRATE_3_OBSERVATION_CHANGE",
+        "metric_value": unrate_change,
+        "unit_or_method": "current unemployment rate minus value 3 observations ago",
+        "data_date": unrate_date,
+        "source": "FRED",
     })
     return rows
 
@@ -273,8 +248,7 @@ def run_daily(as_of: str = "auto") -> Dict:
         p.mkdir(parents=True, exist_ok=True)
 
     logs: List[Dict] = []
-    price_frames = []
-    price_summaries = []
+    price_metrics_rows = []
 
     # Alpha Vantage price source
     if settings.pipeline.get("run", {}).get("fetch_alpha_vantage_prices", True):
@@ -285,8 +259,7 @@ def run_daily(as_of: str = "auto") -> Dict:
             if result.ok:
                 df = result.data
                 write_csv(df, raw_dir / f"alpha_vantage_{symbol}_daily.csv")
-                price_frames.append(df)
-                price_summaries.append(summarize_price(symbol, df, "alpha_vantage", settings.thresholds))
+                price_metrics_rows.append(summarize_price(symbol, df, "alpha_vantage"))
 
     # Tiingo fallback / cross-check price source
     if settings.pipeline.get("run", {}).get("fetch_tiingo_prices", True):
@@ -300,15 +273,14 @@ def run_daily(as_of: str = "auto") -> Dict:
                 df = result.data
                 write_csv(df, raw_dir / f"tiingo_{symbol}_daily.csv")
                 # Only use as summary if Alpha Vantage did not return this symbol.
-                if symbol not in [x.get("symbol") for x in price_summaries]:
-                    price_frames.append(df)
-                    price_summaries.append(summarize_price(symbol, df, "tiingo", settings.thresholds))
+                if symbol not in [x.get("symbol") for x in price_metrics_rows]:
+                    price_metrics_rows.append(summarize_price(symbol, df, "tiingo"))
 
-    price_summary = pd.DataFrame(price_summaries)
-    write_csv(price_summary, processed_dir / "price_summary.csv")
+    price_metrics = pd.DataFrame(price_metrics_rows, columns=PRICE_METRICS_COLUMNS)
+    write_csv(price_metrics, processed_dir / "price_metrics.csv")
 
     # FRED macro
-    macro_rows = []
+    macro_daily_rows = []
     fred_frames: Dict[str, pd.DataFrame] = {}
     fred: FREDProvider = providers["fred"]  # type: ignore[assignment]
     if settings.pipeline.get("run", {}).get("fetch_fred_macro", True):
@@ -321,18 +293,17 @@ def run_daily(as_of: str = "auto") -> Dict:
                 fred_frames[series_id] = result.data
                 latest = latest_value(result.data)
                 last_date = result.data.sort_values("date").iloc[-1]["date"] if not result.data.empty else None
-                macro_rows.append({
+                macro_daily_rows.append({
                     "series_id": series_id,
                     "name": name,
                     "latest_date": last_date,
                     "latest_value": latest,
-                    "status": "信息" if latest is not None else "灰色",
-                    "threshold": "原始FRED观测值，衍生信号见下方",
-                    "direction": "宏观原始数据",
+                    "source": "FRED",
                 })
-        macro_rows.extend(build_macro_signal_rows(fred_frames))
-    macro_summary = pd.DataFrame(macro_rows)
-    write_csv(macro_summary, processed_dir / "macro_summary.csv")
+    macro_daily = pd.DataFrame(macro_daily_rows, columns=MACRO_DAILY_COLUMNS)
+    macro_metrics = pd.DataFrame(build_macro_metric_rows(fred_frames), columns=MACRO_METRICS_COLUMNS)
+    write_csv(macro_daily, processed_dir / "macro_daily.csv")
+    write_csv(macro_metrics, processed_dir / "macro_metrics.csv")
 
     # FMP quotes and key metrics
     fmp: FMPProvider = providers["fmp"]  # type: ignore[assignment]
@@ -362,43 +333,38 @@ def run_daily(as_of: str = "auto") -> Dict:
     logs_df = pd.DataFrame(logs)
     write_csv(logs_df, processed_dir / "run_log.csv")
 
-    ai_input = build_ai_input(price_summary, macro_summary, fmp_summary)
-    analysis = build_analysis_summary(ai_input)
-    write_csv(ai_input, processed_dir / "ai_input.csv")
-    write_csv(analysis, processed_dir / "analysis_summary.csv")
-    write_csv(ai_input, latest_dir / "ai_input.csv")
-    write_csv(analysis, latest_dir / "analysis_summary.csv")
-    write_csv(price_summary, latest_dir / "price_summary.csv")
-    write_csv(macro_summary, latest_dir / "macro_summary.csv")
+    model_input_metrics = build_model_input_metrics(price_metrics, macro_daily, macro_metrics, fmp_summary)
+    write_csv(model_input_metrics, processed_dir / "model_input_metrics.csv")
+    write_csv(model_input_metrics, latest_dir / "model_input_metrics.csv")
+    write_csv(price_metrics, latest_dir / "price_metrics.csv")
+    write_csv(macro_daily, latest_dir / "macro_daily.csv")
+    write_csv(macro_metrics, latest_dir / "macro_metrics.csv")
     write_csv(fmp_summary, latest_dir / "fmp_summary.csv")
     write_csv(logs_df, latest_dir / "run_log.csv")
 
     xlsx_path = latest_dir / "nasdaq100_qqq_daily_tracker.xlsx"
     write_excel(xlsx_path, {
-        "价格摘要": price_summary,
-        "宏观摘要": macro_summary,
+        "价格指标": price_metrics,
+        "宏观原始": macro_daily,
+        "宏观指标": macro_metrics,
         "FMP可用性": fmp_summary,
         "FMP关键指标": key_metrics,
-        "AI输入层": ai_input,
-        "分析判断层": analysis,
+        "模型输入指标": model_input_metrics,
         "运行日志": logs_df,
     })
 
     archive_xlsx_path = archive_dir / f"nasdaq100_qqq_daily_tracker_{run_date}.xlsx"
     shutil.copy2(xlsx_path, archive_xlsx_path)
-    md_text = build_markdown_summary(run_date, ai_input, analysis, "state/latest_manifest.json")
-    write_markdown(md_text, latest_dir / "analysis_summary.md")
-    write_markdown(md_text, archive_dir / f"analysis_summary_{run_date}.md")
 
     manifest = {
         "as_of": run_date,
         "generated_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
         "latest_files": {
-            "markdown_summary": rel_path(latest_dir / "analysis_summary.md", settings.paths.root),
             "excel_report": rel_path(xlsx_path, settings.paths.root),
-            "ai_input_csv": rel_path(latest_dir / "ai_input.csv", settings.paths.root),
-            "price_summary_csv": rel_path(latest_dir / "price_summary.csv", settings.paths.root),
-            "macro_summary_csv": rel_path(latest_dir / "macro_summary.csv", settings.paths.root),
+            "model_input_metrics_csv": rel_path(latest_dir / "model_input_metrics.csv", settings.paths.root),
+            "price_metrics_csv": rel_path(latest_dir / "price_metrics.csv", settings.paths.root),
+            "macro_daily_csv": rel_path(latest_dir / "macro_daily.csv", settings.paths.root),
+            "macro_metrics_csv": rel_path(latest_dir / "macro_metrics.csv", settings.paths.root),
             "fmp_summary_csv": rel_path(latest_dir / "fmp_summary.csv", settings.paths.root),
             "run_log_csv": rel_path(latest_dir / "run_log.csv", settings.paths.root),
         },

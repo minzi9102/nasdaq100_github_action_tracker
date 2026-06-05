@@ -45,7 +45,9 @@ Actions -> Nasdaq-100 QQQ Daily Tracker -> Run workflow
 把仓库链接发给 ChatGPT，并指定读取：
 
 ```text
-reports/latest/analysis_summary.md
-reports/latest/ai_input.csv
+reports/latest/model_input_metrics.csv
+reports/latest/price_metrics.csv
+reports/latest/macro_daily.csv
+reports/latest/macro_metrics.csv
 state/latest_manifest.json
 ```

@@ -36,7 +36,6 @@ class Settings:
         self.sources = load_yaml(self.paths.config_dir / "sources.yml")
         self.symbols = load_yaml(self.paths.config_dir / "symbols.yml")
         self.fred_series = load_yaml(self.paths.config_dir / "fred_series.yml")
-        self.thresholds = load_yaml(self.paths.config_dir / "thresholds.yml")
         self.pipeline = load_yaml(self.paths.config_dir / "pipeline.yml")
 
     def get_secret(self, env_name: str) -> str | None:

@@ -53,32 +53,3 @@ def latest_value(df: pd.DataFrame, value_col: str = "value") -> float | None:
         return None
     return float(d[value_col].iloc[-1])
 
-
-def signal_price_return(value: float | None, green_gte: float, yellow_gte: float) -> str:
-    if value is None:
-        return "灰色"
-    if value >= green_gte:
-        return "绿色"
-    if value >= yellow_gte:
-        return "黄色"
-    return "红色"
-
-
-def signal_lte(value: float | None, green_lte: float, yellow_lte: float) -> str:
-    if value is None:
-        return "灰色"
-    if value <= green_lte:
-        return "绿色"
-    if value <= yellow_lte:
-        return "黄色"
-    return "红色"
-
-
-def signal_gte(value: float | None, green_gte: float, yellow_gte: float) -> str:
-    if value is None:
-        return "灰色"
-    if value >= green_gte:
-        return "绿色"
-    if value >= yellow_gte:
-        return "黄色"
-    return "红色"

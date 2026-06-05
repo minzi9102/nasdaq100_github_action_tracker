@@ -13,10 +13,11 @@ data/raw/YYYY-MM-DD/provider_symbol_method.csv
 保存标准化后的中间结果。
 
 ```text
-data/processed/YYYY-MM-DD/price_summary.csv
-data/processed/YYYY-MM-DD/macro_summary.csv
+data/processed/YYYY-MM-DD/price_metrics.csv
+data/processed/YYYY-MM-DD/macro_daily.csv
+data/processed/YYYY-MM-DD/macro_metrics.csv
 data/processed/YYYY-MM-DD/fmp_summary.csv
-data/processed/YYYY-MM-DD/ai_input.csv
+data/processed/YYYY-MM-DD/model_input_metrics.csv
 ```
 
 ## reports 层
@@ -24,8 +25,10 @@ data/processed/YYYY-MM-DD/ai_input.csv
 保存给人和 ChatGPT 阅读的最终结果。
 
 ```text
-reports/latest/analysis_summary.md
-reports/latest/ai_input.csv
+reports/latest/model_input_metrics.csv
+reports/latest/price_metrics.csv
+reports/latest/macro_daily.csv
+reports/latest/macro_metrics.csv
 reports/latest/nasdaq100_qqq_daily_tracker.xlsx
 reports/archive/YYYY-MM-DD/
 ```

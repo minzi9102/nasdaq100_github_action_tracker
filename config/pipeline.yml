@@ -7,7 +7,6 @@ run:
   fetch_fmp_key_metrics: true
   write_excel: true
   write_csv: true
-  write_markdown_summary: true
   fail_on_missing_all_providers: true
 api:
   request_timeout_seconds: 30

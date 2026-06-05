@@ -1,2 +1,0 @@
-﻿symbol,source,date,latest_close,return_20d,return_60d,vol_20d,current_drawdown,max_drawdown,ma_50,ma_200,signal_return_20d,signal_return_60d,signal_vol_20d,signal_drawdown
-QQQ,alpha_vantage,2026-06-03,744.21,0.09184137556667316,0.22451296564433343,0.15766538415191447,-0.0026133805082019235,-0.11834749376204168,662.3317999999999,,绿色,绿色,绿色,绿色

@@ -1,0 +1,2 @@
+﻿symbol,name,price,changePercentage,change,volume,dayLow,dayHigh,yearHigh,yearLow,marketCap,priceAvg50,priceAvg200,exchange,open,previousClose,timestamp,source
+AAPL,Apple Inc.,311.23,0.31264,0.97,37097099,309.65,313.54,316.94,195.07,4571145807880,278.9512,264.4075,NASDAQ,313.23,310.26,1780603201,fmp

@@ -1,0 +1,8 @@
+﻿series_id,name,latest_date,latest_value,source
+DGS10,美国10年期国债收益率,2026-06-03,4.49,FRED
+DGS2,美国2年期国债收益率,2026-06-03,4.08,FRED
+DGS3MO,美国3个月国债收益率,2026-06-03,3.78,FRED
+DFF,有效联邦基金利率,2026-06-03,3.62,FRED
+CPIAUCSL,美国消费者价格指数,2026-04-01,332.407,FRED
+PCEPI,美国个人消费支出价格指数,2026-04-01,130.902,FRED
+UNRATE,美国失业率,2026-04-01,4.3,FRED
