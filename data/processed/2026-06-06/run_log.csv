@@ -8,4 +8,4 @@ fred,observations,CPIAUCSL,True,CPIAUCSL: 365 rows
 fred,observations,PCEPI,True,PCEPI: 365 rows
 fred,observations,UNRATE,True,UNRATE: 365 rows
 invesco,qqq_holdings,QQQ,True,QQQ: holdings rows=104 effective_date=2026-06-04
-tiingo_cache,load_cached_history_for_breadth,98 symbols,True,98/98 symbols loaded from local cache/raw seed
+tiingo_cache,load_cached_history_for_breadth,98 symbols,True,97/98 symbols loaded from local cache/raw seed

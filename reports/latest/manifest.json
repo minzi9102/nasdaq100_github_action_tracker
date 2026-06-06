@@ -1,6 +1,6 @@
 {
   "as_of": "2026-06-06",
-  "generated_at": "2026-06-06T09:39:09Z",
+  "generated_at": "2026-06-06T11:51:46Z",
   "latest_files": {
     "excel_report": "reports/latest/nasdaq100_qqq_daily_tracker.xlsx",
     "manifest_json": "reports/latest/manifest.json",
@@ -291,24 +291,24 @@
       "provider": "mixed_history_cache+twelve_data_quote",
       "ok": true,
       "rows": 8,
-      "symbol_coverage_ratio": 1.0,
-      "weight_coverage_ratio": 1.0,
-      "missing_symbols": "",
-      "missing_top_weight_symbols": "",
+      "symbol_coverage_ratio": 0.9897959183673469,
+      "weight_coverage_ratio": 0.9146145309607144,
+      "missing_symbols": "NVDA",
+      "missing_top_weight_symbols": "NVDA",
       "rate_limited": false,
       "stopped_after_429": false,
       "remaining_symbols_skipped": 0,
-      "cache_rows_used": 28168,
+      "cache_rows_used": 27880,
       "live_rows_fetched": 0,
       "fallback_provider": "twelve_data_quote",
-      "history_coverage_ratio": 1.0,
-      "quote_coverage_ratio": 0.20408163265306123,
+      "history_coverage_ratio": 0.9897959183673469,
+      "quote_coverage_ratio": 0.1958762886597938,
       "top10_quote_coverage_ratio": null,
       "top20_quote_coverage_ratio": null,
       "ma200_available": null,
       "actual_quote_provider": "twelve_data",
       "actual_history_provider": "mixed_history_cache",
-      "message": "98/98 symbols with history coverage; 20/98 history symbols with Twelve Data quote overlay"
+      "message": "97/98 symbols with history coverage; 19/97 history symbols with Twelve Data quote overlay; coverage insufficient for top-weight symbols"
     }
   ],
   "api_usage": [
@@ -557,7 +557,7 @@
       "method": "load_cached_history_for_breadth",
       "symbol": "98 symbols",
       "ok": true,
-      "message": "98/98 symbols loaded from local cache/raw seed"
+      "message": "97/98 symbols loaded from local cache/raw seed"
     }
   ]
 }

@@ -10,4 +10,4 @@ macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,,,,,,,,UNRATE: 365 rows
 qqq_holdings,invesco,True,104,1.0,1.0,,,False,False,0,0,0,,,,,,,,,QQQ: holdings rows=104 effective_date=2026-06-04
 qqq_equity_holdings,invesco_filter,True,98,0.9423076923076923,0.9876091402011571,"ARM,ASML,NQM6,NQM6_,PDD,USD",,False,False,0,0,0,,,,,,,,,equity filter applied for breadth stock pool
 top_holdings_quotes,twelve_data,True,20,1.0,1.0,,,False,False,0,0,0,quote_cache,,1.0,1.0,1.0,,twelve_data,,20/20 top20 quotes available; 10/10 top10 quotes available
-breadth_metrics,mixed_history_cache+twelve_data_quote,True,8,1.0,1.0,,,False,False,0,28168,0,twelve_data_quote,1.0,0.20408163265306123,,,,twelve_data,mixed_history_cache,98/98 symbols with history coverage; 20/98 history symbols with Twelve Data quote overlay
+breadth_metrics,mixed_history_cache+twelve_data_quote,True,8,0.9897959183673469,0.9146145309607144,NVDA,NVDA,False,False,0,27880,0,twelve_data_quote,0.9897959183673469,0.1958762886597938,,,,twelve_data,mixed_history_cache,97/98 symbols with history coverage; 19/97 history symbols with Twelve Data quote overlay; coverage insufficient for top-weight symbols
