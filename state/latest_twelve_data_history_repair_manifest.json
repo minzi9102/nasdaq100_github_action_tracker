@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "run_date": "2026-06-06",
+  "provider": "twelve_data",
+  "calls_attempted": 2,
+  "symbols_loaded": [
+    "GOOGL",
+    "TSLA"
+  ],
+  "rate_limited": false
+}

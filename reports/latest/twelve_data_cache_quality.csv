@@ -1,0 +1,3 @@
+﻿run_date,symbol,weight,provider,history_sources,before_rows,after_rows,fetched_rows,is_complete,was_requested,ok,rate_limited,stopped_after_429,retry_after_seconds,message
+2026-06-06,GOOGL,0.0343483699999999,twelve_data,twelve_data,0,260,260,True,True,True,False,False,,GOOGL: 260 rows
+2026-06-06,TSLA,0.03310853,twelve_data,twelve_data,0,260,260,True,True,True,False,False,,TSLA: 260 rows

@@ -1,0 +1,2 @@
+﻿run_date,provider,endpoint,calls_attempted,calls_success,calls_failed,rate_limited,limit_window,limit_value,credits_used,symbols_requested,symbols_loaded,stopped_after_429,retry_after_seconds,http_status,error_type,function,outputsize,adjusted,actual_endpoint,production_enabled,premium_blocked,message
+2026-06-06,twelve_data,time_series_history_repair,2,2,0,False,minute,8,2,"GOOGL,TSLA","GOOGL,TSLA",False,,,,,,,time_series_history_repair,True,False,GOOGL: GOOGL: 260 rows; TSLA: TSLA: 260 rows

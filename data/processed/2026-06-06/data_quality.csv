@@ -1,14 +1,13 @@
-﻿dataset,provider,ok,rows,symbol_coverage_ratio,weight_coverage_ratio,missing_symbols,missing_top_weight_symbols,rate_limited,stopped_after_429,remaining_symbols_skipped,cache_rows_used,live_rows_fetched,fallback_provider,message
-price_daily,alpha_vantage,True,100,1.0,1.0,,,False,False,0,0,0,,QQQ: 100 rows
-macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,DGS10: 365 rows
-macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,DGS2: 365 rows
-macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,DGS3MO: 365 rows
-macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,DFF: 365 rows
-macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,CPIAUCSL: 365 rows
-macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,PCEPI: 365 rows
-macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,UNRATE: 365 rows
-qqq_holdings,invesco,True,104,1.0,1.0,,,False,False,0,0,0,,QQQ: holdings rows=104 effective_date=2026-06-04
-qqq_equity_holdings,invesco_filter,True,98,0.9423076923076923,0.9876091402011571,"ARM,ASML,NQM6,NQM6_,PDD,USD",,False,False,0,0,0,,equity filter applied for breadth stock pool
-fmp_summary,fmp,False,98,0.0,0.0,"NVDA,AAPL,MSFT,MU,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,KLAC,TXN,MRVL,QCOM,SNDK,LIN,PANW,ADI,STX,TMUS,WDC,PEP,AMGN,CRWD,APP,GILD,ISRG,SHOP,HON,BKNG,CDNS,VRTX,FTNT,SBUX,ADBE,MAR,CEG,SNPS,ADP,MNST,CSX,CMCSA,INTU,MELI,NXPI,MPWR,DDOG,MDLZ,ROST,ORLY,CTAS,AEP,LITE,WBD,DASH,BKR,REGN,PCAR,FANG,ABNB,FAST,MCHP,ODFL,EA,ADSK,XEL,FER,EXC,IDXX,CCEP,AXON,KDP,MSTR,ALNY,TTWO,PYPL,TRI,PAYX,ROP,WDAY,CPRT,GEHC,DXCM,KHC,CTSH,VRSK,INSM,ZS,CHTR",,False,False,0,0,0,,0/98 quotes fetched
-top_holdings_quotes,fmp+twelve_data,True,20,0.9,0.9,"GOOG,AVGO","GOOG,AVGO",False,False,0,0,0,twelve_data,18/20 top20 quotes available; 8/10 top10 quotes available
-breadth_metrics,fmp+tiingo_cache,True,8,0.5408163265306123,0.4689190577470169,"ADI,ALNY,AMAT,AMD,AMZN,AVGO,AXON,CCEP,CHTR,COST,CPRT,CSCO,CTSH,DXCM,GEHC,GOOG,GOOGL,IDXX,INSM,INTC,KDP,KHC,KLAC,LIN,LRCX,META,MRVL,MSTR,NFLX,PANW,PAYX,PLTR,PYPL,QCOM,ROP,SNDK,STX,TRI,TSLA,TTWO,TXN,VRSK,WDAY,WMT,ZS","AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META,WMT,INTC,CSCO",False,False,0,15264,0,mixed_fmp+tiingo_history_only,53/98 symbols with history+quote coverage; coverage insufficient for top-weight symbols
+﻿dataset,provider,ok,rows,symbol_coverage_ratio,weight_coverage_ratio,missing_symbols,missing_top_weight_symbols,rate_limited,stopped_after_429,remaining_symbols_skipped,cache_rows_used,live_rows_fetched,fallback_provider,history_coverage_ratio,quote_coverage_ratio,top10_quote_coverage_ratio,top20_quote_coverage_ratio,ma200_available,actual_quote_provider,actual_history_provider,message
+price_daily,alpha_vantage_compact+local_cache,True,260,1.0,1.0,,,False,False,0,260,100,tiingo+twelve_data,1.0,,,,True,,alpha_vantage_compact+local_cache,QQQ cache ready
+macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,,,,,,,,DGS10: 365 rows
+macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,,,,,,,,DGS2: 365 rows
+macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,,,,,,,,DGS3MO: 365 rows
+macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,,,,,,,,DFF: 365 rows
+macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,,,,,,,,CPIAUCSL: 365 rows
+macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,,,,,,,,PCEPI: 365 rows
+macro_daily,fred,True,365,1.0,1.0,,,False,False,0,0,0,,,,,,,,,UNRATE: 365 rows
+qqq_holdings,invesco,True,104,1.0,1.0,,,False,False,0,0,0,,,,,,,,,QQQ: holdings rows=104 effective_date=2026-06-04
+qqq_equity_holdings,invesco_filter,True,98,0.9423076923076923,0.9876091402011571,"ARM,ASML,NQM6,NQM6_,PDD,USD",,False,False,0,0,0,,,,,,,,,equity filter applied for breadth stock pool
+top_holdings_quotes,twelve_data,True,20,1.0,1.0,,,False,False,0,0,0,quote_cache,,1.0,1.0,1.0,,twelve_data,,20/20 top20 quotes available; 10/10 top10 quotes available
+breadth_metrics,mixed_history_cache+twelve_data_quote,True,8,1.0,1.0,,,False,False,0,28168,0,twelve_data_quote,1.0,0.20408163265306123,,,,twelve_data,mixed_history_cache,98/98 symbols with history coverage; 20/98 history symbols with Twelve Data quote overlay

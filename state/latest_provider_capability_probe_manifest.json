@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "run_date": "2026-06-06",
+  "generated_rows": 10,
+  "latest_file": "reports/latest/provider_capability_probe.csv",
+  "results": [
+    {
+      "provider": "alpha_vantage",
+      "endpoint": "TIME_SERIES_DAILY compact",
+      "symbol_or_symbols": "QQQ",
+      "http_status": 200,
+      "rows": 100,
+      "usable_for_production": true,
+      "error_type": "success",
+      "message": "QQQ: 100 rows"
+    },
+    {
+      "provider": "alpha_vantage",
+      "endpoint": "TIME_SERIES_DAILY full",
+      "symbol_or_symbols": "QQQ",
+      "http_status": 200,
+      "rows": 0,
+      "usable_for_production": false,
+      "error_type": "premium_blocked",
+      "message": "Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per second). You may subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to lift the free key rate limit (25 requests per day), raise the per-second burst limit, and instantly unlock all premium endpoints"
+    },
+    {
+      "provider": "fmp",
+      "endpoint": "quote",
+      "symbol_or_symbols": "AAPL",
+      "http_status": 200,
+      "rows": 1,
+      "usable_for_production": false,
+      "error_type": "success",
+      "message": "AAPL: quote rows=1"
+    },
+    {
+      "provider": "fmp",
+      "endpoint": "quote",
+      "symbol_or_symbols": "AVGO",
+      "http_status": 402,
+      "rows": 0,
+      "usable_for_production": false,
+      "error_type": "permission_limited",
+      "message": "402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/quote?symbol=AVGO&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
+    },
+    {
+      "provider": "fmp",
+      "endpoint": "quote batch",
+      "symbol_or_symbols": "AAPL,MSFT",
+      "http_status": 402,
+      "rows": 0,
+      "usable_for_production": false,
+      "error_type": "permission_limited",
+      "message": "402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/quote?symbol=AAPL%2CMSFT&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
+    },
+    {
+      "provider": "fmp",
+      "endpoint": "stable/batch-quote",
+      "symbol_or_symbols": "AAPL,MSFT",
+      "http_status": 402,
+      "rows": 0,
+      "usable_for_production": false,
+      "error_type": "permission_limited",
+      "message": "402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/batch-quote?symbols=AAPL%2CMSFT&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
+    },
+    {
+      "provider": "twelve_data",
+      "endpoint": "quote",
+      "symbol_or_symbols": "GOOG",
+      "http_status": 200,
+      "rows": 1,
+      "usable_for_production": true,
+      "error_type": "success",
+      "message": "GOOG: quote rows=1"
+    },
+    {
+      "provider": "twelve_data",
+      "endpoint": "quote",
+      "symbol_or_symbols": "AVGO",
+      "http_status": 200,
+      "rows": 1,
+      "usable_for_production": true,
+      "error_type": "success",
+      "message": "AVGO: quote rows=1"
+    },
+    {
+      "provider": "twelve_data",
+      "endpoint": "time_series",
+      "symbol_or_symbols": "GOOG",
+      "http_status": 200,
+      "rows": 260,
+      "usable_for_production": true,
+      "error_type": "success",
+      "message": "GOOG: 260 rows"
+    },
+    {
+      "provider": "twelve_data",
+      "endpoint": "time_series",
+      "symbol_or_symbols": "AVGO",
+      "http_status": 200,
+      "rows": 260,
+      "usable_for_production": true,
+      "error_type": "success",
+      "message": "AVGO: 260 rows"
+    }
+  ]
+}

@@ -1,21 +1,21 @@
-﻿symbol,company_name,weight,price,change,changes_percentage,market_cap,pe,eps,provider,quote_time,is_missing
-NVDA,NVIDIA Corp,0.08433591,205.10001,-13.56,-6.20141,,,,twelve_data,1780666200.0,False
-AAPL,Apple Inc,0.07244039,307.34,-3.89001,-1.24988,,,,twelve_data,1780666200.0,False
-MSFT,Microsoft Corp,0.05049571,416.67001,-11.37997,-2.65856,,,,twelve_data,1780666200.0,False
-MU,Micron Technology Inc,0.04905769,864.01001,-131.98999,-13.25201,,,,twelve_data,1780666200.0,False
-AMZN,Amazon.com Inc,0.04319211,246.029999,-7.75999,-3.057644,,,,twelve_data,1780666200.0,False
-AMD,Advanced Micro Devices Inc,0.03732949,466.38,-56.82001,-10.86009,,,,twelve_data,1780666200.0,False
-GOOGL,Alphabet Inc Class A,0.034348369999999996,368.53,-3.66,-0.98336969,,,,twelve_data,1780666200.0,False
-TSLA,Tesla Inc,0.03310853,391.0,-27.45001,-6.55993,,,,twelve_data,1780666200.0,False
-GOOG,Alphabet Inc Class C,0.03183849,,,,,,,,,True
-AVGO,Broadcom Inc,0.0314861,,,,,,,,,True
-META,Meta Platforms Inc,0.02934593,593.0,-34.57001,-5.50855,,,,twelve_data,1780666200.0,False
-WMT,Walmart Inc,0.02518224,118.88,1.14,0.96823459,,,,twelve_data,1780666200.0,False
-INTC,Intel Corp,0.0244368,99.17,-12.61,-11.28109,,,,twelve_data,1780666200.0,False
-CSCO,Cisco Systems Inc,0.022473809999999997,121.64,-8.36,-6.43077,,,,twelve_data,1780666200.0,False
-COST,Costco Wholesale Corp,0.01889016,971.87,-0.47998047,-0.049362933,,,,twelve_data,1780666200.0,False
-LRCX,Lam Research Corp,0.01837787,303.28,-33.13,-9.8481,,,,twelve_data,1780666200.0,False
-AMAT,Applied Materials Inc,0.01743618,453.01001,-48.69,-9.705,,,,twelve_data,1780666200.0,False
-NFLX,Netflix Inc,0.01506454,82.18,0.62000275,0.76017995,,,,twelve_data,1780666200.0,False
-PLTR,Palantir Technologies Inc,0.01420458,135.53,-6.17,-4.35427,,,,twelve_data,1780666200.0,False
-KLAC,KLA Corp,0.01221992,1929.19995,-201.90015,-9.47399,,,,twelve_data,1780666200.0,False
+﻿symbol,company_name,weight,price,change,changes_percentage,market_cap,pe,eps,provider,quote_time,is_missing,error_type,attempted_symbol,was_api_success,was_parse_success,was_merge_success
+NVDA,NVIDIA Corp,0.08433591,205.10001,-13.56,-6.20141,,,,twelve_data,2026-06-05,False,,NVDA,False,False,True
+AAPL,Apple Inc,0.07244039,307.34,-3.89001,-1.24988,,,,twelve_data,2026-06-05,False,,AAPL,False,False,True
+MSFT,Microsoft Corp,0.05049571,416.67001,-11.37997,-2.65856,,,,twelve_data,2026-06-05,False,,MSFT,False,False,True
+MU,Micron Technology Inc,0.04905769,864.01001,-131.98999,-13.25201,,,,twelve_data,2026-06-05,False,,MU,False,False,True
+AMZN,Amazon.com Inc,0.04319211,246.029999,-7.75999,-3.057644,,,,twelve_data,2026-06-05,False,,AMZN,False,False,True
+AMD,Advanced Micro Devices Inc,0.03732949,466.38,-56.82001,-10.86009,,,,twelve_data,2026-06-05,False,,AMD,False,False,True
+GOOGL,Alphabet Inc Class A,0.034348369999999996,368.53,-3.66,-0.98336969,,,,twelve_data,2026-06-05,False,,GOOGL,False,False,True
+TSLA,Tesla Inc,0.03310853,391.0,-27.45001,-6.55993,,,,twelve_data,2026-06-05,False,,TSLA,False,False,True
+GOOG,Alphabet Inc Class C,0.03183849,365.76001,-3.50998,-0.95051842,,,,twelve_data,2026-06-05,False,,GOOG,False,False,True
+AVGO,Broadcom Inc,0.0314861,385.73001,-33.17999,-7.92055,,,,twelve_data,2026-06-05,False,,AVGO,False,False,True
+META,Meta Platforms Inc,0.02934593,593.0,-34.57001,-5.50855,,,,twelve_data,2026-06-05,False,,META,False,False,True
+WMT,Walmart Inc,0.02518224,118.88,1.14,0.96823459,,,,twelve_data,2026-06-05,False,,WMT,False,False,True
+INTC,Intel Corp,0.0244368,99.17,-12.61,-11.28109,,,,twelve_data,2026-06-05,False,,INTC,False,False,True
+CSCO,Cisco Systems Inc,0.022473809999999997,121.64,-8.36,-6.43077,,,,twelve_data,2026-06-05,False,,CSCO,False,False,True
+COST,Costco Wholesale Corp,0.01889016,971.87,-0.47998047,-0.049362933,,,,twelve_data,2026-06-05,False,,COST,False,False,True
+LRCX,Lam Research Corp,0.01837787,303.28,-33.13,-9.8481,,,,twelve_data,2026-06-05,False,,LRCX,False,False,True
+AMAT,Applied Materials Inc,0.01743618,453.01001,-48.69,-9.705,,,,twelve_data,2026-06-05,False,,AMAT,False,False,True
+NFLX,Netflix Inc,0.01506454,82.18,0.62000275,0.76017995,,,,twelve_data,2026-06-05,False,,NFLX,False,False,True
+PLTR,Palantir Technologies Inc,0.01420458,135.53,-6.17,-4.35427,,,,twelve_data,2026-06-05,False,,PLTR,False,False,True
+KLAC,KLA Corp,0.01221992,1929.19995,-201.90015,-9.47399,,,,twelve_data,2026-06-05,False,,KLAC,False,False,True
