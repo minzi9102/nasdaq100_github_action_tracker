@@ -1,6 +1,6 @@
 {
   "as_of": "2026-06-06",
-  "generated_at": "2026-06-06T11:51:46Z",
+  "generated_at": "2026-06-06T12:15:14Z",
   "latest_files": {
     "excel_report": "reports/latest/nasdaq100_qqq_daily_tracker.xlsx",
     "manifest_json": "reports/latest/manifest.json",
@@ -236,7 +236,7 @@
       "ma200_available": null,
       "actual_quote_provider": "",
       "actual_history_provider": "",
-      "message": "QQQ: holdings rows=104 effective_date=2026-06-04"
+      "message": "QQQ: holdings rows=104 effective_date=2026-06-06"
     },
     {
       "dataset": "qqq_equity_holdings",
@@ -244,7 +244,7 @@
       "ok": true,
       "rows": 98,
       "symbol_coverage_ratio": 0.9423076923076923,
-      "weight_coverage_ratio": 0.9876091402011571,
+      "weight_coverage_ratio": 0.9876918382952856,
       "missing_symbols": "ARM,ASML,NQM6,NQM6_,PDD,USD",
       "missing_top_weight_symbols": "",
       "rate_limited": false,
@@ -292,7 +292,7 @@
       "ok": true,
       "rows": 8,
       "symbol_coverage_ratio": 0.9897959183673469,
-      "weight_coverage_ratio": 0.9146145309607144,
+      "weight_coverage_ratio": 0.9159165601145549,
       "missing_symbols": "NVDA",
       "missing_top_weight_symbols": "NVDA",
       "rate_limited": false,
@@ -466,26 +466,26 @@
       "run_date": "2026-06-06",
       "provider": "twelve_data",
       "endpoint": "quote",
-      "calls_attempted": 0,
-      "calls_success": 0,
+      "calls_attempted": 20,
+      "calls_success": 20,
       "calls_failed": 0,
       "rate_limited": false,
       "limit_window": "minute",
       "limit_value": 8,
-      "credits_used": 0,
-      "symbols_requested": "NVDA,AAPL,MSFT,MU,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,KLAC",
-      "symbols_loaded": "NVDA,AAPL,MSFT,MU,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,KLAC",
+      "credits_used": 20,
+      "symbols_requested": "NVDA,AAPL,MSFT,MU,AMZN,GOOGL,AMD,GOOG,TSLA,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,TXN",
+      "symbols_loaded": "NVDA,AAPL,MSFT,MU,AMZN,GOOGL,AMD,GOOG,TSLA,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,TXN",
       "stopped_after_429": false,
       "retry_after_seconds": null,
-      "http_status": null,
-      "error_type": "missing_api_key",
+      "http_status": 200.0,
+      "error_type": "success",
       "function": "",
       "outputsize": "",
       "adjusted": null,
       "actual_endpoint": "quote",
       "production_enabled": true,
       "premium_blocked": false,
-      "message": "missing Twelve Data API key; used quote cache"
+      "message": "NVDA: quote loaded on round 1; AAPL: quote loaded on round 1; MSFT: quote loaded on round 1; MU: quote loaded on round 1; AMZN: quote loaded on round 1; ..."
     }
   ],
   "provider_logs": [
@@ -550,7 +550,7 @@
       "method": "qqq_holdings",
       "symbol": "QQQ",
       "ok": true,
-      "message": "QQQ: holdings rows=104 effective_date=2026-06-04"
+      "message": "QQQ: holdings rows=104 effective_date=2026-06-06"
     },
     {
       "provider": "tiingo_cache",

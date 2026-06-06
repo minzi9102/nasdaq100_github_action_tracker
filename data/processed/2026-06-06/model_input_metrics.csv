@@ -60,15 +60,15 @@ macro_daily_fred_rate_limited,0.0,2026-06-06,data_quality,fred,,False,1 means pr
 macro_daily_fred_symbol_coverage_ratio,1.0,2026-06-06,data_quality,fred,1.0,False,symbol coverage; ok=True; rows=365; message=UNRATE: 365 rows
 macro_daily_fred_weight_coverage_ratio,1.0,2026-06-06,data_quality,fred,1.0,False,weight coverage; rate_limited=False; fallback_provider=
 macro_daily_fred_rate_limited,0.0,2026-06-06,data_quality,fred,,False,1 means provider hit a limit; stopped_after_429=False
-qqq_holdings_invesco_symbol_coverage_ratio,1.0,2026-06-06,data_quality,invesco,1.0,False,symbol coverage; ok=True; rows=104; message=QQQ: holdings rows=104 effective_date=2026-06-04
+qqq_holdings_invesco_symbol_coverage_ratio,1.0,2026-06-06,data_quality,invesco,1.0,False,symbol coverage; ok=True; rows=104; message=QQQ: holdings rows=104 effective_date=2026-06-06
 qqq_holdings_invesco_weight_coverage_ratio,1.0,2026-06-06,data_quality,invesco,1.0,False,weight coverage; rate_limited=False; fallback_provider=
 qqq_holdings_invesco_rate_limited,0.0,2026-06-06,data_quality,invesco,,False,1 means provider hit a limit; stopped_after_429=False
 qqq_equity_holdings_invesco_filter_symbol_coverage_ratio,0.9423076923076923,2026-06-06,data_quality,invesco_filter,0.9423076923076923,False,symbol coverage; ok=True; rows=98; message=equity filter applied for breadth stock pool
-qqq_equity_holdings_invesco_filter_weight_coverage_ratio,0.9876091402011571,2026-06-06,data_quality,invesco_filter,0.9876091402011571,False,weight coverage; rate_limited=False; fallback_provider=
+qqq_equity_holdings_invesco_filter_weight_coverage_ratio,0.9876918382952856,2026-06-06,data_quality,invesco_filter,0.9876918382952856,False,weight coverage; rate_limited=False; fallback_provider=
 qqq_equity_holdings_invesco_filter_rate_limited,0.0,2026-06-06,data_quality,invesco_filter,,False,1 means provider hit a limit; stopped_after_429=False
 top_holdings_quotes_twelve_data_symbol_coverage_ratio,1.0,2026-06-06,data_quality,twelve_data,1.0,False,symbol coverage; ok=True; rows=20; message=20/20 top20 quotes available; 10/10 top10 quotes available
 top_holdings_quotes_twelve_data_weight_coverage_ratio,1.0,2026-06-06,data_quality,twelve_data,1.0,False,weight coverage; rate_limited=False; fallback_provider=quote_cache
 top_holdings_quotes_twelve_data_rate_limited,0.0,2026-06-06,data_quality,twelve_data,,False,1 means provider hit a limit; stopped_after_429=False
 breadth_metrics_mixed_history_cache+twelve_data_quote_symbol_coverage_ratio,0.9897959183673469,2026-06-06,data_quality,mixed_history_cache+twelve_data_quote,0.9897959183673469,False,symbol coverage; ok=True; rows=8; message=97/98 symbols with history coverage; 19/97 history symbols with Twelve Data quote overlay; coverage insufficient for top-weight symbols
-breadth_metrics_mixed_history_cache+twelve_data_quote_weight_coverage_ratio,0.9146145309607144,2026-06-06,data_quality,mixed_history_cache+twelve_data_quote,0.9146145309607144,False,weight coverage; rate_limited=False; fallback_provider=twelve_data_quote
+breadth_metrics_mixed_history_cache+twelve_data_quote_weight_coverage_ratio,0.9159165601145549,2026-06-06,data_quality,mixed_history_cache+twelve_data_quote,0.9159165601145549,False,weight coverage; rate_limited=False; fallback_provider=twelve_data_quote
 breadth_metrics_mixed_history_cache+twelve_data_quote_rate_limited,0.0,2026-06-06,data_quality,mixed_history_cache+twelve_data_quote,,False,1 means provider hit a limit; stopped_after_429=False
