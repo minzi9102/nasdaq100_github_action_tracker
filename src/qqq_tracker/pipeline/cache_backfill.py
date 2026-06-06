@@ -34,6 +34,7 @@ CACHE_QUALITY_COLUMNS = [
     "symbol",
     "weight",
     "provider",
+    "history_sources",
     "before_rows",
     "after_rows",
     "fetched_rows",
@@ -74,6 +75,40 @@ def prepare_backfill_holdings(holdings: pd.DataFrame) -> pd.DataFrame:
     return prepared.sort_values(["weight", "symbol"], ascending=[False, True]).reset_index(drop=True)
 
 
+def load_missing_top_weight_symbols(settings: Settings) -> list[str]:
+    quality = load_previous_csv(settings, "data_quality.csv", [])
+    if quality.empty or "missing_top_weight_symbols" not in quality.columns:
+        return []
+    breadth = quality[quality.get("dataset", pd.Series(dtype="object")).eq("breadth_metrics")]
+    if breadth.empty:
+        return []
+    value = breadth.iloc[-1].get("missing_top_weight_symbols")
+    if pd.isna(value):
+        return []
+    return [normalize_symbol(symbol) for symbol in str(value).split(",") if symbol.strip()]
+
+
+def prioritize_backfill_holdings(settings: Settings, holdings: pd.DataFrame) -> pd.DataFrame:
+    prepared = prepare_backfill_holdings(holdings)
+    if prepared.empty:
+        return prepared
+    missing_top = set(load_missing_top_weight_symbols(settings))
+    top20 = set(prepared.head(20)["symbol"])
+    top40 = set(prepared.head(40)["symbol"])
+
+    def priority(symbol: str) -> int:
+        if symbol in missing_top:
+            return 0
+        if symbol in top20:
+            return 1
+        if symbol in top40:
+            return 2
+        return 3
+
+    prepared["priority_group"] = prepared["symbol"].map(priority)
+    return prepared.sort_values(["priority_group", "weight", "symbol"], ascending=[True, False, True]).reset_index(drop=True)
+
+
 def cache_quality_row(
     run_date: str,
     symbol: str,
@@ -88,12 +123,14 @@ def cache_quality_row(
     stopped_after_429: bool = False,
     retry_after_seconds: float | None = None,
     message: str = "",
+    history_sources: str = "",
 ) -> Dict:
     return {
         "run_date": run_date,
         "symbol": normalize_symbol(symbol),
         "weight": weight,
         "provider": provider,
+        "history_sources": history_sources,
         "before_rows": int(before_rows),
         "after_rows": int(after_rows),
         "fetched_rows": int(fetched_rows),
@@ -114,7 +151,7 @@ def backfill_price_cache(
     max_calls: int | None = None,
     twelve_data: TwelveDataProvider | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
-    holdings = prepare_backfill_holdings(load_backfill_holdings(settings, run_date))
+    holdings = prioritize_backfill_holdings(settings, load_backfill_holdings(settings, run_date))
     max_calls_per_run = int(max_calls if max_calls is not None else settings.api_limits.get("tiingo", {}).get("max_calls_per_run", 40))
     raw_dir = settings.paths.raw_dir / run_date
 
@@ -154,7 +191,19 @@ def backfill_price_cache(
         before_rows = valid_history_row_count(cache_df)
 
         if before_rows >= MIN_HISTORY_ROWS:
-            quality_rows.append(cache_quality_row(run_date, symbol, weight, before_rows, before_rows, ok=True, message="cache complete"))
+            sources = ",".join(sorted(cache_df.get("source", pd.Series(dtype="object")).dropna().astype(str).unique()))
+            quality_rows.append(
+                cache_quality_row(
+                    run_date,
+                    symbol,
+                    weight,
+                    before_rows,
+                    before_rows,
+                    ok=True,
+                    history_sources=sources,
+                    message="cache complete",
+                )
+            )
             continue
 
         if stopped_after_429:
@@ -219,6 +268,7 @@ def backfill_price_cache(
             stopped_after_429=result_rate_limited,
             retry_after_seconds=retry_after,
             message=result.message,
+            history_sources=",".join(sorted(merged.get("source", pd.Series(dtype="object")).dropna().astype(str).unique())),
         )
         if (not result.ok or fetched_rows == 0 or after_rows < MIN_HISTORY_ROWS) and calls_attempted <= max_calls_per_run:
             fallback_candidates.append({"row": row, "symbol": symbol, "weight": weight, "before_rows": before_rows, "reason": "tiingo_failed_or_incomplete"})
@@ -326,6 +376,7 @@ def run_twelve_data_fallback(
                 row = candidate["row"]
                 row["provider"] = "tiingo+twelve_data" if row.get("was_requested") else "twelve_data"
                 row["after_rows"] = after_rows
+                row["history_sources"] = ",".join(sorted(merged.get("source", pd.Series(dtype="object")).dropna().astype(str).unique()))
                 row["fetched_rows"] = int(row.get("fetched_rows") or 0) + len(result.data)
                 row["is_complete"] = True
                 row["was_requested"] = True
@@ -359,6 +410,103 @@ def run_twelve_data_fallback(
         credits_used=len(attempted),
         message="; ".join(messages[:5]) + ("; ..." if len(messages) > 5 else ""),
     )
+
+
+def repair_price_cache_with_twelve_data(
+    settings: Settings,
+    twelve_data: TwelveDataProvider,
+    run_date: str,
+    max_calls: int | None = None,
+) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
+    holdings = prioritize_backfill_holdings(settings, load_backfill_holdings(settings, run_date))
+    cfg = settings.api_limits.get("twelve_data", {})
+    max_credits = int(max_calls if max_calls is not None else cfg.get("max_time_series_symbols_backfill", 80))
+    batch_size = int(cfg.get("time_series_batch_size", cfg.get("max_credits_per_minute", 8)))
+    sleep_seconds = float(cfg.get("sleep_seconds_between_batches", 70))
+    outputsize = int(cfg.get("outputsize", 260))
+    raw_dir = settings.paths.raw_dir / run_date
+    quality_rows: list[Dict] = []
+    attempted: list[str] = []
+    loaded: list[str] = []
+    messages: list[str] = []
+    rate_limited = False
+    retry_after_seconds = None
+
+    for _, holding in holdings.iterrows():
+        symbol = holding["symbol"]
+        weight = float(holding.get("weight", 0.0))
+        cache_df = load_tiingo_cache(settings, symbol)
+        before_rows = valid_history_row_count(cache_df)
+        if before_rows >= MIN_HISTORY_ROWS:
+            continue
+        if len(attempted) >= max_credits or rate_limited:
+            break
+        if attempted and batch_size > 0 and len(attempted) % batch_size == 0:
+            time.sleep(sleep_seconds)
+        attempted.append(symbol)
+        result = twelve_data.time_series(symbol, outputsize=outputsize, interval="1day")
+        limited, retry_after = result_rate_limit_meta(result)
+        merged = merge_price_history(cache_df, result.data if result.ok else pd.DataFrame(), symbol)
+        after_rows = valid_history_row_count(merged)
+        if after_rows > 0:
+            write_tiingo_cache(settings, symbol, merged)
+        if result.ok:
+            write_csv(result.data, raw_dir / f"twelve_data_{symbol}_history_repair.csv")
+        if after_rows >= MIN_HISTORY_ROWS:
+            loaded.append(symbol)
+        quality_rows.append(
+            cache_quality_row(
+                run_date,
+                symbol,
+                weight,
+                before_rows,
+                after_rows,
+                provider="twelve_data",
+                fetched_rows=len(result.data) if result.ok else 0,
+                was_requested=True,
+                ok=after_rows >= MIN_HISTORY_ROWS,
+                rate_limited=limited,
+                stopped_after_429=limited,
+                retry_after_seconds=retry_after,
+                history_sources=",".join(sorted(merged.get("source", pd.Series(dtype="object")).dropna().astype(str).unique())),
+                message=result.message,
+            )
+        )
+        messages.append(f"{symbol}: {result.message}")
+        if limited:
+            rate_limited = True
+            retry_after_seconds = retry_after
+
+    usage = pd.DataFrame(
+        [
+            api_usage_row(
+                settings,
+                run_date,
+                "twelve_data",
+                "time_series_history_repair",
+                len(attempted),
+                len(loaded),
+                symbols_requested=attempted,
+                symbols_loaded=loaded,
+                rate_limited=rate_limited,
+                stopped_after_429=rate_limited,
+                retry_after_seconds=retry_after_seconds,
+                credits_used=len(attempted),
+                message="; ".join(messages[:5]) + ("; ..." if len(messages) > 5 else ""),
+            )
+        ],
+        columns=API_USAGE_COLUMNS,
+    )
+    quality = pd.DataFrame(quality_rows, columns=CACHE_QUALITY_COLUMNS)
+    manifest = {
+        "ok": True,
+        "run_date": run_date,
+        "provider": "twelve_data",
+        "calls_attempted": len(attempted),
+        "symbols_loaded": loaded,
+        "rate_limited": rate_limited,
+    }
+    return quality, usage, manifest
 
 
 def run_backfill(as_of: str = "auto", max_calls: int | None = None) -> dict:
@@ -402,4 +550,27 @@ def run_backfill(as_of: str = "auto", max_calls: int | None = None) -> dict:
     manifest["api_usage"] = api_usage.to_dict(orient="records")
     write_json(manifest, settings.paths.state_dir / "latest_cache_backfill_manifest.json")
     print(json.dumps(manifest, ensure_ascii=False, indent=2))
+    return manifest
+
+
+def run_history_repair(as_of: str = "auto", max_calls: int | None = None) -> dict:
+    settings = Settings()
+    settings.ensure_dirs()
+    run_date = as_of_date(as_of)
+    timeout = settings.pipeline.get("api", {}).get("request_timeout_seconds", 30)
+    retry_count = settings.pipeline.get("api", {}).get("retry_count", 2)
+    cfg = provider_config(settings, "twelve_data")
+    twelve_data = TwelveDataProvider(
+        settings.get_secret(cfg.get("api_key_env", "TWELVE_DATA_API_KEY")),
+        cfg.get("base_url", "https://api.twelvedata.com"),
+        timeout=timeout,
+        retry_count=retry_count,
+    )
+    quality, usage, manifest = repair_price_cache_with_twelve_data(settings, twelve_data, run_date, max_calls=max_calls)
+    processed_dir = settings.paths.processed_dir / run_date
+    write_csv(quality, processed_dir / "twelve_data_cache_quality.csv")
+    write_csv(usage, processed_dir / "twelve_data_history_api_usage.csv")
+    write_csv(quality, settings.paths.reports_latest_dir / "twelve_data_cache_quality.csv")
+    write_csv(usage, settings.paths.reports_latest_dir / "twelve_data_history_api_usage.csv")
+    write_json(manifest, settings.paths.state_dir / "latest_twelve_data_history_repair_manifest.json")
     return manifest

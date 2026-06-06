@@ -2,7 +2,13 @@ from types import SimpleNamespace
 
 import pandas as pd
 
-from qqq_tracker.pipeline.cache_backfill import CACHE_QUALITY_COLUMNS, backfill_price_cache, prepare_backfill_holdings
+from qqq_tracker.pipeline.cache_backfill import (
+    CACHE_QUALITY_COLUMNS,
+    backfill_price_cache,
+    prepare_backfill_holdings,
+    prioritize_backfill_holdings,
+    repair_price_cache_with_twelve_data,
+)
 from qqq_tracker.pipeline.daily_run import API_USAGE_COLUMNS
 from qqq_tracker.providers.base import ProviderResult
 
@@ -88,6 +94,30 @@ def test_prepare_backfill_holdings_sorts_by_weight():
     prepared = prepare_backfill_holdings(holdings)
 
     assert prepared["symbol"].tolist() == ["AAPL", "MSFT"]
+
+
+def test_backfill_priority_starts_with_reported_high_weight_gaps(tmp_path):
+    holdings = pd.DataFrame(
+        [
+            {"symbol": "HIGH", "weight": 0.9},
+            {"symbol": "MID", "weight": 0.5},
+            {"symbol": "LOW", "weight": 0.1},
+        ]
+    )
+    settings = make_settings(tmp_path, holdings)
+    pd.DataFrame(
+        [
+            {
+                "dataset": "breadth_metrics",
+                "missing_top_weight_symbols": "MID",
+            }
+        ]
+    ).to_csv(settings.paths.reports_latest_dir / "data_quality.csv", index=False)
+
+    prioritized = prioritize_backfill_holdings(settings, holdings)
+
+    assert prioritized["symbol"].tolist() == ["MID", "HIGH", "LOW"]
+    assert prioritized["priority_group"].tolist() == [0, 1, 1]
 
 
 def test_complete_cache_is_not_requested(tmp_path):
@@ -279,3 +309,20 @@ def test_twelve_data_429_stops_fallback_only(tmp_path):
     assert bool(twelve_usage["rate_limited"]) is True
     assert twelve_usage["retry_after_seconds"] == 120
     assert bool(cache_quality[cache_quality["symbol"] == "A"].iloc[0]["rate_limited"]) is True
+
+
+def test_twelve_data_history_repair_only_requests_incomplete_cache(tmp_path, monkeypatch):
+    holdings = pd.DataFrame([{"symbol": "DONE", "weight": 0.8}, {"symbol": "GAP", "weight": 0.7}])
+    settings = make_settings(tmp_path, holdings)
+    settings.api_limits["twelve_data"]["time_series_batch_size"] = 100
+    price_frame("DONE", rows=220).to_csv(settings.paths.tiingo_price_cache_dir / "DONE.csv", index=False)
+    twelve = FakeTwelveData({"GAP": price_frame("GAP", rows=220)})
+    monkeypatch.setattr("qqq_tracker.pipeline.cache_backfill.time.sleep", lambda seconds: None)
+
+    quality, usage, manifest = repair_price_cache_with_twelve_data(settings, twelve, "2026-06-05", max_calls=10)
+
+    assert [call[0] for call in twelve.calls] == ["GAP"]
+    assert quality["symbol"].tolist() == ["GAP"]
+    assert quality.loc[0, "history_sources"] == "twelve_data"
+    assert usage.loc[0, "calls_success"] == 1
+    assert manifest["symbols_loaded"] == ["GAP"]

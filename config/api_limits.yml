@@ -47,6 +47,8 @@ twelve_data:
   quote_max_credits_per_run: 40
   quote_batch_size: 8
   quote_sleep_seconds_between_batches: 70
+  time_series_batch_size: 8
+  max_time_series_symbols_backfill: 80
   stop_after_limit_error: true
 
 invesco:
