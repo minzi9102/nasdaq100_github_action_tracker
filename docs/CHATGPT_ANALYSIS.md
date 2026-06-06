@@ -1,27 +1,36 @@
-# 如何让 ChatGPT 读取仓库并分析
+# 使用 ChatGPT 分析仓库数据
 
-每日 GitHub Actions 运行后，会把最新结果提交到：
+## 推荐读取顺序
+
+1. `state/latest_manifest.json`：确认报告日期、生成时间和文件清单。
+2. `reports/latest/data_quality.csv`：确认覆盖率、缓存新鲜度、缺失标的和实际 provider。
+3. `reports/latest/api_usage.csv`：确认限速、失败和生产启用状态。
+4. `reports/latest/model_input_metrics.csv`：读取统一客观指标。
+5. 按需读取价格、宏观、持仓、报价和市场广度明细。
+
+不要把缺失值、低覆盖率或过期数据解释为中性信号。
+
+## 建议长期保留
 
 ```text
-reports/latest/
+reports/latest/model_input_metrics.csv
+reports/latest/price_daily.csv
+reports/latest/price_metrics.csv
+reports/latest/macro_daily.csv
+reports/latest/macro_metrics.csv
+reports/latest/qqq_holdings.csv
+reports/latest/qqq_equity_holdings.csv
+reports/latest/top_holdings_quotes.csv
+reports/latest/quote_failures.csv
+reports/latest/breadth_metrics.csv
+reports/latest/data_quality.csv
+reports/latest/api_usage.csv
+reports/latest/manifest.json
 state/latest_manifest.json
 ```
 
-你可以对 ChatGPT 说：
+## 示例提示词
 
-> 请读取我的 GitHub 仓库链接，重点查看 `reports/latest/model_input_metrics.csv`、`reports/latest/price_daily.csv`、`reports/latest/price_metrics.csv`、`reports/latest/macro_daily.csv`、`reports/latest/macro_metrics.csv`、`reports/latest/qqq_holdings.csv`、`reports/latest/breadth_metrics.csv`、`reports/latest/data_quality.csv` 和 `reports/latest/manifest.json`，基于客观指标分析今天的纳斯达克100 / QQQ。
+> 请读取这个仓库的 `state/latest_manifest.json`、`reports/latest/data_quality.csv`、`reports/latest/api_usage.csv` 和 `reports/latest/model_input_metrics.csv`。先确认报告日期、覆盖率、缓存新鲜度、缺失值、实际 provider 和限速情况。只有数据质量足够时，再结合 `price_metrics.csv`、`macro_daily.csv`、`macro_metrics.csv`、`qqq_holdings.csv`、`top_holdings_quotes.csv` 与 `breadth_metrics.csv` 分析 Nasdaq-100 / QQQ。明确区分事实、计算结果和推断，不把仓库输出当成买卖建议。
 
-建议仓库中长期保留：
-
-- `reports/latest/model_input_metrics.csv`：给模型读取的客观指标表。
-- `reports/latest/price_daily.csv`：QQQ 价格日线。
-- `reports/latest/price_metrics.csv`：QQQ 价格、收益率、波动率、回撤和均线。
-- `reports/latest/macro_daily.csv`：FRED 宏观序列最新值。
-- `reports/latest/macro_metrics.csv`：宏观衍生指标。
-- `reports/latest/qqq_holdings.csv`：QQQ 持仓。
-- `reports/latest/breadth_metrics.csv`：基于持仓股票价格计算的市场广度。
-- `reports/latest/data_quality.csv`：数据源可用性、覆盖率和缺失项。
-- `reports/latest/nasdaq100_qqq_daily_tracker.xlsx`：完整报表。
-- `reports/latest/manifest.json` 和 `state/latest_manifest.json`：最新文件索引。
-
-如果 ChatGPT 无法直接访问 GitHub 链接，你也可以把这几个文件上传到对话里。
+如果无法直接访问 GitHub，可以上传上述文件。Excel 适合人工浏览，CSV 和 JSON 更适合模型精确读取。

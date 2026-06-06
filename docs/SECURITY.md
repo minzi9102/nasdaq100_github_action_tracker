@@ -1,27 +1,48 @@
 # 安全说明
 
-## 不要提交 API key
+## 密钥边界
 
-严禁把真实 API key 写入：
+真实 API key 只能放在：
 
-- 代码文件
-- README
-- GitHub issue
-- GitHub Actions 日志
-- Excel 报表
-- CSV 输出
-- 提交历史
+- 本地 `.env`
+- GitHub Repository Secrets
 
-本项目通过环境变量读取密钥。本地使用 `.env`，GitHub Actions 使用 Repository Secrets。
+禁止写入代码、README、Issue、PR、Actions 日志、CSV、Excel、截图和提交历史。
 
-## 已泄露密钥怎么办
+当前变量：
 
-如果密钥曾经被上传、截图、发送到聊天或提交到仓库，应立即去数据商后台撤销并重新生成。
+```text
+ALPHA_VANTAGE_API_KEY
+FRED_API_KEY
+TIINGO_API_TOKEN
+TWELVE_DATA_API_KEY
+FMP_API_KEY
+```
 
-## GitHub Secrets
+`FMP_API_KEY` 仅供独立能力探测使用。Invesco 持仓接口无需密钥。
 
-GitHub Secrets 会在 Actions workflow 中通过 `${{ secrets.NAME }}` 引用。只有明确在 workflow 中引用的 secret 才会暴露给该 workflow。
+## 日志与异常
 
-## 日志注意事项
+provider 应通过 `BaseProvider.request_json()` 请求。该实现会：
 
-不要 `print(os.environ)`，不要打印完整请求 URL，因为有些接口把 API key 放在 query string 里。
+- 对重试进行统一处理。
+- 将 HTTP 429 转换为 `RateLimitError`。
+- 对 URL query 中的 `apikey`、`api_key`、`token` 和 `access_token` 脱敏。
+- 对已知密钥值进行替换。
+
+仍然不要打印 `os.environ`、`.env` 内容、完整请求参数或原始认证 header。
+
+## GitHub Actions
+
+Secrets 仅在需要的 step 中通过 `${{ secrets.NAME }}` 注入。不要将 secret 提升到整个 workflow 的全局 `env`，也不要把包含认证信息的原始响应上传为 artifact。
+
+生产和辅助工作流拥有 `contents: write`，会向仓库提交生成数据。启用第三方 Action 前应检查来源和版本，并优先固定到可信版本。
+
+## 泄露处置
+
+如果密钥曾被提交、上传、截图或发送到聊天：
+
+1. 立即在数据商后台撤销。
+2. 创建新密钥并更新 GitHub Secret 和本地 `.env`。
+3. 检查 Actions 日志、artifact、Issue、PR 和 Git 历史。
+4. 必要时清理历史，但不要把“删除文件”误认为旧提交中的密钥已经消失。
