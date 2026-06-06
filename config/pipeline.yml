@@ -5,7 +5,7 @@ run:
   fetch_fred_macro: true
   fetch_qqq_holdings: true
   fetch_breadth_metrics: true
-  fetch_fmp_quotes: true
+  fetch_fmp_quotes: false
   fetch_fmp_key_metrics: false
   write_excel: true
   write_csv: true

@@ -21,7 +21,7 @@ from qqq_tracker.pipeline.daily_run import (
     merge_price_history,
     normalize_price_daily,
     quality_row,
-    run_twelve_data_quote_fallback,
+    fetch_twelve_data_quotes,
     summarize_price,
     top_holdings_quote_quality,
 )
@@ -341,65 +341,63 @@ def test_top_holdings_quotes_uses_batch_quote_map():
     assert bool(quotes.loc[quotes["symbol"] == "MSFT", "is_missing"].iloc[0]) is True
 
 
-def test_twelve_data_quote_fallback_not_called_when_top20_covered(tmp_path):
-    settings = SimpleNamespace(api_limits={"twelve_data": {"quote_max_credits_per_run": 20}})
-    holdings = pd.DataFrame([{"symbol": "AAPL", "weight": 0.7}, {"symbol": "MSFT", "weight": 0.3}])
-    quote_map = {
-        "AAPL": {"symbol": "AAPL", "price": 200.0, "source": "fmp"},
-        "MSFT": {"symbol": "MSFT", "price": 500.0, "source": "fmp"},
-    }
-    twelve = FakeTwelveDataQuote({"MSFT": {"price": 501.0}})
-
-    updated, usage = run_twelve_data_quote_fallback(settings, twelve, "2026-06-05", holdings, quote_map, raw_dir=tmp_path)
-
-    assert twelve.calls == []
-    assert updated == quote_map
-    assert usage["calls_attempted"] == 0
-    assert usage["message"] == "no missing top holdings quote candidates"
+def quote_settings(tmp_path, max_credits=40):
+    cache_dir = tmp_path / "cache"
+    cache_dir.mkdir(exist_ok=True)
+    return SimpleNamespace(
+        api_limits={
+            "twelve_data": {
+                "quote_max_credits_per_run": max_credits,
+                "quote_batch_size": 100,
+                "quote_sleep_seconds_between_batches": 0,
+            }
+        },
+        paths=SimpleNamespace(cache_dir=cache_dir, root=tmp_path),
+    )
 
 
-def test_twelve_data_quote_fallback_only_requests_missing_top20(tmp_path):
-    settings = SimpleNamespace(api_limits={"twelve_data": {"quote_max_credits_per_run": 20, "quote_batch_size": 100}})
+def test_twelve_data_quotes_requests_top_holdings_and_merges_normalized_symbols(tmp_path):
+    settings = quote_settings(tmp_path)
     holdings = pd.DataFrame([{"symbol": "AAPL", "weight": 0.7}, {"symbol": "MSFT", "weight": 0.3}, {"symbol": "LOW", "weight": 0.01}])
-    quote_map = {"AAPL": {"symbol": "AAPL", "price": 200.0, "source": "fmp"}}
-    twelve = FakeTwelveDataQuote({"MSFT": {"price": 500.0, "change": 1.0}, "LOW": {"price": 10.0}})
+    twelve = FakeTwelveDataQuote({"AAPL": {"price": 200.0}, "MSFT": {"price": 500.0, "change": 1.0}, "LOW": {"price": 10.0}})
 
-    updated, usage = run_twelve_data_quote_fallback(settings, twelve, "2026-06-05", holdings, quote_map, raw_dir=tmp_path, limit=2)
+    updated, diagnostics, usage = fetch_twelve_data_quotes(settings, twelve, "2026-06-05", holdings, raw_dir=tmp_path, limit=2)
     quotes = build_top_holdings_quotes(holdings, updated, limit=2)
 
-    assert twelve.calls == ["MSFT"]
-    assert usage["calls_success"] == 1
+    assert twelve.calls == ["AAPL", "MSFT"]
+    assert usage["calls_success"] == 2
     assert quotes.loc[quotes["symbol"] == "MSFT", "provider"].iloc[0] == "twelve_data"
     assert bool(quotes.loc[quotes["symbol"] == "MSFT", "is_missing"].iloc[0]) is False
+    assert diagnostics["final_missing"].tolist() == [False, False]
 
 
-def test_twelve_data_quote_fallback_caps_fmp_full_failure_to_top20(tmp_path, monkeypatch):
-    settings = SimpleNamespace(api_limits={"twelve_data": {"quote_max_credits_per_run": 20, "quote_batch_size": 100}})
+def test_twelve_data_quotes_caps_requests_to_top20(tmp_path, monkeypatch):
+    settings = quote_settings(tmp_path, max_credits=20)
     holdings = pd.DataFrame([{"symbol": f"S{i:02d}", "weight": 100 - i} for i in range(25)])
     twelve = FakeTwelveDataQuote({f"S{i:02d}": {"price": float(i)} for i in range(25)})
     monkeypatch.setattr("time.sleep", lambda seconds: None)
 
-    _, usage = run_twelve_data_quote_fallback(settings, twelve, "2026-06-05", holdings, {}, raw_dir=tmp_path)
+    _, _, usage = fetch_twelve_data_quotes(settings, twelve, "2026-06-05", holdings, raw_dir=tmp_path)
 
     assert len(twelve.calls) == 20
     assert twelve.calls == [f"S{i:02d}" for i in range(20)]
     assert usage["credits_used"] == 20
 
 
-def test_twelve_data_quote_429_stops_without_overwriting_fmp(tmp_path):
-    settings = SimpleNamespace(api_limits={"twelve_data": {"quote_max_credits_per_run": 20, "quote_batch_size": 100}})
+def test_twelve_data_quote_429_stops_and_records_diagnostics(tmp_path):
+    settings = quote_settings(tmp_path)
     holdings = pd.DataFrame([{"symbol": "AAPL", "weight": 0.9}, {"symbol": "MSFT", "weight": 0.8}, {"symbol": "NVDA", "weight": 0.7}])
-    quote_map = {"AAPL": {"symbol": "AAPL", "price": 200.0, "source": "fmp"}}
-    twelve = FakeTwelveDataQuote({"MSFT": "429", "NVDA": {"price": 900.0}})
+    twelve = FakeTwelveDataQuote({"AAPL": "429", "MSFT": {"price": 500.0}, "NVDA": {"price": 900.0}})
 
-    updated, usage = run_twelve_data_quote_fallback(settings, twelve, "2026-06-05", holdings, quote_map, raw_dir=tmp_path)
+    updated, diagnostics, usage = fetch_twelve_data_quotes(settings, twelve, "2026-06-05", holdings, raw_dir=tmp_path)
 
-    assert twelve.calls == ["MSFT"]
-    assert updated["AAPL"]["source"] == "fmp"
+    assert twelve.calls == ["AAPL"]
+    assert "AAPL" not in updated
     assert "NVDA" not in updated
     assert bool(usage["rate_limited"]) is True
     assert bool(usage["stopped_after_429"]) is True
     assert usage["retry_after_seconds"] == 120
+    assert bool(diagnostics.loc[diagnostics["symbol"] == "AAPL", "final_missing"].iloc[0]) is True
 
 
 def test_top_holdings_quote_quality_records_coverage():

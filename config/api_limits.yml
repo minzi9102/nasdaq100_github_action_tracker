@@ -13,7 +13,9 @@ fred:
   cache_ttl_hours: 24
 
 fmp:
-  role: latest_quote_and_light_fundamentals
+  role: diagnostic_only
+  production_enabled: false
+  diagnostic_only: true
   daily_requests: 250
   reserve_daily: 50
   max_calls_per_run: 30
@@ -34,7 +36,7 @@ tiingo:
   respect_retry_after: true
 
 twelve_data:
-  role: history_cache_fallback
+  role: primary_quote_and_history_fallback
   minute_credits: 8
   daily_credits: 800
   reserve_daily_credits: 150
@@ -42,7 +44,7 @@ twelve_data:
   max_credits_per_run: 160
   batch_size: 8
   sleep_seconds_between_batches: 70
-  quote_max_credits_per_run: 20
+  quote_max_credits_per_run: 40
   quote_batch_size: 8
   quote_sleep_seconds_between_batches: 70
   stop_after_limit_error: true

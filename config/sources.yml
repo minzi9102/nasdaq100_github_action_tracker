@@ -17,10 +17,12 @@ providers:
 
   fmp:
     enabled: true
+    production_enabled: false
+    diagnostic_only: true
     class_path: qqq_tracker.providers.fmp.FMPProvider
     api_key_env: FMP_API_KEY
     base_url: https://financialmodelingprep.com/stable
-    rate_limit_note: 用于报价、关键指标、基本面。不同套餐字段和调用限制可能不同。
+    rate_limit_note: 仅用于独立能力探测，不参与生产报价或市场广度。
 
   tiingo:
     enabled: true
@@ -34,7 +36,7 @@ providers:
     class_path: qqq_tracker.providers.twelve_data.TwelveDataProvider
     api_key_env: TWELVE_DATA_API_KEY
     base_url: https://api.twelvedata.com
-    rate_limit_note: 用于 Tiingo 历史缓存失败或限速后的低频兜底；按 credits/minute 节流。
+    rate_limit_note: 用于生产报价，并作为 Tiingo 历史缓存失败或限速后的低频兜底；按 credits/minute 节流。
 
   invesco:
     enabled: true

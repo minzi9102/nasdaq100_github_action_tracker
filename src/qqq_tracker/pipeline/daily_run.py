@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import shutil
-from datetime import date, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Dict, List
 
@@ -62,6 +62,32 @@ TOP_HOLDINGS_QUOTES_COLUMNS = [
     "provider",
     "quote_time",
     "is_missing",
+]
+QUOTE_FAILURE_COLUMNS = [
+    "symbol",
+    "company_name",
+    "weight",
+    "provider",
+    "endpoint",
+    "attempted_symbol",
+    "http_status",
+    "api_status",
+    "raw_error",
+    "parse_error",
+    "was_api_success",
+    "was_parse_success",
+    "was_merge_success",
+    "final_missing",
+]
+QUOTE_CACHE_COLUMNS = [
+    "symbol",
+    "price",
+    "change",
+    "changes_percentage",
+    "volume",
+    "datetime",
+    "provider",
+    "fetched_at",
 ]
 DATA_QUALITY_COLUMNS = [
     "dataset",
@@ -639,6 +665,56 @@ def quote_map_from_batch(df: pd.DataFrame) -> dict[str, dict]:
     return {row["symbol"]: row.to_dict() for _, row in quote_df.iterrows()}
 
 
+def quote_cache_path(settings: Settings) -> Path:
+    return settings.paths.cache_dir / "quotes" / "twelve_data" / "latest_quotes.csv"
+
+
+def load_quote_cache(settings: Settings) -> dict[str, dict]:
+    path = quote_cache_path(settings)
+    if not path.exists():
+        return {}
+    try:
+        cached = pd.read_csv(path)
+    except Exception:  # noqa: BLE001
+        return {}
+    if cached.empty or "symbol" not in cached.columns:
+        return {}
+    normalized = pd.DataFrame(
+        {
+            "symbol": cached["symbol"].map(normalize_symbol),
+            "price": cached.get("price"),
+            "change": cached.get("change"),
+            "changesPercentage": cached.get("changes_percentage"),
+            "volume": cached.get("volume"),
+            "date": cached.get("datetime"),
+            "source": cached.get("provider", "twelve_data_cache"),
+            "fetched_at": cached.get("fetched_at"),
+        }
+    )
+    return quote_map_from_batch(normalized.dropna(subset=["price"]))
+
+
+def write_quote_cache(settings: Settings, quote_map: dict[str, dict], fetched_at: str) -> None:
+    rows = []
+    for symbol, quote in sorted(quote_map.items()):
+        price = pd.to_numeric(pd.Series([quote.get("price")]), errors="coerce").iloc[0]
+        if pd.isna(price):
+            continue
+        rows.append(
+            {
+                "symbol": normalize_symbol(symbol),
+                "price": price,
+                "change": first_present(quote, ["change"]),
+                "changes_percentage": first_present(quote, ["changesPercentage", "changes_percentage"]),
+                "volume": first_present(quote, ["volume"]),
+                "datetime": first_present(quote, ["date", "datetime", "timestamp"]),
+                "provider": quote.get("source", "twelve_data"),
+                "fetched_at": quote.get("fetched_at", fetched_at),
+            }
+        )
+    write_csv(pd.DataFrame(rows, columns=QUOTE_CACHE_COLUMNS), quote_cache_path(settings))
+
+
 def first_present(row: dict, names: list[str]) -> object:
     for name in names:
         value = row.get(name)
@@ -671,7 +747,7 @@ def build_top_holdings_quotes(equity_holdings: pd.DataFrame, quote_map: dict[str
                 "market_cap": first_present(quote, ["marketCap", "market_cap"]),
                 "pe": first_present(quote, ["pe", "peRatio"]),
                 "eps": first_present(quote, ["eps"]),
-                "provider": quote.get("source", "fmp") if not is_missing else "",
+                "provider": quote.get("source", "twelve_data") if not is_missing else "",
                 "quote_time": first_present(quote, ["timestamp", "earningsAnnouncement", "date"]),
                 "is_missing": is_missing,
             }
@@ -692,7 +768,7 @@ def top_holding_symbols(equity_holdings: pd.DataFrame, limit: int = 20) -> list[
 def top_holdings_quote_quality(
     equity_holdings: pd.DataFrame,
     quotes: pd.DataFrame,
-    provider: str = "fmp+twelve_data",
+    provider: str = "twelve_data",
     rate_limited: bool = False,
     stopped_after_429: bool = False,
 ) -> Dict:
@@ -718,85 +794,165 @@ def top_holdings_quote_quality(
         missing_top_weight_symbols=missing10,
         rate_limited=rate_limited,
         stopped_after_429=stopped_after_429,
-        fallback_provider="twelve_data",
+        fallback_provider="quote_cache",
         message=f"{requested - len(missing20)}/{requested} top20 quotes available; {len(top10) - len(missing10)}/{len(top10)} top10 quotes available",
     )
 
 
-def run_twelve_data_quote_fallback(
+def fetch_twelve_data_quotes(
     settings: Settings,
     twelve_data: TwelveDataProvider,
     run_date: str,
     equity_holdings: pd.DataFrame,
-    quote_map: dict[str, dict],
     raw_dir: Path | None = None,
     limit: int = 20,
-) -> tuple[dict[str, dict], Dict]:
-    quote_map = dict(quote_map)
+) -> tuple[dict[str, dict], pd.DataFrame, Dict]:
+    quote_map: dict[str, dict] = {}
     top_symbols = top_holding_symbols(equity_holdings, limit)
-    missing_symbols = [symbol for symbol in top_symbols if symbol not in quote_map]
+    holdings_by_symbol = (
+        equity_holdings.assign(symbol=equity_holdings["symbol"].map(normalize_symbol))
+        .drop_duplicates("symbol")
+        .set_index("symbol")
+        .to_dict(orient="index")
+        if not equity_holdings.empty
+        else {}
+    )
     cfg = settings.api_limits.get("twelve_data", {})
-    max_credits = int(cfg.get("quote_max_credits_per_run", 20))
+    max_credits = int(cfg.get("quote_max_credits_per_run", 40))
     batch_size = int(cfg.get("quote_batch_size", cfg.get("max_credits_per_minute", 8)))
     sleep_seconds = float(cfg.get("quote_sleep_seconds_between_batches", cfg.get("sleep_seconds_between_batches", 70)))
     attempted: list[str] = []
     loaded: list[str] = []
     messages: list[str] = []
+    attempts: dict[str, dict] = {}
+    failed_raw: dict[str, object] = {}
     rate_limited = False
     retry_after_seconds = None
 
-    if not missing_symbols:
-        return quote_map, api_usage_row(settings, run_date, "twelve_data", "quote_fallback", 0, 0, message="no missing top holdings quote candidates")
     if not getattr(twelve_data, "available", False):
-        return quote_map, api_usage_row(
+        cached = load_quote_cache(settings)
+        quote_map.update({symbol: cached[symbol] for symbol in top_symbols if symbol in cached})
+        diagnostics = build_quote_diagnostics(top_symbols, holdings_by_symbol, attempts, quote_map)
+        return (
+            quote_map,
+            diagnostics,
+            api_usage_row(
+                settings,
+                run_date,
+                "twelve_data",
+                "quote",
+                0,
+                0,
+                symbols_requested=top_symbols,
+                symbols_loaded=list(quote_map),
+                message="missing Twelve Data API key; used quote cache",
+            ),
+        )
+
+    for round_number in (1, 2):
+        candidates = [symbol for symbol in top_symbols if symbol not in quote_map]
+        if not candidates or rate_limited:
+            break
+        for symbol in candidates:
+            if len(attempted) >= max_credits or rate_limited:
+                break
+            if attempted and batch_size > 0 and len(attempted) % batch_size == 0:
+                import time
+
+                time.sleep(sleep_seconds)
+            attempted.append(symbol)
+            result = twelve_data.quote(symbol)
+            result_rate_limited, retry_after = result_rate_limit_meta(result)
+            api_success = bool(result.ok and not result.data.empty)
+            parsed = quote_map_from_batch(result.data) if api_success else {}
+            parsed_quote = parsed.get(normalize_symbol(symbol))
+            price = pd.to_numeric(pd.Series([(parsed_quote or {}).get("price")]), errors="coerce").iloc[0]
+            parse_success = parsed_quote is not None and not pd.isna(price)
+            attempts[symbol] = {
+                "attempted_symbol": symbol,
+                "api_status": "success" if api_success else "error",
+                "raw_error": "" if api_success else result.message,
+                "parse_error": "" if parse_success else ("missing normalized symbol or numeric price" if api_success else ""),
+                "was_api_success": api_success,
+                "was_parse_success": parse_success,
+            }
+            if parse_success:
+                quote_map[symbol] = parsed_quote
+                if symbol not in loaded:
+                    loaded.append(symbol)
+                messages.append(f"{symbol}: quote loaded on round {round_number}")
+            else:
+                failed_raw[symbol] = result.raw
+                messages.append(f"{symbol}: {result.message or 'parse failed'}")
+            if result_rate_limited:
+                rate_limited = True
+                retry_after_seconds = retry_after
+
+    cached = load_quote_cache(settings)
+    for symbol in top_symbols:
+        if symbol not in quote_map and symbol in cached:
+            quote_map[symbol] = cached[symbol]
+    write_quote_cache(settings, quote_map, datetime.now(UTC).isoformat(timespec="seconds"))
+
+    final_missing = [symbol for symbol in top_symbols if symbol not in quote_map]
+    debug_dir = settings.paths.root / "data" / "debug" / "twelve_data_quotes" / run_date
+    for symbol in final_missing:
+        raw = failed_raw.get(symbol)
+        if isinstance(raw, dict):
+            write_json(raw, debug_dir / f"{symbol}.json")
+
+    diagnostics = build_quote_diagnostics(top_symbols, holdings_by_symbol, attempts, quote_map)
+    return (
+        quote_map,
+        diagnostics,
+        api_usage_row(
             settings,
             run_date,
             "twelve_data",
-            "quote_fallback",
-            0,
-            0,
-            symbols_requested=missing_symbols,
-            message="missing Twelve Data API key; quote fallback not called",
-        )
-
-    for symbol in missing_symbols:
-        if len(attempted) >= max_credits or rate_limited:
-            break
-        if attempted and batch_size > 0 and len(attempted) % batch_size == 0:
-            import time
-
-            time.sleep(sleep_seconds)
-        attempted.append(symbol)
-        result = twelve_data.quote(symbol)
-        result_rate_limited, retry_after = result_rate_limit_meta(result)
-        if result.ok and not result.data.empty:
-            df = result.data.copy()
-            if raw_dir is not None:
-                write_csv(df, raw_dir / f"twelve_data_{symbol}_quote_fallback.csv")
-            quote_map.update(quote_map_from_batch(df))
-            loaded.append(symbol)
-            messages.append(f"{symbol}: quote loaded")
-        else:
-            messages.append(f"{symbol}: {result.message}")
-        if result_rate_limited:
-            rate_limited = True
-            retry_after_seconds = retry_after
-
-    return quote_map, api_usage_row(
-        settings,
-        run_date,
-        "twelve_data",
-        "quote_fallback",
-        len(attempted),
-        len(loaded),
-        symbols_requested=attempted,
-        symbols_loaded=loaded,
-        rate_limited=rate_limited,
-        stopped_after_429=rate_limited,
-        retry_after_seconds=retry_after_seconds,
-        credits_used=len(attempted),
-        message="; ".join(messages[:5]) + ("; ..." if len(messages) > 5 else ""),
+            "quote",
+            len(attempted),
+            len(loaded),
+            symbols_requested=attempted,
+            symbols_loaded=loaded,
+            rate_limited=rate_limited,
+            stopped_after_429=rate_limited,
+            retry_after_seconds=retry_after_seconds,
+            credits_used=len(attempted),
+            message="; ".join(messages[:5]) + ("; ..." if len(messages) > 5 else ""),
+        ),
     )
+
+
+def build_quote_diagnostics(
+    symbols: list[str],
+    holdings_by_symbol: dict[str, dict],
+    attempts: dict[str, dict],
+    quote_map: dict[str, dict],
+) -> pd.DataFrame:
+    rows = []
+    for symbol in symbols:
+        attempt = attempts.get(symbol, {})
+        merged = symbol in quote_map
+        holding = holdings_by_symbol.get(symbol, {})
+        rows.append(
+            {
+                "symbol": symbol,
+                "company_name": holding.get("company_name"),
+                "weight": holding.get("weight"),
+                "provider": "twelve_data",
+                "endpoint": "quote",
+                "attempted_symbol": attempt.get("attempted_symbol", symbol),
+                "http_status": attempt.get("http_status"),
+                "api_status": attempt.get("api_status", "cache" if merged else "not_attempted"),
+                "raw_error": attempt.get("raw_error", ""),
+                "parse_error": attempt.get("parse_error", ""),
+                "was_api_success": bool(attempt.get("was_api_success", False)),
+                "was_parse_success": bool(attempt.get("was_parse_success", False)),
+                "was_merge_success": merged,
+                "final_missing": not merged,
+            }
+        )
+    return pd.DataFrame(rows, columns=QUOTE_FAILURE_COLUMNS)
 
 
 def valid_history_row_count(df: pd.DataFrame) -> int:
@@ -822,7 +978,11 @@ def compute_missing_top_weight_symbols(holdings: pd.DataFrame, missing_symbols: 
     return ranked["symbol"].head(TOP_WEIGHT_MISSING_LIMIT).tolist()
 
 
-def build_breadth_metrics(price_frames: dict[str, pd.DataFrame], quote_map: dict[str, dict] | None = None) -> pd.DataFrame:
+def build_breadth_metrics(
+    price_frames: dict[str, pd.DataFrame],
+    quote_map: dict[str, dict] | None = None,
+    source_name: str = "tiingo_cache_only",
+) -> pd.DataFrame:
     quote_map = quote_map or {}
     records: list[dict] = []
     latest_dates: list[str] = []
@@ -864,7 +1024,6 @@ def build_breadth_metrics(price_frames: dict[str, pd.DataFrame], quote_map: dict
         return (sum(1 for x in valid if x), len(valid))
 
     rows: list[list[object]] = []
-    source_name = "fmp+tiingo_cache"
     for metric, field in [
         ("advancing_count", "up"),
         ("declining_count", "down"),
@@ -1013,7 +1172,7 @@ def fetch_breadth(
         quality_rows.append(
             quality_row(
                 "breadth_metrics",
-                "fmp+tiingo_cache",
+                "insufficient_price_coverage",
                 False,
                 0,
                 symbol_coverage_ratio=0.0,
@@ -1048,18 +1207,27 @@ def fetch_breadth(
             "message": f"{len(fetched_symbols)}/{len(symbols)} symbols loaded from local cache/raw seed",
         }
     )
-    quote_fallback_provider = "fmp" if quote_map else "tiingo_history_only"
+    history_sources = {
+        str(source)
+        for frame in history_frames.values()
+        if "source" in frame.columns
+        for source in frame["source"].dropna().astype(str).unique()
+    }
+    quote_provider = "twelve_data_quote" if quote_map else ""
+    if history_sources == {"tiingo"}:
+        source_name = "tiingo_cache+twelve_data_quote" if quote_provider else "tiingo_cache_only"
+    elif history_sources:
+        source_name = "mixed_history_cache+twelve_data_quote" if quote_provider else "mixed_history_cache"
+    else:
+        source_name = "insufficient_price_coverage"
 
     usable_frames: dict[str, pd.DataFrame] = {}
     missing_symbols = list(dict.fromkeys(history_meta["missing_symbols"]))
     for symbol in fetched_symbols:
         frame = history_frames[symbol]
-        quote = quote_map.get(symbol)
-        if quote is None and quote_map:
-            quote_fallback_provider = "mixed_fmp+tiingo_history_only"
         usable_frames[symbol] = frame
 
-    metrics = build_breadth_metrics(usable_frames, quote_map)
+    metrics = build_breadth_metrics(usable_frames, quote_map, source_name=source_name)
     total_symbols = len(symbols)
     used_symbols = sorted(usable_frames.keys())
     used_weight = holdings[holdings["symbol"].isin(used_symbols)]["weight"].sum()
@@ -1076,7 +1244,7 @@ def fetch_breadth(
     quality_rows.append(
         quality_row(
             "breadth_metrics",
-            "fmp+tiingo_cache",
+            source_name,
             quality_ok,
             len(metrics),
             symbol_coverage_ratio=symbol_coverage_ratio,
@@ -1088,7 +1256,7 @@ def fetch_breadth(
             remaining_symbols_skipped=int(history_meta["remaining_symbols_skipped"]),
             cache_rows_used=int(history_meta["cache_rows_used"]),
             live_rows_fetched=int(history_meta["live_rows_fetched"]),
-            fallback_provider=quote_fallback_provider,
+            fallback_provider=quote_provider,
             message=quality_message,
         )
     )
@@ -1313,91 +1481,29 @@ def run_daily(as_of: str = "auto") -> Dict:
             )
         )
 
-    fmp: FMPProvider = providers["fmp"]  # type: ignore[assignment]
     twelve_data: TwelveDataProvider = providers["twelve_data"]  # type: ignore[assignment]
-    fmp_summary = pd.DataFrame()
-    quote_map: dict[str, dict] = {}
+    fmp_summary = pd.DataFrame(columns=["symbol", "ok", "rows", "message"])
     top_holdings_quotes = pd.DataFrame(columns=TOP_HOLDINGS_QUOTES_COLUMNS)
-    fmp_requested_symbols = qqq_equity_holdings["symbol"].dropna().astype(str).map(normalize_symbol).unique().tolist() if not qqq_equity_holdings.empty else []
-    fmp_loaded_symbols: list[str] = []
-    key_metric_frames = []
-    if settings.pipeline.get("run", {}).get("fetch_fmp_quotes", True):
-        batch_size = int(settings.api_limits.get("fmp", {}).get("batch_size", 25))
-        result = fmp.batch_quote(fmp_requested_symbols, chunk_size=batch_size, fallback_to_single=False)
-        logs.append(
-            {
-                "provider": result.name,
-                "method": "batch_quote",
-                "symbol": symbol_list_value(fmp_requested_symbols),
-                "ok": result.ok,
-                "message": result.message,
-            }
+    api_usage_rows.append(
+        api_usage_row(
+            settings,
+            run_date,
+            "fmp",
+            "diagnostic_only",
+            0,
+            0,
+            message="FMP production quote collection disabled; use provider capability probe",
         )
-        rate_limited, retry_after = result_rate_limit_meta(result)
-        raw_meta = result.raw if isinstance(result.raw, dict) else {}
-        fmp_calls_attempted = int(raw_meta.get("calls_attempted", 0))
-        fmp_calls_success = int(raw_meta.get("calls_success", 0))
-        if result.ok and not result.data.empty:
-            write_csv(result.data, raw_dir / "fmp_equity_batch_quote.csv")
-            quote_map = quote_map_from_batch(result.data)
-            fmp_loaded_symbols = sorted(quote_map.keys())
-        api_usage_rows.append(
-            api_usage_row(
-                settings,
-                run_date,
-                result.name,
-                "batch_quote",
-                fmp_calls_attempted,
-                fmp_calls_success,
-                symbols_requested=fmp_requested_symbols,
-                symbols_loaded=fmp_loaded_symbols,
-                rate_limited=rate_limited,
-                stopped_after_429=rate_limited,
-                retry_after_seconds=retry_after,
-                message=result.message,
-            )
-        )
-        fmp_rows = [
-            {
-                "symbol": symbol,
-                "ok": symbol in quote_map,
-                "rows": 1 if symbol in quote_map else 0,
-                "message": "batch_quote loaded" if symbol in quote_map else result.message,
-            }
-            for symbol in fmp_requested_symbols
-        ]
-        fmp_summary = pd.DataFrame(fmp_rows)
-        requested = len(fmp_requested_symbols)
-        missing = [r["symbol"] for r in fmp_rows if not r["ok"]]
-        quality_rows.append(
-            quality_row(
-                "fmp_summary",
-                "fmp",
-                any(r["ok"] for r in fmp_rows),
-                len(fmp_rows),
-                symbol_coverage_ratio=(requested - len(missing)) / requested if requested else 0.0,
-                weight_coverage_ratio=(requested - len(missing)) / requested if requested else 0.0,
-                missing_symbols=missing,
-                rate_limited=rate_limited,
-                stopped_after_429=rate_limited,
-                message=f"{requested - len(missing)}/{requested} quotes fetched",
-            )
-        )
-    else:
-        api_usage_rows.append(
-            api_usage_row(settings, run_date, "fmp", "batch_quote", 0, 0, symbols_requested=fmp_requested_symbols, message="fetch_fmp_quotes disabled")
-        )
+    )
 
-    if settings.pipeline.get("run", {}).get("fetch_fmp_key_metrics", True):
-        for symbol in settings.symbols.get("fundamental_symbols", [])[:5]:
-            result = fmp.key_metrics(symbol, limit=5)
-            logs.append({"provider": result.name, "method": "key_metrics", "symbol": symbol, "ok": result.ok, "message": result.message})
-            if result.ok:
-                df = result.data
-                write_csv(df, raw_dir / f"fmp_{symbol}_key_metrics.csv")
-                key_metric_frames.append(df)
-
-    quote_map, twelve_quote_usage = run_twelve_data_quote_fallback(settings, twelve_data, run_date, qqq_equity_holdings, quote_map, raw_dir=raw_dir, limit=20)
+    quote_map, quote_failures, twelve_quote_usage = fetch_twelve_data_quotes(
+        settings,
+        twelve_data,
+        run_date,
+        qqq_equity_holdings,
+        raw_dir=raw_dir,
+        limit=20,
+    )
     api_usage_rows.append(twelve_quote_usage)
     top_holdings_quotes = build_top_holdings_quotes(qqq_equity_holdings, quote_map, limit=20)
     quality_rows.append(
@@ -1409,6 +1515,7 @@ def run_daily(as_of: str = "auto") -> Dict:
         )
     )
     write_csv(top_holdings_quotes, processed_dir / "top_holdings_quotes.csv")
+    write_csv(quote_failures, processed_dir / "quote_failures.csv")
 
     breadth_metrics = pd.DataFrame(columns=BREADTH_METRICS_COLUMNS)
     if settings.pipeline.get("run", {}).get("fetch_breadth_metrics", True):
@@ -1417,9 +1524,6 @@ def run_daily(as_of: str = "auto") -> Dict:
     write_csv(breadth_metrics, processed_dir / "breadth_metrics.csv")
 
     write_csv(fmp_summary, processed_dir / "fmp_summary.csv")
-    key_metrics = pd.concat(key_metric_frames, ignore_index=True) if key_metric_frames else pd.DataFrame()
-    if not key_metrics.empty:
-        write_csv(key_metrics, processed_dir / "fmp_key_metrics.csv")
 
     logs_df = pd.DataFrame(logs)
     data_quality = pd.DataFrame(quality_rows, columns=DATA_QUALITY_COLUMNS)
@@ -1440,6 +1544,7 @@ def run_daily(as_of: str = "auto") -> Dict:
     write_csv(qqq_equity_holdings, latest_dir / "qqq_equity_holdings.csv")
     write_csv(breadth_metrics, latest_dir / "breadth_metrics.csv")
     write_csv(top_holdings_quotes, latest_dir / "top_holdings_quotes.csv")
+    write_csv(quote_failures, latest_dir / "quote_failures.csv")
     write_csv(data_quality, latest_dir / "data_quality.csv")
     write_csv(api_usage, latest_dir / "api_usage.csv")
     write_csv(fmp_summary, latest_dir / "fmp_summary.csv")
@@ -1457,6 +1562,7 @@ def run_daily(as_of: str = "auto") -> Dict:
             "QQQ股票池": qqq_equity_holdings,
             "市场广度": breadth_metrics,
             "前20持仓报价": top_holdings_quotes,
+            "报价失败诊断": quote_failures,
             "数据质量": data_quality,
             "API调用": api_usage,
             "FMP可用性": fmp_summary,
@@ -1483,6 +1589,7 @@ def run_daily(as_of: str = "auto") -> Dict:
             "qqq_equity_holdings_csv": rel_path(latest_dir / "qqq_equity_holdings.csv", settings.paths.root),
             "breadth_metrics_csv": rel_path(latest_dir / "breadth_metrics.csv", settings.paths.root),
             "top_holdings_quotes_csv": rel_path(latest_dir / "top_holdings_quotes.csv", settings.paths.root),
+            "quote_failures_csv": rel_path(latest_dir / "quote_failures.csv", settings.paths.root),
             "data_quality_csv": rel_path(latest_dir / "data_quality.csv", settings.paths.root),
             "api_usage_csv": rel_path(latest_dir / "api_usage.csv", settings.paths.root),
             "fmp_summary_csv": rel_path(latest_dir / "fmp_summary.csv", settings.paths.root),
