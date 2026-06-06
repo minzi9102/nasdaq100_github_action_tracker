@@ -81,6 +81,7 @@ def run_probe_calls(
         ("fmp", "quote", "AAPL", lambda: fmp.quote("AAPL"), False),
         ("fmp", "quote", "AVGO", lambda: fmp.quote("AVGO"), False),
         ("fmp", "quote batch", "AAPL,MSFT", lambda: fmp.batch_quote(["AAPL", "MSFT"], fallback_to_single=False), False),
+        ("fmp", "stable/batch-quote", "AAPL,MSFT", lambda: fmp.stable_batch_quote(["AAPL", "MSFT"]), False),
         ("twelve_data", "quote", "GOOG", lambda: twelve.quote("GOOG"), True),
         ("twelve_data", "quote", "AVGO", lambda: twelve.quote("AVGO"), True),
         ("twelve_data", "time_series", "GOOG", lambda: twelve.time_series("GOOG", outputsize=260), True),

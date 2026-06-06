@@ -2,15 +2,16 @@
 
 这是一个可部署到 GitHub Actions 的纳斯达克100 / QQQ 每日数据收集项目。
 
-目标：每天自动读取 Alpha Vantage、FRED、Financial Modeling Prep、Tiingo 四类接口，生成结构化数据、Excel 报表和模型输入指标文件，并把最新结果保存到仓库中，方便后续把 GitHub 仓库链接交给 ChatGPT 读取分析。
+目标：每天自动读取 Alpha Vantage、FRED、Invesco 和 Twelve Data，结合 Tiingo/Twelve Data 历史缓存生成结构化数据、Excel 报表和模型输入指标文件。
 
 ## 功能
 
 - 读取四个接口：
   - Alpha Vantage：QQQ / 股票日线价格。
   - FRED：美债收益率、利率、通胀等宏观数据。
-  - Financial Modeling Prep：股票报价、基本面、关键指标。
-  - Tiingo：QQQ / 成分股日线价格备用源。
+  - Twelve Data：前 20 持仓生产报价和历史缓存修复。
+  - Tiingo：QQQ / 成分股历史价格缓存主源。
+  - Financial Modeling Prep：仅用于独立能力探测。
   - Invesco：QQQ 官方持仓公开下载，不需要 API key。
 - GitHub Actions 每日自动运行。
 - 使用 GitHub Secrets 保存 API key，不把密钥写入代码。
@@ -54,6 +55,7 @@ ALPHA_VANTAGE_API_KEY=你的密钥
 FRED_API_KEY=你的密钥
 FMP_API_KEY=你的密钥
 TIINGO_API_TOKEN=你的密钥
+TWELVE_DATA_API_KEY=你的密钥
 ```
 
 不要把 `.env` 提交到 GitHub。
@@ -101,6 +103,9 @@ state/latest_manifest.json
 - `reports/latest/macro_metrics.csv`
 - `reports/latest/qqq_holdings.csv`
 - `reports/latest/breadth_metrics.csv`
+- `reports/latest/top_holdings_quotes.csv`
+- `reports/latest/quote_failures.csv`
+- `reports/latest/provider_capability_probe.csv`
 - `reports/latest/data_quality.csv`
 - `reports/latest/nasdaq100_qqq_daily_tracker.xlsx`
 - `state/latest_manifest.json`

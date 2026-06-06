@@ -342,6 +342,8 @@ def test_top_holdings_quotes_uses_batch_quote_map():
     assert list(quotes.columns) == TOP_HOLDINGS_QUOTES_COLUMNS
     assert quotes.loc[quotes["symbol"] == "AAPL", "provider"].iloc[0] == "fmp"
     assert bool(quotes.loc[quotes["symbol"] == "MSFT", "is_missing"].iloc[0]) is True
+    assert quotes.loc[quotes["symbol"] == "MSFT", "error_type"].iloc[0] == "quote_missing"
+    assert bool(quotes.loc[quotes["symbol"] == "AAPL", "was_merge_success"].iloc[0]) is True
 
 
 def quote_settings(tmp_path, max_credits=40):
@@ -444,12 +446,14 @@ def test_api_usage_row_columns_and_429_metadata():
     assert bool(df.loc[0, "rate_limited"]) is True
     assert bool(df.loc[0, "stopped_after_429"]) is True
     assert df.loc[0, "retry_after_seconds"] == 3600
+    assert "actual_endpoint" in df.columns
+    assert bool(df.loc[0, "production_enabled"]) is True
 
 
 def test_data_quality_row_records_extended_coverage_fields():
     row = quality_row(
         "breadth_metrics",
-        "fmp+tiingo_cache",
+        "tiingo_cache+twelve_data_quote",
         True,
         8,
         symbol_coverage_ratio=0.75,
@@ -471,6 +475,7 @@ def test_data_quality_row_records_extended_coverage_fields():
     assert df.loc[0, "symbol_coverage_ratio"] == 0.75
     assert df.loc[0, "weight_coverage_ratio"] == 0.82
     assert bool(df.loc[0, "rate_limited"]) is True
+    assert {"history_coverage_ratio", "quote_coverage_ratio", "ma200_available"}.issubset(df.columns)
 
 
 def test_model_input_v2_keeps_objective_columns():
@@ -498,7 +503,7 @@ def test_model_input_v2_keeps_objective_columns():
                 "metric_value": 0.5,
                 "denominator": 2,
                 "data_date": "2025-12-31",
-                "source": "fmp+tiingo_cache",
+                "source": "tiingo_cache+twelve_data_quote",
                 "is_missing": False,
             }
         ]
@@ -507,7 +512,7 @@ def test_model_input_v2_keeps_objective_columns():
         [
             quality_row(
                 "breadth_metrics",
-                "fmp+tiingo_cache",
+                "tiingo_cache+twelve_data_quote",
                 True,
                 8,
                 symbol_coverage_ratio=1.0,
@@ -529,16 +534,16 @@ def test_model_input_v2_keeps_objective_columns():
     assert list(model_input.columns) == MODEL_INPUT_COLUMNS
     breadth_row = model_input[model_input["metric_name"] == "advancing_ratio"].iloc[0]
     assert breadth_row["source"] == "breadth_metrics"
-    assert breadth_row["provider"] == "fmp+tiingo_cache"
+    assert breadth_row["provider"] == "tiingo_cache+twelve_data_quote"
     assert pd.isna(breadth_row["coverage_ratio"])
     coverage_row = model_input[
-        model_input["metric_name"] == "breadth_metrics_fmp+tiingo_cache_symbol_coverage_ratio"
+        model_input["metric_name"] == "breadth_metrics_tiingo_cache+twelve_data_quote_symbol_coverage_ratio"
     ].iloc[0]
     assert coverage_row["source"] == "data_quality"
-    assert coverage_row["provider"] == "fmp+tiingo_cache"
+    assert coverage_row["provider"] == "tiingo_cache+twelve_data_quote"
     assert coverage_row["coverage_ratio"] == 1.0
     assert "symbol coverage" in coverage_row["quality_message"]
-    assert "breadth_metrics_fmp+tiingo_cache_symbol_coverage_ratio" in set(model_input["metric_name"])
+    assert "breadth_metrics_tiingo_cache+twelve_data_quote_symbol_coverage_ratio" in set(model_input["metric_name"])
 
 
 def test_model_input_csv_contains_no_subjective_output(tmp_path):

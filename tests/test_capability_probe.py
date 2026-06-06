@@ -33,6 +33,9 @@ def test_probe_matrix_keeps_diagnostic_sources_out_of_production():
         def batch_quote(self, symbols, fallback_to_single=False):
             return result("fmp", message="402 Payment Required")
 
+        def stable_batch_quote(self, symbols):
+            return result("fmp", message="402 Payment Required")
+
     class Twelve:
         def quote(self, symbol):
             return result("twelve_data", ok=True, rows=1, raw={})

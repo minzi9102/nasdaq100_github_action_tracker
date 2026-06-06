@@ -138,3 +138,28 @@ class FMPProvider(BaseProvider):
                 "calls_success": calls_success,
             },
         )
+
+    def stable_batch_quote(self, symbols: list[str]) -> ProviderResult:
+        if not self.available:
+            return self.unavailable_result("stable_batch_quote")
+        cleaned = [symbol.strip().upper() for symbol in symbols if str(symbol).strip()]
+        try:
+            data = self.request_json(
+                f"{self.base_url}/batch-quote",
+                params={"symbols": ",".join(cleaned), "apikey": self.api_key},
+            )
+            rows = data if isinstance(data, list) else [data]
+            df = pd.DataFrame(rows)
+            if not df.empty:
+                df["source"] = self.provider_name
+            return ProviderResult(self.provider_name, not df.empty, df, f"stable_batch_quote: rows={len(df)}", data)
+        except RateLimitError as exc:
+            return ProviderResult(
+                self.provider_name,
+                False,
+                pd.DataFrame(),
+                str(exc),
+                {"rate_limited": True, "retry_after_seconds": exc.retry_after_seconds, "symbols": cleaned},
+            )
+        except Exception as exc:  # noqa: BLE001
+            return ProviderResult(self.provider_name, False, pd.DataFrame(), str(exc), {"symbols": cleaned})

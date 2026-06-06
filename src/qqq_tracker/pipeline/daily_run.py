@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
@@ -62,6 +63,11 @@ TOP_HOLDINGS_QUOTES_COLUMNS = [
     "provider",
     "quote_time",
     "is_missing",
+    "error_type",
+    "attempted_symbol",
+    "was_api_success",
+    "was_parse_success",
+    "was_merge_success",
 ]
 QUOTE_FAILURE_COLUMNS = [
     "symbol",
@@ -104,6 +110,13 @@ DATA_QUALITY_COLUMNS = [
     "cache_rows_used",
     "live_rows_fetched",
     "fallback_provider",
+    "history_coverage_ratio",
+    "quote_coverage_ratio",
+    "top10_quote_coverage_ratio",
+    "top20_quote_coverage_ratio",
+    "ma200_available",
+    "actual_quote_provider",
+    "actual_history_provider",
     "message",
 ]
 API_USAGE_COLUMNS = [
@@ -121,6 +134,14 @@ API_USAGE_COLUMNS = [
     "symbols_loaded",
     "stopped_after_429",
     "retry_after_seconds",
+    "http_status",
+    "error_type",
+    "function",
+    "outputsize",
+    "adjusted",
+    "actual_endpoint",
+    "production_enabled",
+    "premium_blocked",
     "message",
 ]
 BREATH_EXCLUDE_SYMBOLS = {"USD"}
@@ -282,6 +303,13 @@ def quality_row(
     cache_rows_used: int = 0,
     live_rows_fetched: int = 0,
     fallback_provider: str | None = None,
+    history_coverage_ratio: float | None = None,
+    quote_coverage_ratio: float | None = None,
+    top10_quote_coverage_ratio: float | None = None,
+    top20_quote_coverage_ratio: float | None = None,
+    ma200_available: bool | None = None,
+    actual_quote_provider: str = "",
+    actual_history_provider: str = "",
     message: str = "",
 ) -> Dict:
     return {
@@ -299,6 +327,13 @@ def quality_row(
         "cache_rows_used": int(cache_rows_used or 0),
         "live_rows_fetched": int(live_rows_fetched or 0),
         "fallback_provider": fallback_provider or "",
+        "history_coverage_ratio": history_coverage_ratio,
+        "quote_coverage_ratio": quote_coverage_ratio,
+        "top10_quote_coverage_ratio": top10_quote_coverage_ratio,
+        "top20_quote_coverage_ratio": top20_quote_coverage_ratio,
+        "ma200_available": ma200_available,
+        "actual_quote_provider": actual_quote_provider,
+        "actual_history_provider": actual_history_provider,
         "message": message,
     }
 
@@ -345,6 +380,14 @@ def api_usage_row(
     retry_after_seconds: float | None = None,
     message: str = "",
     credits_used: int | None = None,
+    http_status: int | None = None,
+    error_type: str = "",
+    function: str = "",
+    outputsize: str = "",
+    adjusted: bool | None = None,
+    actual_endpoint: str = "",
+    production_enabled: bool = True,
+    premium_blocked: bool = False,
 ) -> Dict:
     limit_window, limit_value = limit_window_and_value(settings, provider)
     calls_failed = max(int(calls_attempted) - int(calls_success), 0)
@@ -363,6 +406,14 @@ def api_usage_row(
         "symbols_loaded": symbol_list_value(symbols_loaded),
         "stopped_after_429": bool(stopped_after_429),
         "retry_after_seconds": retry_after_seconds,
+        "http_status": http_status,
+        "error_type": error_type,
+        "function": function,
+        "outputsize": outputsize,
+        "adjusted": adjusted,
+        "actual_endpoint": actual_endpoint or endpoint,
+        "production_enabled": production_enabled,
+        "premium_blocked": premium_blocked,
         "message": message,
     }
 
@@ -391,6 +442,14 @@ def result_rate_limit_meta(result: object) -> tuple[bool, float | None]:
     if isinstance(raw, dict):
         return bool(raw.get("rate_limited")), raw.get("retry_after_seconds")
     return False, None
+
+
+def result_http_status(result: object) -> int | None:
+    message = str(getattr(result, "message", "") or "")
+    match = re.search(r"\b(4\d\d|5\d\d)\b", message)
+    if match:
+        return int(match.group(1))
+    return 200 if getattr(result, "raw", None) is not None else None
 
 
 def fred_latest(df: pd.DataFrame) -> tuple[float | None, str | None]:
@@ -739,19 +798,30 @@ def first_present(row: dict, names: list[str]) -> object:
     return None
 
 
-def build_top_holdings_quotes(equity_holdings: pd.DataFrame, quote_map: dict[str, dict], limit: int = 20) -> pd.DataFrame:
+def build_top_holdings_quotes(
+    equity_holdings: pd.DataFrame,
+    quote_map: dict[str, dict],
+    limit: int = 20,
+    diagnostics: pd.DataFrame | None = None,
+) -> pd.DataFrame:
     if equity_holdings.empty:
         return pd.DataFrame(columns=TOP_HOLDINGS_QUOTES_COLUMNS)
     holdings = equity_holdings.copy()
     holdings["symbol"] = holdings["symbol"].map(normalize_symbol)
     holdings["weight"] = pd.to_numeric(holdings["weight"], errors="coerce").fillna(0.0)
     holdings = holdings.sort_values(["weight", "symbol"], ascending=[False, True]).head(limit)
+    diagnostic_map = (
+        diagnostics.assign(symbol=diagnostics["symbol"].map(normalize_symbol)).set_index("symbol").to_dict(orient="index")
+        if diagnostics is not None and not diagnostics.empty
+        else {}
+    )
 
     rows: list[dict] = []
     for _, holding in holdings.iterrows():
         symbol = holding.get("symbol")
         quote = quote_map.get(symbol, {})
         is_missing = not quote
+        diagnostic = diagnostic_map.get(symbol, {})
         rows.append(
             {
                 "symbol": symbol,
@@ -766,6 +836,11 @@ def build_top_holdings_quotes(equity_holdings: pd.DataFrame, quote_map: dict[str
                 "provider": quote.get("source", "twelve_data") if not is_missing else "",
                 "quote_time": first_present(quote, ["timestamp", "earningsAnnouncement", "date"]),
                 "is_missing": is_missing,
+                "error_type": "quote_missing" if is_missing else "",
+                "attempted_symbol": diagnostic.get("attempted_symbol", symbol),
+                "was_api_success": bool(diagnostic.get("was_api_success", False)),
+                "was_parse_success": bool(diagnostic.get("was_parse_success", False)),
+                "was_merge_success": bool(diagnostic.get("was_merge_success", not is_missing)),
             }
         )
     return pd.DataFrame(rows, columns=TOP_HOLDINGS_QUOTES_COLUMNS)
@@ -811,6 +886,10 @@ def top_holdings_quote_quality(
         rate_limited=rate_limited,
         stopped_after_429=stopped_after_429,
         fallback_provider="quote_cache",
+        quote_coverage_ratio=(requested - len(missing20)) / requested if requested else 0.0,
+        top10_quote_coverage_ratio=(len(top10) - len(missing10)) / len(top10) if top10 else 0.0,
+        top20_quote_coverage_ratio=(requested - len(missing20)) / requested if requested else 0.0,
+        actual_quote_provider="twelve_data",
         message=f"{requested - len(missing20)}/{requested} top20 quotes available; {len(top10) - len(missing10)}/{len(top10)} top10 quotes available",
     )
 
@@ -861,6 +940,8 @@ def fetch_twelve_data_quotes(
                 0,
                 symbols_requested=top_symbols,
                 symbols_loaded=list(quote_map),
+                error_type="missing_api_key",
+                actual_endpoint="quote",
                 message="missing Twelve Data API key; used quote cache",
             ),
         )
@@ -886,6 +967,7 @@ def fetch_twelve_data_quotes(
             parse_success = parsed_quote is not None and not pd.isna(price)
             attempts[symbol] = {
                 "attempted_symbol": symbol,
+                "http_status": result_http_status(result),
                 "api_status": "success" if api_success else "error",
                 "raw_error": "" if api_success else result.message,
                 "parse_error": "" if parse_success else ("missing normalized symbol or numeric price" if api_success else ""),
@@ -934,6 +1016,9 @@ def fetch_twelve_data_quotes(
             stopped_after_429=rate_limited,
             retry_after_seconds=retry_after_seconds,
             credits_used=len(attempted),
+            http_status=429 if rate_limited else (200 if loaded else None),
+            error_type="rate_limited" if rate_limited else ("success" if loaded else "api_error"),
+            actual_endpoint="quote",
             message="; ".join(messages[:5]) + ("; ..." if len(messages) > 5 else ""),
         ),
     )
@@ -1273,6 +1358,10 @@ def fetch_breadth(
             cache_rows_used=int(history_meta["cache_rows_used"]),
             live_rows_fetched=int(history_meta["live_rows_fetched"]),
             fallback_provider=quote_provider,
+            history_coverage_ratio=symbol_coverage_ratio,
+            quote_coverage_ratio=len(set(quote_map) & set(used_symbols)) / len(used_symbols) if used_symbols else 0.0,
+            actual_quote_provider="twelve_data" if quote_map else "",
+            actual_history_provider=source_name.split("+")[0],
             message=quality_message,
         )
     )
@@ -1308,6 +1397,12 @@ def fetch_qqq_price_history(
             rate_limited=av_rate_limited,
             stopped_after_429=av_rate_limited,
             retry_after_seconds=av_retry_after,
+            http_status=200 if av_result.ok else None,
+            error_type="success" if av_result.ok else ("rate_limited" if av_rate_limited else "api_error"),
+            function="TIME_SERIES_DAILY",
+            outputsize=str(outputsize),
+            adjusted=False,
+            actual_endpoint="TIME_SERIES_DAILY",
             message=av_result.message,
         )
     )
@@ -1387,6 +1482,9 @@ def fetch_qqq_price_history(
             cache_rows_used=rows,
             live_rows_fetched=len(av_result.data) if av_result.ok else 0,
             fallback_provider="tiingo+twelve_data",
+            history_coverage_ratio=min(rows / QQQ_OUTPUT_ROWS, 1.0),
+            ma200_available=bool(not metrics.empty and pd.notna(metrics.loc[0, "ma_200"])),
+            actual_history_provider=metric_source,
             message="QQQ cache ready" if rows >= QQQ_OUTPUT_ROWS else "insufficient_history_for_ma200",
         )
     )
@@ -1535,6 +1633,8 @@ def run_daily(as_of: str = "auto") -> Dict:
             "diagnostic_only",
             0,
             0,
+            production_enabled=False,
+            actual_endpoint="diagnostic_only",
             message="FMP production quote collection disabled; use provider capability probe",
         )
     )
@@ -1548,7 +1648,7 @@ def run_daily(as_of: str = "auto") -> Dict:
         limit=20,
     )
     api_usage_rows.append(twelve_quote_usage)
-    top_holdings_quotes = build_top_holdings_quotes(qqq_equity_holdings, quote_map, limit=20)
+    top_holdings_quotes = build_top_holdings_quotes(qqq_equity_holdings, quote_map, limit=20, diagnostics=quote_failures)
     quality_rows.append(
         top_holdings_quote_quality(
             qqq_equity_holdings,
@@ -1565,8 +1665,6 @@ def run_daily(as_of: str = "auto") -> Dict:
         breadth_metrics = fetch_breadth(settings, qqq_equity_holdings, run_date, logs, quality_rows, quote_map)
     breadth_metrics = breadth_metrics.reindex(columns=BREADTH_METRICS_COLUMNS)
     write_csv(breadth_metrics, processed_dir / "breadth_metrics.csv")
-
-    write_csv(fmp_summary, processed_dir / "fmp_summary.csv")
 
     logs_df = pd.DataFrame(logs)
     data_quality = pd.DataFrame(quality_rows, columns=DATA_QUALITY_COLUMNS)
@@ -1590,7 +1688,6 @@ def run_daily(as_of: str = "auto") -> Dict:
     write_csv(quote_failures, latest_dir / "quote_failures.csv")
     write_csv(data_quality, latest_dir / "data_quality.csv")
     write_csv(api_usage, latest_dir / "api_usage.csv")
-    write_csv(fmp_summary, latest_dir / "fmp_summary.csv")
     write_csv(logs_df, latest_dir / "run_log.csv")
 
     xlsx_path = latest_dir / "nasdaq100_qqq_daily_tracker.xlsx"
@@ -1608,7 +1705,6 @@ def run_daily(as_of: str = "auto") -> Dict:
             "报价失败诊断": quote_failures,
             "数据质量": data_quality,
             "API调用": api_usage,
-            "FMP可用性": fmp_summary,
             "模型输入指标": model_input_metrics,
             "运行日志": logs_df,
         },
@@ -1633,9 +1729,10 @@ def run_daily(as_of: str = "auto") -> Dict:
             "breadth_metrics_csv": rel_path(latest_dir / "breadth_metrics.csv", settings.paths.root),
             "top_holdings_quotes_csv": rel_path(latest_dir / "top_holdings_quotes.csv", settings.paths.root),
             "quote_failures_csv": rel_path(latest_dir / "quote_failures.csv", settings.paths.root),
+            "provider_capability_probe_csv": rel_path(latest_dir / "provider_capability_probe.csv", settings.paths.root),
+            "cache_quality_csv": rel_path(latest_dir / "cache_quality.csv", settings.paths.root),
             "data_quality_csv": rel_path(latest_dir / "data_quality.csv", settings.paths.root),
             "api_usage_csv": rel_path(latest_dir / "api_usage.csv", settings.paths.root),
-            "fmp_summary_csv": rel_path(latest_dir / "fmp_summary.csv", settings.paths.root),
             "run_log_csv": rel_path(latest_dir / "run_log.csv", settings.paths.root),
         },
         "quality_summary": data_quality.to_dict(orient="records"),
