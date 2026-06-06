@@ -8,5 +8,5 @@ fred,observations,CPIAUCSL,True,CPIAUCSL: 365 rows
 fred,observations,PCEPI,True,PCEPI: 365 rows
 fred,observations,UNRATE,True,UNRATE: 365 rows
 invesco,qqq_holdings,QQQ,True,QQQ: holdings rows=104 effective_date=2026-06-04
-fmp,batch_quote,98 symbols,False,429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=NVDA%2CAAPL%2CMSFT%2CMU%2CAMZN%2CAMD%2CGOOGL%2CTSLA%2CGOOG%2CAVGO%2CMETA%2CWMT%2CINTC%2CCSCO%2CCOST%2CLRCX%2CAMAT%2CNFLX%2CPLTR%2CKLAC%2CTXN%2CMRVL%2CQCOM%2CSNDK%2CLIN&apikey=%2A%2A%2AREDACTED%2A%2A%2A
-tiingo_cache,load_cached_history_for_breadth,98 symbols,True,50/98 symbols loaded from local cache/raw seed
+fmp,batch_quote,98 symbols,False,402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/quote?symbol=NVDA%2CAAPL%2CMSFT%2CMU%2CAMZN%2CAMD%2CGOOGL%2CTSLA%2CGOOG%2CAVGO%2CMETA%2CWMT%2CINTC%2CCSCO%2CCOST%2CLRCX%2CAMAT%2CNFLX%2CPLTR%2CKLAC%2CTXN%2CMRVL%2CQCOM%2CSNDK%2CLIN&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+tiingo_cache,load_cached_history_for_breadth,98 symbols,True,53/98 symbols loaded from local cache/raw seed

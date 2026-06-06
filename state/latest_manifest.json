@@ -1,6 +1,6 @@
 {
   "as_of": "2026-06-06",
-  "generated_at": "2026-06-05T16:24:55Z",
+  "generated_at": "2026-06-06T01:15:35Z",
   "latest_files": {
     "excel_report": "reports/latest/nasdaq100_qqq_daily_tracker.xlsx",
     "manifest_json": "reports/latest/manifest.json",
@@ -198,8 +198,8 @@
       "weight_coverage_ratio": 0.0,
       "missing_symbols": "NVDA,AAPL,MSFT,MU,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,KLAC,TXN,MRVL,QCOM,SNDK,LIN,PANW,ADI,STX,TMUS,WDC,PEP,AMGN,CRWD,APP,GILD,ISRG,SHOP,HON,BKNG,CDNS,VRTX,FTNT,SBUX,ADBE,MAR,CEG,SNPS,ADP,MNST,CSX,CMCSA,INTU,MELI,NXPI,MPWR,DDOG,MDLZ,ROST,ORLY,CTAS,AEP,LITE,WBD,DASH,BKR,REGN,PCAR,FANG,ABNB,FAST,MCHP,ODFL,EA,ADSK,XEL,FER,EXC,IDXX,CCEP,AXON,KDP,MSTR,ALNY,TTWO,PYPL,TRI,PAYX,ROP,WDAY,CPRT,GEHC,DXCM,KHC,CTSH,VRSK,INSM,ZS,CHTR",
       "missing_top_weight_symbols": "",
-      "rate_limited": true,
-      "stopped_after_429": true,
+      "rate_limited": false,
+      "stopped_after_429": false,
       "remaining_symbols_skipped": 0,
       "cache_rows_used": 0,
       "live_rows_fetched": 0,
@@ -207,21 +207,38 @@
       "message": "0/98 quotes fetched"
     },
     {
+      "dataset": "top_holdings_quotes",
+      "provider": "fmp+twelve_data",
+      "ok": true,
+      "rows": 20,
+      "symbol_coverage_ratio": 1.0,
+      "weight_coverage_ratio": 1.0,
+      "missing_symbols": "",
+      "missing_top_weight_symbols": "",
+      "rate_limited": false,
+      "stopped_after_429": false,
+      "remaining_symbols_skipped": 0,
+      "cache_rows_used": 0,
+      "live_rows_fetched": 0,
+      "fallback_provider": "twelve_data",
+      "message": "20/20 top20 quotes available; 10/10 top10 quotes available"
+    },
+    {
       "dataset": "breadth_metrics",
       "provider": "fmp+tiingo_cache",
       "ok": true,
       "rows": 8,
-      "symbol_coverage_ratio": 0.5102040816326531,
-      "weight_coverage_ratio": 0.29478480780539196,
-      "missing_symbols": "AAPL,ADI,ALNY,AMAT,AMD,AMZN,AVGO,AXON,CCEP,CHTR,COST,CPRT,CSCO,CTSH,DXCM,GEHC,GOOG,GOOGL,IDXX,INSM,INTC,KDP,KHC,KLAC,LIN,LRCX,META,MRVL,MSFT,MSTR,MU,NFLX,PANW,PAYX,PLTR,PYPL,QCOM,ROP,SNDK,STX,TRI,TSLA,TTWO,TXN,VRSK,WDAY,WMT,ZS",
-      "missing_top_weight_symbols": "AAPL,MSFT,MU,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META",
+      "symbol_coverage_ratio": 0.5408163265306123,
+      "weight_coverage_ratio": 0.4689190577470169,
+      "missing_symbols": "ADI,ALNY,AMAT,AMD,AMZN,AVGO,AXON,CCEP,CHTR,COST,CPRT,CSCO,CTSH,DXCM,GEHC,GOOG,GOOGL,IDXX,INSM,INTC,KDP,KHC,KLAC,LIN,LRCX,META,MRVL,MSTR,NFLX,PANW,PAYX,PLTR,PYPL,QCOM,ROP,SNDK,STX,TRI,TSLA,TTWO,TXN,VRSK,WDAY,WMT,ZS",
+      "missing_top_weight_symbols": "AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META,WMT,INTC,CSCO",
       "rate_limited": false,
       "stopped_after_429": false,
       "remaining_symbols_skipped": 0,
-      "cache_rows_used": 14400,
+      "cache_rows_used": 15264,
       "live_rows_fetched": 0,
-      "fallback_provider": "tiingo_history_only",
-      "message": "50/98 symbols with history+quote coverage; coverage insufficient for top-weight symbols"
+      "fallback_provider": "mixed_fmp+tiingo_history_only",
+      "message": "53/98 symbols with history+quote coverage; coverage insufficient for top-weight symbols"
     }
   ],
   "api_usage": [
@@ -283,15 +300,32 @@
       "calls_attempted": 1,
       "calls_success": 0,
       "calls_failed": 1,
-      "rate_limited": true,
+      "rate_limited": false,
       "limit_window": "day",
       "limit_value": 250,
       "credits_used": 1,
       "symbols_requested": "98 symbols",
       "symbols_loaded": "",
-      "stopped_after_429": true,
+      "stopped_after_429": false,
       "retry_after_seconds": null,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=NVDA%2CAAPL%2CMSFT%2CMU%2CAMZN%2CAMD%2CGOOGL%2CTSLA%2CGOOG%2CAVGO%2CMETA%2CWMT%2CINTC%2CCSCO%2CCOST%2CLRCX%2CAMAT%2CNFLX%2CPLTR%2CKLAC%2CTXN%2CMRVL%2CQCOM%2CSNDK%2CLIN&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
+      "message": "402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/quote?symbol=NVDA%2CAAPL%2CMSFT%2CMU%2CAMZN%2CAMD%2CGOOGL%2CTSLA%2CGOOG%2CAVGO%2CMETA%2CWMT%2CINTC%2CCSCO%2CCOST%2CLRCX%2CAMAT%2CNFLX%2CPLTR%2CKLAC%2CTXN%2CMRVL%2CQCOM%2CSNDK%2CLIN&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
+    },
+    {
+      "run_date": "2026-06-06",
+      "provider": "twelve_data",
+      "endpoint": "quote_fallback",
+      "calls_attempted": 20,
+      "calls_success": 20,
+      "calls_failed": 0,
+      "rate_limited": false,
+      "limit_window": "minute",
+      "limit_value": 8,
+      "credits_used": 20,
+      "symbols_requested": "NVDA,AAPL,MSFT,MU,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,KLAC",
+      "symbols_loaded": "NVDA,AAPL,MSFT,MU,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,KLAC",
+      "stopped_after_429": false,
+      "retry_after_seconds": null,
+      "message": "NVDA: quote loaded; AAPL: quote loaded; MSFT: quote loaded; MU: quote loaded; AMZN: quote loaded; ..."
     },
     {
       "run_date": "2026-06-06",
@@ -380,14 +414,14 @@
       "method": "batch_quote",
       "symbol": "98 symbols",
       "ok": false,
-      "message": "429 Client Error: Too Many Requests for url: https://financialmodelingprep.com/stable/quote?symbol=NVDA%2CAAPL%2CMSFT%2CMU%2CAMZN%2CAMD%2CGOOGL%2CTSLA%2CGOOG%2CAVGO%2CMETA%2CWMT%2CINTC%2CCSCO%2CCOST%2CLRCX%2CAMAT%2CNFLX%2CPLTR%2CKLAC%2CTXN%2CMRVL%2CQCOM%2CSNDK%2CLIN&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
+      "message": "402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/quote?symbol=NVDA%2CAAPL%2CMSFT%2CMU%2CAMZN%2CAMD%2CGOOGL%2CTSLA%2CGOOG%2CAVGO%2CMETA%2CWMT%2CINTC%2CCSCO%2CCOST%2CLRCX%2CAMAT%2CNFLX%2CPLTR%2CKLAC%2CTXN%2CMRVL%2CQCOM%2CSNDK%2CLIN&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
     },
     {
       "provider": "tiingo_cache",
       "method": "load_cached_history_for_breadth",
       "symbol": "98 symbols",
       "ok": true,
-      "message": "50/98 symbols loaded from local cache/raw seed"
+      "message": "53/98 symbols loaded from local cache/raw seed"
     }
   ]
 }

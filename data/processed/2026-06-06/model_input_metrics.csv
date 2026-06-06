@@ -1,24 +1,24 @@
 ﻿metric_name,metric_value,unit_or_method,data_date,source,is_missing
-QQQ_latest_close,740.61,latest adjusted close,2026-06-04,alpha_vantage,False
-QQQ_return_20d,0.06444658435977413,20 trading day return,2026-06-04,alpha_vantage,False
-QQQ_return_60d,0.21856952465570867,60 trading day return,2026-06-04,alpha_vantage,False
-QQQ_vol_20d,0.14843397987581194,20 trading day annualized volatility,2026-06-04,alpha_vantage,False
-QQQ_current_drawdown,-0.007438082984882577,current drawdown from period high,2026-06-04,alpha_vantage,False
-QQQ_max_drawdown,-0.11834749376204168,maximum drawdown over fetched period,2026-06-04,alpha_vantage,False
-QQQ_ma_50,665.4643999999998,50 trading day moving average,2026-06-04,alpha_vantage,False
-QQQ_ma_200,,200 trading day moving average,2026-06-04,alpha_vantage,True
-DGS10_latest_value,4.49,latest FRED observation value,2026-06-03,FRED,False
-DGS2_latest_value,4.08,latest FRED observation value,2026-06-03,FRED,False
-DGS3MO_latest_value,3.78,latest FRED observation value,2026-06-03,FRED,False
-DFF_latest_value,3.62,latest FRED observation value,2026-06-03,FRED,False
+QQQ_latest_close,705.06,latest adjusted close,2026-06-05,alpha_vantage,False
+QQQ_return_20d,0.014562408265461624,20 trading day return,2026-06-05,alpha_vantage,False
+QQQ_return_60d,0.1602297223913507,60 trading day return,2026-06-05,alpha_vantage,False
+QQQ_vol_20d,0.23463816976189822,20 trading day annualized volatility,2026-06-05,alpha_vantage,False
+QQQ_current_drawdown,-0.0550820199421036,current drawdown from period high,2026-06-05,alpha_vantage,False
+QQQ_max_drawdown,-0.11834749376204168,maximum drawdown over fetched period,2026-06-05,alpha_vantage,False
+QQQ_ma_50,667.8092,50 trading day moving average,2026-06-05,alpha_vantage,False
+QQQ_ma_200,,200 trading day moving average,2026-06-05,alpha_vantage,True
+DGS10_latest_value,4.47,latest FRED observation value,2026-06-04,FRED,False
+DGS2_latest_value,4.05,latest FRED observation value,2026-06-04,FRED,False
+DGS3MO_latest_value,3.78,latest FRED observation value,2026-06-04,FRED,False
+DFF_latest_value,3.62,latest FRED observation value,2026-06-04,FRED,False
 CPIAUCSL_latest_value,332.407,latest FRED observation value,2026-04-01,FRED,False
 PCEPI_latest_value,130.902,latest FRED observation value,2026-04-01,FRED,False
 UNRATE_latest_value,4.3,latest FRED observation value,2026-05-01,FRED,False
-DGS10_latest_value,4.49,percent yield,2026-06-03,FRED,False
-DGS10_1M_CHANGE,0.040000000000000036,current value minus value 21 observations ago,2026-06-03,FRED,False
-DGS2_DGS10_SPREAD,-0.41000000000000014,2-year yield minus 10-year yield,2026-06-03,FRED,False
-DGS10_DGS2_SPREAD,0.41000000000000014,10-year yield minus 2-year yield,2026-06-03,FRED,False
-DGS10_DGS2_SPREAD_1M_CHANGE,-0.08999999999999986,current 10y-2y spread minus spread 21 observations ago,2026-06-03,FRED,False
+DGS10_latest_value,4.47,percent yield,2026-06-04,FRED,False
+DGS10_1M_CHANGE,0.040000000000000036,current value minus value 21 observations ago,2026-06-04,FRED,False
+DGS2_DGS10_SPREAD,-0.41999999999999993,2-year yield minus 10-year yield,2026-06-04,FRED,False
+DGS10_DGS2_SPREAD,0.41999999999999993,10-year yield minus 2-year yield,2026-06-04,FRED,False
+DGS10_DGS2_SPREAD_1M_CHANGE,-0.07999999999999963,current 10y-2y spread minus spread 21 observations ago,2026-06-04,FRED,False
 CPIAUCSL_RECENT_PCT_CHANGE_1,0.0026700307420970404,CPI近3次变化; pct_change between consecutive observations,2026-04-01,FRED,False
 CPIAUCSL_RECENT_PCT_CHANGE_2,0.008651438343614481,CPI近3次变化; pct_change between consecutive observations,2026-04-01,FRED,False
 CPIAUCSL_RECENT_PCT_CHANGE_3,0.0064003778463364025,CPI近3次变化; pct_change between consecutive observations,2026-04-01,FRED,False
@@ -29,14 +29,14 @@ PCEPI_RECENT_PCT_CHANGE_3,0.003995981009502714,PCE近3次变化; pct_change betw
 PCEPI_LATEST_PCT_CHANGE,0.003995981009502714,PCE近3次变化; latest pct_change between consecutive observations,2026-04-01,FRED,False
 UNRATE_3_OBSERVATION_CHANGE,-0.10000000000000053,current unemployment rate minus value 3 observations ago,2026-05-01,FRED,False
 fmp_quote_available_ratio,0.0,successful quote responses / requested symbols,2026-06-06,FMP,False
-advancing_count,29.0,breadth metric; denominator=50,2026-06-04,fmp+tiingo_cache,False
-declining_count,20.0,breadth metric; denominator=50,2026-06-04,fmp+tiingo_cache,False
-advancing_ratio,0.58,breadth metric; denominator=50,2026-06-04,fmp+tiingo_cache,False
-above_20d_ma_ratio,0.58,breadth metric; denominator=50,2026-06-04,fmp+tiingo_cache,False
-above_50d_ma_ratio,0.58,breadth metric; denominator=50,2026-06-04,fmp+tiingo_cache,False
-above_200d_ma_ratio,0.66,breadth metric; denominator=50,2026-06-04,fmp+tiingo_cache,False
-new_high_20d_count,7.0,breadth metric; denominator=50,2026-06-04,fmp+tiingo_cache,False
-new_low_20d_count,4.0,breadth metric; denominator=50,2026-06-04,fmp+tiingo_cache,False
+advancing_count,28.0,breadth metric; denominator=53,2026-06-05,fmp+tiingo_cache,False
+declining_count,24.0,breadth metric; denominator=53,2026-06-05,fmp+tiingo_cache,False
+advancing_ratio,0.5283018867924528,breadth metric; denominator=53,2026-06-05,fmp+tiingo_cache,False
+above_20d_ma_ratio,0.5849056603773585,breadth metric; denominator=53,2026-06-05,fmp+tiingo_cache,False
+above_50d_ma_ratio,0.6037735849056604,breadth metric; denominator=53,2026-06-05,fmp+tiingo_cache,False
+above_200d_ma_ratio,0.660377358490566,breadth metric; denominator=53,2026-06-05,fmp+tiingo_cache,False
+new_high_20d_count,7.0,breadth metric; denominator=53,2026-06-05,fmp+tiingo_cache,False
+new_low_20d_count,5.0,breadth metric; denominator=53,2026-06-05,fmp+tiingo_cache,False
 price_daily_alpha_vantage_symbol_coverage_ratio,1.0,data quality symbol coverage; ok=True; rows=100,2026-06-06,alpha_vantage,False
 price_daily_alpha_vantage_weight_coverage_ratio,1.0,data quality weight coverage; rate_limited=False; fallback_provider=,2026-06-06,alpha_vantage,False
 price_daily_alpha_vantage_rate_limited,0.0,1 means provider hit 429 and breadth stopped_after_429=False,2026-06-06,alpha_vantage,False
@@ -68,8 +68,11 @@ qqq_equity_holdings_invesco_filter_symbol_coverage_ratio,0.9423076923076923,data
 qqq_equity_holdings_invesco_filter_weight_coverage_ratio,0.9876091402011571,data quality weight coverage; rate_limited=False; fallback_provider=,2026-06-06,invesco_filter,False
 qqq_equity_holdings_invesco_filter_rate_limited,0.0,1 means provider hit 429 and breadth stopped_after_429=False,2026-06-06,invesco_filter,False
 fmp_summary_fmp_symbol_coverage_ratio,0.0,data quality symbol coverage; ok=False; rows=98,2026-06-06,fmp,False
-fmp_summary_fmp_weight_coverage_ratio,0.0,data quality weight coverage; rate_limited=True; fallback_provider=,2026-06-06,fmp,False
-fmp_summary_fmp_rate_limited,1.0,1 means provider hit 429 and breadth stopped_after_429=True,2026-06-06,fmp,False
-breadth_metrics_fmp+tiingo_cache_symbol_coverage_ratio,0.5102040816326531,data quality symbol coverage; ok=True; rows=8,2026-06-06,fmp+tiingo_cache,False
-breadth_metrics_fmp+tiingo_cache_weight_coverage_ratio,0.29478480780539196,data quality weight coverage; rate_limited=False; fallback_provider=tiingo_history_only,2026-06-06,fmp+tiingo_cache,False
+fmp_summary_fmp_weight_coverage_ratio,0.0,data quality weight coverage; rate_limited=False; fallback_provider=,2026-06-06,fmp,False
+fmp_summary_fmp_rate_limited,0.0,1 means provider hit 429 and breadth stopped_after_429=False,2026-06-06,fmp,False
+top_holdings_quotes_fmp+twelve_data_symbol_coverage_ratio,1.0,data quality symbol coverage; ok=True; rows=20,2026-06-06,fmp+twelve_data,False
+top_holdings_quotes_fmp+twelve_data_weight_coverage_ratio,1.0,data quality weight coverage; rate_limited=False; fallback_provider=twelve_data,2026-06-06,fmp+twelve_data,False
+top_holdings_quotes_fmp+twelve_data_rate_limited,0.0,1 means provider hit 429 and breadth stopped_after_429=False,2026-06-06,fmp+twelve_data,False
+breadth_metrics_fmp+tiingo_cache_symbol_coverage_ratio,0.5408163265306123,data quality symbol coverage; ok=True; rows=8,2026-06-06,fmp+tiingo_cache,False
+breadth_metrics_fmp+tiingo_cache_weight_coverage_ratio,0.4689190577470169,data quality weight coverage; rate_limited=False; fallback_provider=mixed_fmp+tiingo_history_only,2026-06-06,fmp+tiingo_cache,False
 breadth_metrics_fmp+tiingo_cache_rate_limited,0.0,1 means provider hit 429 and breadth stopped_after_429=False,2026-06-06,fmp+tiingo_cache,False

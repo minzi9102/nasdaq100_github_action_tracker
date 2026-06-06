@@ -1,5 +1,4 @@
 ﻿date,series_id,value,source
-2025-06-04,DFF,4.33,fred
 2025-06-05,DFF,4.33,fred
 2025-06-06,DFF,4.33,fred
 2025-06-07,DFF,4.33,fred
@@ -364,3 +363,4 @@
 2026-06-01,DFF,3.62,fred
 2026-06-02,DFF,3.62,fred
 2026-06-03,DFF,3.62,fred
+2026-06-04,DFF,3.62,fred

@@ -9,7 +9,7 @@ from typing import Dict, List
 import pandas as pd
 
 from qqq_tracker.io import write_csv, write_json
-from qqq_tracker.providers import AlphaVantageProvider, FMPProvider, FREDProvider, InvescoProvider, TiingoProvider
+from qqq_tracker.providers import AlphaVantageProvider, FMPProvider, FREDProvider, InvescoProvider, TiingoProvider, TwelveDataProvider
 from qqq_tracker.settings import Settings
 
 from .calculations import (
@@ -127,6 +127,7 @@ def make_providers(settings: Settings) -> Dict[str, object]:
     fred_cfg = provider_config(settings, "fred")
     fmp_cfg = provider_config(settings, "fmp")
     tiingo_cfg = provider_config(settings, "tiingo")
+    twelve_cfg = provider_config(settings, "twelve_data")
     invesco_cfg = provider_config(settings, "invesco")
 
     return {
@@ -151,6 +152,12 @@ def make_providers(settings: Settings) -> Dict[str, object]:
         "tiingo": TiingoProvider(
             settings.get_secret(tiingo_cfg.get("api_key_env", "TIINGO_API_TOKEN")),
             tiingo_cfg.get("base_url", "https://api.tiingo.com/tiingo"),
+            timeout=timeout,
+            retry_count=retry_count,
+        ),
+        "twelve_data": TwelveDataProvider(
+            settings.get_secret(twelve_cfg.get("api_key_env", "TWELVE_DATA_API_KEY")),
+            twelve_cfg.get("base_url", "https://api.twelvedata.com"),
             timeout=timeout,
             retry_count=retry_count,
         ),
@@ -672,6 +679,126 @@ def build_top_holdings_quotes(equity_holdings: pd.DataFrame, quote_map: dict[str
     return pd.DataFrame(rows, columns=TOP_HOLDINGS_QUOTES_COLUMNS)
 
 
+def top_holding_symbols(equity_holdings: pd.DataFrame, limit: int = 20) -> list[str]:
+    if equity_holdings.empty or "symbol" not in equity_holdings.columns:
+        return []
+    holdings = equity_holdings.copy()
+    holdings["symbol"] = holdings["symbol"].map(normalize_symbol)
+    holdings["weight"] = pd.to_numeric(holdings.get("weight", 0.0), errors="coerce").fillna(0.0)
+    holdings = holdings[holdings["symbol"].notna() & holdings["symbol"].ne("")]
+    return holdings.sort_values(["weight", "symbol"], ascending=[False, True]).head(limit)["symbol"].tolist()
+
+
+def top_holdings_quote_quality(
+    equity_holdings: pd.DataFrame,
+    quotes: pd.DataFrame,
+    provider: str = "fmp+twelve_data",
+    rate_limited: bool = False,
+    stopped_after_429: bool = False,
+) -> Dict:
+    top20 = top_holding_symbols(equity_holdings, 20)
+    top10 = top_holding_symbols(equity_holdings, 10)
+    if quotes.empty or not top20:
+        available: set[str] = set()
+    else:
+        quote_df = quotes.copy()
+        quote_df["symbol"] = quote_df["symbol"].map(normalize_symbol)
+        available = set(quote_df.loc[~quote_df["is_missing"].astype(bool), "symbol"])
+    missing20 = [symbol for symbol in top20 if symbol not in available]
+    missing10 = [symbol for symbol in top10 if symbol not in available]
+    requested = len(top20)
+    return quality_row(
+        "top_holdings_quotes",
+        provider,
+        bool(requested and len(missing20) < requested),
+        len(quotes),
+        symbol_coverage_ratio=(requested - len(missing20)) / requested if requested else 0.0,
+        weight_coverage_ratio=(requested - len(missing20)) / requested if requested else 0.0,
+        missing_symbols=missing20,
+        missing_top_weight_symbols=missing10,
+        rate_limited=rate_limited,
+        stopped_after_429=stopped_after_429,
+        fallback_provider="twelve_data",
+        message=f"{requested - len(missing20)}/{requested} top20 quotes available; {len(top10) - len(missing10)}/{len(top10)} top10 quotes available",
+    )
+
+
+def run_twelve_data_quote_fallback(
+    settings: Settings,
+    twelve_data: TwelveDataProvider,
+    run_date: str,
+    equity_holdings: pd.DataFrame,
+    quote_map: dict[str, dict],
+    raw_dir: Path | None = None,
+    limit: int = 20,
+) -> tuple[dict[str, dict], Dict]:
+    quote_map = dict(quote_map)
+    top_symbols = top_holding_symbols(equity_holdings, limit)
+    missing_symbols = [symbol for symbol in top_symbols if symbol not in quote_map]
+    cfg = settings.api_limits.get("twelve_data", {})
+    max_credits = int(cfg.get("quote_max_credits_per_run", 20))
+    batch_size = int(cfg.get("quote_batch_size", cfg.get("max_credits_per_minute", 8)))
+    sleep_seconds = float(cfg.get("quote_sleep_seconds_between_batches", cfg.get("sleep_seconds_between_batches", 70)))
+    attempted: list[str] = []
+    loaded: list[str] = []
+    messages: list[str] = []
+    rate_limited = False
+    retry_after_seconds = None
+
+    if not missing_symbols:
+        return quote_map, api_usage_row(settings, run_date, "twelve_data", "quote_fallback", 0, 0, message="no missing top holdings quote candidates")
+    if not getattr(twelve_data, "available", False):
+        return quote_map, api_usage_row(
+            settings,
+            run_date,
+            "twelve_data",
+            "quote_fallback",
+            0,
+            0,
+            symbols_requested=missing_symbols,
+            message="missing Twelve Data API key; quote fallback not called",
+        )
+
+    for symbol in missing_symbols:
+        if len(attempted) >= max_credits or rate_limited:
+            break
+        if attempted and batch_size > 0 and len(attempted) % batch_size == 0:
+            import time
+
+            time.sleep(sleep_seconds)
+        attempted.append(symbol)
+        result = twelve_data.quote(symbol)
+        result_rate_limited, retry_after = result_rate_limit_meta(result)
+        if result.ok and not result.data.empty:
+            df = result.data.copy()
+            if raw_dir is not None:
+                write_csv(df, raw_dir / f"twelve_data_{symbol}_quote_fallback.csv")
+            quote_map.update(quote_map_from_batch(df))
+            loaded.append(symbol)
+            messages.append(f"{symbol}: quote loaded")
+        else:
+            messages.append(f"{symbol}: {result.message}")
+        if result_rate_limited:
+            rate_limited = True
+            retry_after_seconds = retry_after
+
+    return quote_map, api_usage_row(
+        settings,
+        run_date,
+        "twelve_data",
+        "quote_fallback",
+        len(attempted),
+        len(loaded),
+        symbols_requested=attempted,
+        symbols_loaded=loaded,
+        rate_limited=rate_limited,
+        stopped_after_429=rate_limited,
+        retry_after_seconds=retry_after_seconds,
+        credits_used=len(attempted),
+        message="; ".join(messages[:5]) + ("; ..." if len(messages) > 5 else ""),
+    )
+
+
 def valid_history_row_count(df: pd.DataFrame) -> int:
     if df.empty or "date" not in df.columns:
         return 0
@@ -1187,6 +1314,7 @@ def run_daily(as_of: str = "auto") -> Dict:
         )
 
     fmp: FMPProvider = providers["fmp"]  # type: ignore[assignment]
+    twelve_data: TwelveDataProvider = providers["twelve_data"]  # type: ignore[assignment]
     fmp_summary = pd.DataFrame()
     quote_map: dict[str, dict] = {}
     top_holdings_quotes = pd.DataFrame(columns=TOP_HOLDINGS_QUOTES_COLUMNS)
@@ -1269,7 +1397,17 @@ def run_daily(as_of: str = "auto") -> Dict:
                 write_csv(df, raw_dir / f"fmp_{symbol}_key_metrics.csv")
                 key_metric_frames.append(df)
 
+    quote_map, twelve_quote_usage = run_twelve_data_quote_fallback(settings, twelve_data, run_date, qqq_equity_holdings, quote_map, raw_dir=raw_dir, limit=20)
+    api_usage_rows.append(twelve_quote_usage)
     top_holdings_quotes = build_top_holdings_quotes(qqq_equity_holdings, quote_map, limit=20)
+    quality_rows.append(
+        top_holdings_quote_quality(
+            qqq_equity_holdings,
+            top_holdings_quotes,
+            rate_limited=bool(twelve_quote_usage.get("rate_limited")),
+            stopped_after_429=bool(twelve_quote_usage.get("stopped_after_429")),
+        )
+    )
     write_csv(top_holdings_quotes, processed_dir / "top_holdings_quotes.csv")
 
     breadth_metrics = pd.DataFrame(columns=BREADTH_METRICS_COLUMNS)
@@ -1285,7 +1423,7 @@ def run_daily(as_of: str = "auto") -> Dict:
 
     logs_df = pd.DataFrame(logs)
     data_quality = pd.DataFrame(quality_rows, columns=DATA_QUALITY_COLUMNS)
-    api_usage_rows = ensure_api_usage_provider_rows(settings, run_date, api_usage_rows, ["alpha_vantage", "fred", "fmp", "tiingo", "invesco"])
+    api_usage_rows = ensure_api_usage_provider_rows(settings, run_date, api_usage_rows, ["alpha_vantage", "fred", "fmp", "tiingo", "twelve_data", "invesco"])
     api_usage = pd.DataFrame(api_usage_rows, columns=API_USAGE_COLUMNS)
     write_csv(logs_df, processed_dir / "run_log.csv")
     write_csv(data_quality, processed_dir / "data_quality.csv")

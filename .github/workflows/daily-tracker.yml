@@ -39,6 +39,7 @@ jobs:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
           TIINGO_API_TOKEN: ${{ secrets.TIINGO_API_TOKEN }}
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
         run: |
           .venv/bin/python scripts/run_daily.py --as-of auto
 

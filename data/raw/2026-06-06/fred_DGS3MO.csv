@@ -1,5 +1,4 @@
 ﻿date,series_id,value,source
-2025-01-09,DGS3MO,4.35,fred
 2025-01-10,DGS3MO,4.36,fred
 2025-01-13,DGS3MO,4.37,fred
 2025-01-14,DGS3MO,4.36,fred
@@ -364,3 +363,4 @@
 2026-06-01,DGS3MO,3.78,fred
 2026-06-02,DGS3MO,3.77,fred
 2026-06-03,DGS3MO,3.78,fred
+2026-06-04,DGS3MO,3.78,fred
