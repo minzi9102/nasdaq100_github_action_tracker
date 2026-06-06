@@ -1,0 +1,67 @@
+name: Tiingo Price Cache Backfill
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "00 03 * * 1-5"
+    - cron: "10 05 * * 1-5"
+    - cron: "20 07 * * 1-5"
+
+permissions:
+  contents: write
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  cache-backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: |
+          uv venv .venv
+          uv pip install -r requirements.txt
+
+      - name: Backfill Tiingo cache
+        env:
+          TIINGO_API_TOKEN: ${{ secrets.TIINGO_API_TOKEN }}
+        run: |
+          .venv/bin/python scripts/backfill_price_cache.py --as-of auto
+
+      - name: Upload cache artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiingo-price-cache-backfill
+          path: |
+            data/cache/prices/tiingo/
+            data/raw/
+            data/processed/
+            reports/latest/cache_quality.csv
+            reports/latest/price_cache_api_usage.csv
+            state/latest_cache_backfill_manifest.json
+          retention-days: 30
+
+      - name: Commit cache updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f data/cache/prices/tiingo
+          git add data/raw data/processed reports/latest state/latest_cache_backfill_manifest.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update Tiingo price cache"
+            git push
+          fi
