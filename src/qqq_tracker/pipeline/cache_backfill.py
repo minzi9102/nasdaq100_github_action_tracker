@@ -15,10 +15,12 @@ from qqq_tracker.settings import Settings
 from .daily_run import (
     API_USAGE_COLUMNS,
     FULL_HISTORY_DAYS,
+    INCREMENTAL_LOOKBACK_DAYS,
     MIN_HISTORY_ROWS,
     api_usage_row,
     cache_path_for_symbol,
-    history_latest_date,
+    history_cache_status,
+    history_freshness,
     history_price_column,
     load_previous_csv,
     load_tiingo_cache,
@@ -27,7 +29,6 @@ from .daily_run import (
     provider_config,
     rel_path,
     result_rate_limit_meta,
-    valid_history_row_count,
     write_tiingo_cache,
 )
 
@@ -40,11 +41,14 @@ CACHE_QUALITY_COLUMNS = [
     "cache_path",
     "price_column",
     "latest_date",
+    "staleness_days",
     "ma200_ready",
     "before_rows",
     "after_rows",
     "fetched_rows",
     "is_complete",
+    "is_fresh",
+    "is_qualified",
     "was_requested",
     "ok",
     "rate_limited",
@@ -134,6 +138,8 @@ def cache_quality_row(
     price_column: str = "",
     latest_date: str | None = None,
 ) -> Dict:
+    staleness_days, is_fresh = history_freshness(latest_date, run_date)
+    is_complete = int(after_rows) >= MIN_HISTORY_ROWS
     return {
         "run_date": run_date,
         "symbol": normalize_symbol(symbol),
@@ -143,11 +149,14 @@ def cache_quality_row(
         "cache_path": cache_path,
         "price_column": price_column,
         "latest_date": latest_date,
+        "staleness_days": staleness_days,
         "ma200_ready": int(after_rows) >= 200,
         "before_rows": int(before_rows),
         "after_rows": int(after_rows),
         "fetched_rows": int(fetched_rows),
-        "is_complete": int(after_rows) >= MIN_HISTORY_ROWS,
+        "is_complete": is_complete,
+        "is_fresh": is_fresh,
+        "is_qualified": is_complete and is_fresh,
         "was_requested": bool(was_requested),
         "ok": bool(ok),
         "rate_limited": bool(rate_limited),
@@ -201,9 +210,11 @@ def backfill_price_cache(
         symbol = holding["symbol"]
         weight = float(holding.get("weight", 0.0))
         cache_df = load_tiingo_cache(settings, symbol)
-        before_rows = valid_history_row_count(cache_df)
+        before_status = history_cache_status(cache_df, run_date)
+        before_rows = int(before_status["valid_rows"])
+        before_latest_date = before_status["latest_date"]
 
-        if before_rows >= MIN_HISTORY_ROWS:
+        if before_status["is_qualified"]:
             primary_cache_path = cache_path_for_symbol(settings, symbol)
             if not primary_cache_path.exists():
                 write_tiingo_cache(settings, symbol, cache_df)
@@ -219,8 +230,8 @@ def backfill_price_cache(
                     history_sources=sources,
                     cache_path=rel_path(primary_cache_path, settings.paths.root),
                     price_column=history_price_column(cache_df) or "",
-                    latest_date=history_latest_date(cache_df),
-                    message="cache complete",
+                    latest_date=before_latest_date,
+                    message="cache complete and fresh",
                 )
             )
             continue
@@ -236,6 +247,7 @@ def backfill_price_cache(
                 rate_limited=True,
                 stopped_after_429=True,
                 retry_after_seconds=retry_after_seconds,
+                latest_date=before_latest_date,
                 message="skipped after Tiingo 429",
             )
             fallback_candidates.append({"row": row, "symbol": symbol, "weight": weight, "before_rows": before_rows, "reason": "tiingo_429_skip"})
@@ -243,13 +255,29 @@ def backfill_price_cache(
             continue
 
         if calls_attempted >= max_calls_per_run:
-            quality_rows.append(cache_quality_row(run_date, symbol, weight, before_rows, before_rows, ok=False, message="skipped after max_calls limit"))
+            quality_rows.append(
+                cache_quality_row(
+                    run_date,
+                    symbol,
+                    weight,
+                    before_rows,
+                    before_rows,
+                    ok=False,
+                    latest_date=before_latest_date,
+                    message="skipped after max_calls limit",
+                )
+            )
             continue
 
         attempted_symbols.append(symbol)
         calls_attempted += 1
         end = run_date
-        start = (datetime.fromisoformat(end) - timedelta(days=FULL_HISTORY_DAYS)).date().isoformat()
+        full_history_start = (datetime.fromisoformat(end) - timedelta(days=FULL_HISTORY_DAYS)).date()
+        start_date = full_history_start
+        if before_status["is_complete"] and before_latest_date is not None:
+            incremental_start = datetime.fromisoformat(str(before_latest_date)).date() - timedelta(days=INCREMENTAL_LOOKBACK_DAYS)
+            start_date = max(incremental_start, full_history_start)
+        start = start_date.isoformat()
         result = tiingo.daily_prices(symbol, start_date=start, end_date=end)
         result_rate_limited, retry_after = result_rate_limit_meta(result)
         fetched_rows = len(result.data) if result.ok else 0
@@ -263,10 +291,11 @@ def backfill_price_cache(
             messages.append(f"{symbol}: {result.message}")
 
         merged = merge_price_history(cache_df, live_df, symbol)
-        after_rows = valid_history_row_count(merged)
+        after_status = history_cache_status(merged, run_date)
+        after_rows = int(after_status["valid_rows"])
         if after_rows > 0:
             write_tiingo_cache(settings, symbol, merged)
-        if result.ok and after_rows >= MIN_HISTORY_ROWS:
+        if result.ok and after_status["is_qualified"]:
             loaded_symbols.append(symbol)
 
         if result_rate_limited:
@@ -282,7 +311,7 @@ def backfill_price_cache(
             after_rows,
             fetched_rows=fetched_rows,
             was_requested=True,
-            ok=result.ok and after_rows >= MIN_HISTORY_ROWS,
+            ok=result.ok and bool(after_status["is_qualified"]),
             rate_limited=result_rate_limited,
             stopped_after_429=result_rate_limited,
             retry_after_seconds=retry_after,
@@ -290,9 +319,9 @@ def backfill_price_cache(
             history_sources=",".join(sorted(merged.get("source", pd.Series(dtype="object")).dropna().astype(str).unique())),
             cache_path=rel_path(cache_path_for_symbol(settings, symbol), settings.paths.root),
             price_column=history_price_column(merged) or "",
-            latest_date=history_latest_date(merged),
+            latest_date=after_status["latest_date"],
         )
-        if (not result.ok or fetched_rows == 0 or after_rows < MIN_HISTORY_ROWS) and calls_attempted <= max_calls_per_run:
+        if (not result.ok or fetched_rows == 0 or not after_status["is_qualified"]) and calls_attempted <= max_calls_per_run:
             fallback_candidates.append({"row": row, "symbol": symbol, "weight": weight, "before_rows": before_rows, "reason": "tiingo_failed_or_incomplete"})
         quality_rows.append(row)
 
@@ -330,7 +359,7 @@ def backfill_price_cache(
         "ok": True,
         "run_date": run_date,
         "symbols_total": int(len(holdings)),
-        "symbols_complete": int(cache_quality["is_complete"].sum()) if not cache_quality.empty else 0,
+        "symbols_complete": int(cache_quality["is_qualified"].sum()) if not cache_quality.empty else 0,
         "calls_attempted": calls_attempted,
         "calls_success": calls_success,
         "rate_limited": rate_limited,
@@ -389,25 +418,29 @@ def run_twelve_data_fallback(
             write_csv(result.data, raw_dir / f"twelve_data_{symbol}_cache_fallback.csv")
             cache_df = load_tiingo_cache(settings, symbol)
             merged = merge_price_history(cache_df, result.data, symbol)
-            after_rows = valid_history_row_count(merged)
+            after_status = history_cache_status(merged, run_date)
+            after_rows = int(after_status["valid_rows"])
             if after_rows > 0:
                 write_tiingo_cache(settings, symbol, merged)
-            if after_rows >= MIN_HISTORY_ROWS:
+            row = candidate["row"]
+            row["provider"] = "tiingo+twelve_data" if row.get("was_requested") else "twelve_data"
+            row["after_rows"] = after_rows
+            row["history_sources"] = ",".join(sorted(merged.get("source", pd.Series(dtype="object")).dropna().astype(str).unique()))
+            row["cache_path"] = rel_path(cache_path_for_symbol(settings, symbol), settings.paths.root)
+            row["price_column"] = history_price_column(merged) or ""
+            row["latest_date"] = after_status["latest_date"]
+            row["staleness_days"] = after_status["staleness_days"]
+            row["ma200_ready"] = after_rows >= 200
+            row["fetched_rows"] = int(row.get("fetched_rows") or 0) + len(result.data)
+            row["is_complete"] = bool(after_status["is_complete"])
+            row["is_fresh"] = bool(after_status["is_fresh"])
+            row["is_qualified"] = bool(after_status["is_qualified"])
+            row["was_requested"] = True
+            row["ok"] = bool(after_status["is_qualified"])
+            row["message"] = f"{row.get('message')}; twelve_data fallback: {len(result.data)} rows"
+            if after_status["is_qualified"]:
                 calls_success += 1
                 loaded.append(symbol)
-                row = candidate["row"]
-                row["provider"] = "tiingo+twelve_data" if row.get("was_requested") else "twelve_data"
-                row["after_rows"] = after_rows
-                row["history_sources"] = ",".join(sorted(merged.get("source", pd.Series(dtype="object")).dropna().astype(str).unique()))
-                row["cache_path"] = rel_path(cache_path_for_symbol(settings, symbol), settings.paths.root)
-                row["price_column"] = history_price_column(merged) or ""
-                row["latest_date"] = history_latest_date(merged)
-                row["ma200_ready"] = after_rows >= 200
-                row["fetched_rows"] = int(row.get("fetched_rows") or 0) + len(result.data)
-                row["is_complete"] = True
-                row["was_requested"] = True
-                row["ok"] = True
-                row["message"] = f"{row.get('message')}; twelve_data fallback: {len(result.data)} rows"
             messages.append(f"{symbol}: {len(result.data)} rows")
         else:
             messages.append(f"{symbol}: {result.message}")
@@ -462,8 +495,9 @@ def repair_price_cache_with_twelve_data(
         symbol = holding["symbol"]
         weight = float(holding.get("weight", 0.0))
         cache_df = load_tiingo_cache(settings, symbol)
-        before_rows = valid_history_row_count(cache_df)
-        if before_rows >= MIN_HISTORY_ROWS:
+        before_status = history_cache_status(cache_df, run_date)
+        before_rows = int(before_status["valid_rows"])
+        if before_status["is_qualified"]:
             continue
         if len(attempted) >= max_credits or rate_limited:
             break
@@ -473,12 +507,13 @@ def repair_price_cache_with_twelve_data(
         result = twelve_data.time_series(symbol, outputsize=outputsize, interval="1day")
         limited, retry_after = result_rate_limit_meta(result)
         merged = merge_price_history(cache_df, result.data if result.ok else pd.DataFrame(), symbol)
-        after_rows = valid_history_row_count(merged)
+        after_status = history_cache_status(merged, run_date)
+        after_rows = int(after_status["valid_rows"])
         if after_rows > 0:
             write_tiingo_cache(settings, symbol, merged)
         if result.ok:
             write_csv(result.data, raw_dir / f"twelve_data_{symbol}_history_repair.csv")
-        if after_rows >= MIN_HISTORY_ROWS:
+        if after_status["is_qualified"]:
             loaded.append(symbol)
         quality_rows.append(
             cache_quality_row(
@@ -490,14 +525,14 @@ def repair_price_cache_with_twelve_data(
                 provider="twelve_data",
                 fetched_rows=len(result.data) if result.ok else 0,
                 was_requested=True,
-                ok=after_rows >= MIN_HISTORY_ROWS,
+                ok=bool(after_status["is_qualified"]),
                 rate_limited=limited,
                 stopped_after_429=limited,
                 retry_after_seconds=retry_after,
                 history_sources=",".join(sorted(merged.get("source", pd.Series(dtype="object")).dropna().astype(str).unique())),
                 cache_path=rel_path(cache_path_for_symbol(settings, symbol), settings.paths.root),
                 price_column=history_price_column(merged) or "",
-                latest_date=history_latest_date(merged),
+                latest_date=after_status["latest_date"],
                 message=result.message,
             )
         )

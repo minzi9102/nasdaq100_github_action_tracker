@@ -9,7 +9,7 @@ from qqq_tracker.pipeline.cache_backfill import (
     prioritize_backfill_holdings,
     repair_price_cache_with_twelve_data,
 )
-from qqq_tracker.pipeline.daily_run import API_USAGE_COLUMNS, valid_history_row_count
+from qqq_tracker.pipeline.daily_run import API_USAGE_COLUMNS, history_cache_status, history_latest_date, valid_history_row_count
 from qqq_tracker.providers.base import ProviderResult
 
 
@@ -38,10 +38,11 @@ def make_settings(tmp_path, holdings):
     )
 
 
-def price_frame(symbol, start="2025-01-01", rows=220, first=100.0):
+def price_frame(symbol, start=None, rows=220, first=100.0):
+    dates = pd.date_range(start, periods=rows, freq="B") if start else pd.bdate_range(end="2026-06-05", periods=rows)
     return pd.DataFrame(
         {
-            "date": pd.date_range(start, periods=rows, freq="B").astype(str),
+            "date": dates.astype(str),
             "adjClose": [first + i for i in range(rows)],
             "symbol": [symbol] * rows,
             "source": ["tiingo"] * rows,
@@ -126,12 +127,16 @@ def test_complete_cache_is_not_requested(tmp_path):
     price_frame("AAPL", rows=220).to_csv(settings.paths.tiingo_price_cache_dir / "AAPL.csv", index=False)
     tiingo = FakeTiingo({"AAPL": price_frame("AAPL", rows=220)})
 
-    cache_quality, api_usage, _ = backfill_price_cache(settings, tiingo, "2026-06-05", max_calls=40)
+    cache_quality, api_usage, manifest = backfill_price_cache(settings, tiingo, "2026-06-05", max_calls=40)
 
     assert tiingo.calls == []
     assert list(cache_quality.columns) == CACHE_QUALITY_COLUMNS
     assert bool(cache_quality.loc[0, "is_complete"]) is True
+    assert cache_quality.loc[0, "staleness_days"] == 0
+    assert bool(cache_quality.loc[0, "is_fresh"]) is True
+    assert bool(cache_quality.loc[0, "is_qualified"]) is True
     assert bool(cache_quality.loc[0, "was_requested"]) is False
+    assert manifest["symbols_complete"] == 1
     assert list(api_usage.columns) == API_USAGE_COLUMNS
     assert api_usage.loc[0, "calls_attempted"] == 0
 
@@ -168,6 +173,77 @@ def test_history_complete_requires_valid_date_and_price_values():
 
     assert valid_history_row_count(invalid) == 0
     assert valid_history_row_count(partially_valid) == 199
+
+
+def test_cache_status_uses_latest_valid_price_date_and_five_day_boundary():
+    fresh = price_frame("AAPL")
+    fresh.loc[len(fresh)] = {"date": "2026-06-07", "adjClose": None, "symbol": "AAPL", "source": "tiingo"}
+
+    assert history_latest_date(fresh) == "2026-06-05"
+    assert history_cache_status(fresh, "2026-06-10") == {
+        "valid_rows": 220,
+        "latest_date": "2026-06-05",
+        "staleness_days": 5,
+        "is_complete": True,
+        "is_fresh": True,
+        "is_qualified": True,
+    }
+    assert history_cache_status(fresh, "2026-06-11")["is_qualified"] is False
+    assert history_cache_status(fresh, "2026-06-04")["is_fresh"] is False
+
+
+def test_incomplete_cache_requests_full_history_window(tmp_path):
+    holdings = pd.DataFrame([{"symbol": "AAPL", "weight": 0.8}])
+    settings = make_settings(tmp_path, holdings)
+    price_frame("AAPL", rows=219).to_csv(settings.paths.tiingo_price_cache_dir / "AAPL.csv", index=False)
+    tiingo = FakeTiingo({"AAPL": price_frame("AAPL")})
+
+    backfill_price_cache(settings, tiingo, "2026-06-05", max_calls=1)
+
+    assert tiingo.calls == [("AAPL", "2025-04-11", "2026-06-05")]
+
+
+def test_stale_complete_cache_uses_bounded_incremental_window(tmp_path):
+    holdings = pd.DataFrame([{"symbol": "AAPL", "weight": 0.8}])
+    settings = make_settings(tmp_path, holdings)
+    stale = price_frame("AAPL", start="2005-01-03")
+    stale.to_csv(settings.paths.tiingo_price_cache_dir / "AAPL.csv", index=False)
+    tiingo = FakeTiingo({"AAPL": price_frame("AAPL")})
+
+    quality, _, _ = backfill_price_cache(settings, tiingo, "2026-06-05", max_calls=1)
+
+    assert tiingo.calls == [("AAPL", "2025-04-11", "2026-06-05")]
+    assert bool(quality.loc[0, "is_complete"]) is True
+    assert bool(quality.loc[0, "is_fresh"]) is True
+    assert bool(quality.loc[0, "is_qualified"]) is True
+
+
+def test_recently_stale_cache_uses_ten_day_overlap(tmp_path):
+    holdings = pd.DataFrame([{"symbol": "AAPL", "weight": 0.8}])
+    settings = make_settings(tmp_path, holdings)
+    stale = price_frame("AAPL")
+    stale["date"] = pd.bdate_range(end="2026-05-20", periods=220).astype(str)
+    stale.to_csv(settings.paths.tiingo_price_cache_dir / "AAPL.csv", index=False)
+    tiingo = FakeTiingo({"AAPL": price_frame("AAPL")})
+
+    backfill_price_cache(settings, tiingo, "2026-06-05", max_calls=1)
+
+    assert tiingo.calls == [("AAPL", "2026-05-10", "2026-06-05")]
+
+
+def test_tiingo_success_without_fresh_data_uses_twelve_data_fallback(tmp_path):
+    holdings = pd.DataFrame([{"symbol": "AAPL", "weight": 0.8}])
+    settings = make_settings(tmp_path, holdings)
+    stale = price_frame("AAPL")
+    stale["date"] = pd.bdate_range(end="2026-05-20", periods=220).astype(str)
+    stale.to_csv(settings.paths.tiingo_price_cache_dir / "AAPL.csv", index=False)
+    tiingo = FakeTiingo({"AAPL": stale})
+    twelve = FakeTwelveData({"AAPL": price_frame("AAPL")})
+
+    quality, _, _ = backfill_price_cache(settings, tiingo, "2026-06-05", max_calls=1, twelve_data=twelve)
+
+    assert [call[0] for call in twelve.calls] == ["AAPL"]
+    assert bool(quality.loc[0, "is_qualified"]) is True
 
 
 def test_incomplete_cache_requests_by_weight_and_respects_max_calls(tmp_path):

@@ -260,7 +260,7 @@ def test_fetch_breadth_daily_mode_uses_cache_only(monkeypatch, tmp_path):
     settings.paths.raw_dir.mkdir(parents=True)
     cache = pd.DataFrame(
         {
-            "date": pd.date_range("2025-01-01", periods=220, freq="B").astype(str),
+            "date": pd.bdate_range(end="2026-06-05", periods=220).astype(str),
             "adjClose": range(100, 320),
             "symbol": ["AAPL"] * 220,
             "source": ["tiingo"] * 220,
@@ -315,6 +315,51 @@ def test_fetch_breadth_missing_cache_still_records_quality(tmp_path):
     assert quality_rows[0]["symbol_coverage_ratio"] == 0.0
     assert quality_rows[0]["weight_coverage_ratio"] == 0.0
     assert quality_rows[0]["missing_top_weight_symbols"] == "AAPL,MSFT"
+
+
+def test_fetch_breadth_excludes_stale_and_raw_seed_history(tmp_path):
+    price_cache_dir = tmp_path / "cache" / "prices"
+    raw_dir = tmp_path / "raw"
+    raw_run_dir = raw_dir / "2026-06-05"
+    price_cache_dir.mkdir(parents=True)
+    raw_run_dir.mkdir(parents=True)
+    settings = SimpleNamespace(
+        paths=SimpleNamespace(
+            price_cache_dir=price_cache_dir,
+            tiingo_price_cache_dir=price_cache_dir / "tiingo",
+            raw_dir=raw_dir,
+        )
+    )
+
+    def history(symbol, end):
+        return pd.DataFrame(
+            {
+                "date": pd.bdate_range(end=end, periods=220).astype(str),
+                "adjClose": range(100, 320),
+                "symbol": [symbol] * 220,
+                "source": ["tiingo"] * 220,
+            }
+        )
+
+    history("FRESH", "2026-06-05").to_csv(price_cache_dir / "FRESH.csv", index=False)
+    history("STALE", "2026-05-20").to_csv(price_cache_dir / "STALE.csv", index=False)
+    history("RAW", "2026-06-05").to_csv(raw_run_dir / "tiingo_RAW_breadth_daily.csv", index=False)
+    holdings = pd.DataFrame(
+        [
+            {"symbol": "STALE", "company_name": "Stale", "weight": 0.5},
+            {"symbol": "RAW", "company_name": "Raw", "weight": 0.3},
+            {"symbol": "FRESH", "company_name": "Fresh", "weight": 0.2},
+        ]
+    )
+
+    quality_rows = []
+    metrics = fetch_breadth(settings, holdings, "2026-06-05", [], quality_rows, {})
+
+    assert metrics.loc[metrics["metric_name"] == "advancing_count", "denominator"].iloc[0] == 1
+    assert quality_rows[0]["symbol_coverage_ratio"] == 1 / 3
+    assert quality_rows[0]["weight_coverage_ratio"] == 0.2
+    assert quality_rows[0]["missing_top_weight_symbols"] == "STALE,RAW"
+    assert not (price_cache_dir / "RAW.csv").exists()
 
 
 def test_top_holdings_quotes_uses_batch_quote_map():

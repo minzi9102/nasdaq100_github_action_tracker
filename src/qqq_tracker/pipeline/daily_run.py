@@ -148,6 +148,7 @@ BREATH_EXCLUDE_SYMBOLS = {"USD"}
 FULL_HISTORY_DAYS = 420
 INCREMENTAL_LOOKBACK_DAYS = 10
 MIN_HISTORY_ROWS = 220
+MAX_STALE_CALENDAR_DAYS = 5
 QQQ_OUTPUT_ROWS = 260
 MAX_BACKFILL_SYMBOLS_PER_RUN = 15
 TOP_WEIGHT_MISSING_LIMIT = 10
@@ -1076,15 +1077,49 @@ def history_price_column(df: pd.DataFrame) -> str | None:
 def history_latest_date(df: pd.DataFrame) -> str | None:
     if df.empty or "date" not in df.columns:
         return None
-    dates = pd.to_datetime(df["date"], errors="coerce").dropna()
+    price_col = history_price_column(df)
+    if price_col is None:
+        return None
+    dates = pd.to_datetime(df["date"], errors="coerce")
+    prices = pd.to_numeric(df[price_col], errors="coerce")
+    dates = dates[dates.notna() & prices.notna()]
     return dates.max().date().isoformat() if not dates.empty else None
 
 
-def cached_or_seed_history_row_count(settings: Settings, symbol: str) -> int:
-    cache_df = load_tiingo_cache(settings, symbol)
-    if not cache_df.empty:
-        return valid_history_row_count(cache_df)
-    return valid_history_row_count(load_tiingo_seed_from_raw(settings, symbol))
+def history_freshness(latest_date: str | None, run_date: str) -> tuple[int | None, bool]:
+    if latest_date is None:
+        return None, False
+    staleness_days = (datetime.fromisoformat(run_date).date() - datetime.fromisoformat(latest_date).date()).days
+    return staleness_days, 0 <= staleness_days <= MAX_STALE_CALENDAR_DAYS
+
+
+def history_cache_status(df: pd.DataFrame, run_date: str) -> dict[str, object]:
+    valid_rows = valid_history_row_count(df)
+    latest_date = history_latest_date(df)
+    staleness_days, is_fresh = history_freshness(latest_date, run_date)
+    is_complete = valid_rows >= MIN_HISTORY_ROWS
+    return {
+        "valid_rows": valid_rows,
+        "latest_date": latest_date,
+        "staleness_days": staleness_days,
+        "is_complete": is_complete,
+        "is_fresh": is_fresh,
+        "is_qualified": is_complete and is_fresh,
+    }
+
+
+def load_primary_price_cache(settings: Settings, symbol: str) -> pd.DataFrame:
+    cache_path = cache_path_for_symbol(settings, symbol)
+    if not cache_path.exists():
+        return pd.DataFrame()
+    try:
+        df = pd.read_csv(cache_path)
+    except Exception:  # noqa: BLE001
+        return pd.DataFrame()
+    if "date" not in df.columns:
+        return pd.DataFrame()
+    df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.strftime("%Y-%m-%d")
+    return df
 
 
 def compute_missing_top_weight_symbols(holdings: pd.DataFrame, missing_symbols: list[str]) -> list[str]:
@@ -1252,19 +1287,19 @@ def fetch_tiingo_history_for_breadth(
     }
 
 
-def load_cached_history_for_breadth(settings: Settings, symbols: list[str]) -> tuple[dict[str, pd.DataFrame], dict[str, object]]:
+def load_cached_history_for_breadth(
+    settings: Settings,
+    symbols: list[str],
+    run_date: str,
+) -> tuple[dict[str, pd.DataFrame], dict[str, object]]:
     frames: dict[str, pd.DataFrame] = {}
     missing: list[str] = []
     cache_rows_used = 0
 
     for symbol in symbols:
-        cache_df = load_tiingo_cache(settings, symbol)
-        if cache_df.empty:
-            cache_df = load_tiingo_seed_from_raw(settings, symbol)
-            if not cache_df.empty:
-                write_tiingo_cache(settings, symbol, cache_df)
+        cache_df = load_primary_price_cache(settings, symbol)
         cache_rows_used += len(cache_df)
-        if valid_history_row_count(cache_df) >= 2:
+        if history_cache_status(cache_df, run_date)["is_qualified"]:
             frames[symbol] = cache_df
         else:
             missing.append(symbol)
@@ -1307,15 +1342,15 @@ def fetch_breadth(
     holdings["weight"] = pd.to_numeric(holdings["weight"], errors="coerce").fillna(0.0)
     symbol_priority = []
     for symbol in holdings["symbol"].dropna().astype(str).unique().tolist():
-        history_rows = cached_or_seed_history_row_count(settings, symbol)
-        symbol_priority.append((symbol, history_rows >= MIN_HISTORY_ROWS, history_rows))
+        status = history_cache_status(load_primary_price_cache(settings, symbol), run_date)
+        symbol_priority.append((symbol, bool(status["is_qualified"]), int(status["valid_rows"])))
     priority_map = {symbol: (has_ready_cache, history_rows) for symbol, has_ready_cache, history_rows in symbol_priority}
     holdings["has_ready_cache"] = holdings["symbol"].map(lambda symbol: priority_map.get(symbol, (False, 0))[0])
     holdings["cached_history_rows"] = holdings["symbol"].map(lambda symbol: priority_map.get(symbol, (False, 0))[1])
     ordered = holdings.sort_values(["has_ready_cache", "cached_history_rows", "weight", "symbol"], ascending=[False, False, False, True])
     symbols = ordered["symbol"].dropna().astype(str).unique().tolist()
 
-    history_frames, history_meta = load_cached_history_for_breadth(settings, symbols)
+    history_frames, history_meta = load_cached_history_for_breadth(settings, symbols, run_date)
     fetched_symbols = sorted(history_frames.keys())
     logs.append(
         {
