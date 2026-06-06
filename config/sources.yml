@@ -29,6 +29,13 @@ providers:
     base_url: https://api.tiingo.com/tiingo
     rate_limit_note: 用于日线价格备用源和成分股历史价格计算。
 
+  twelve_data:
+    enabled: true
+    class_path: qqq_tracker.providers.twelve_data.TwelveDataProvider
+    api_key_env: TWELVE_DATA_API_KEY
+    base_url: https://api.twelvedata.com
+    rate_limit_note: 用于 Tiingo 历史缓存失败或限速后的低频兜底；按 credits/minute 节流。
+
   invesco:
     enabled: true
     class_path: qqq_tracker.providers.invesco.InvescoProvider

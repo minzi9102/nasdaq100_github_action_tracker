@@ -33,6 +33,17 @@ tiingo:
   stop_after_429: true
   respect_retry_after: true
 
+twelve_data:
+  role: history_cache_fallback
+  minute_credits: 8
+  daily_credits: 800
+  reserve_daily_credits: 150
+  max_credits_per_minute: 8
+  max_credits_per_run: 160
+  batch_size: 8
+  sleep_seconds_between_batches: 70
+  stop_after_limit_error: true
+
 invesco:
   role: official_qqq_holdings
   max_calls_per_run: 3

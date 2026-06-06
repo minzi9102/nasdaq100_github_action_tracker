@@ -271,8 +271,14 @@ def quality_row(
 
 def limit_window_and_value(settings: Settings, provider: str) -> tuple[str, object]:
     cfg = settings.api_limits.get(provider, {})
+    if "max_credits_per_minute" in cfg:
+        return "minute", cfg.get("max_credits_per_minute")
+    if "minute_credits" in cfg:
+        return "minute", cfg.get("minute_credits")
     if "hourly_requests" in cfg:
         return "hour", cfg.get("hourly_requests")
+    if "daily_credits" in cfg:
+        return "day", cfg.get("daily_credits")
     if "daily_requests" in cfg:
         return "day", cfg.get("daily_requests")
     if "max_calls_per_run" in cfg:

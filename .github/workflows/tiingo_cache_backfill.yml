@@ -37,6 +37,7 @@ jobs:
       - name: Backfill Tiingo cache
         env:
           TIINGO_API_TOKEN: ${{ secrets.TIINGO_API_TOKEN }}
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
         run: |
           .venv/bin/python scripts/backfill_price_cache.py --as-of auto
 

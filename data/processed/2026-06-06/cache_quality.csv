@@ -1,8 +1,8 @@
 ﻿run_date,symbol,weight,provider,before_rows,after_rows,fetched_rows,is_complete,was_requested,ok,rate_limited,stopped_after_429,retry_after_seconds,message
 2026-06-06,NVDA,0.08433591,tiingo,288,288,0,True,False,True,False,False,,cache complete
-2026-06-06,AAPL,0.07244039,tiingo,0,288,288,True,True,True,False,False,,AAPL: 288 rows
-2026-06-06,MSFT,0.05049571,tiingo,0,0,0,False,False,False,False,False,,skipped after max_calls limit
-2026-06-06,MU,0.04905769,tiingo,0,0,0,False,False,False,False,False,,skipped after max_calls limit
+2026-06-06,AAPL,0.07244039,tiingo,288,288,0,True,False,True,False,False,,cache complete
+2026-06-06,MSFT,0.05049571,tiingo,288,288,0,True,False,True,False,False,,cache complete
+2026-06-06,MU,0.04905769,tiingo,0,288,288,True,True,True,False,False,,MU: 288 rows
 2026-06-06,AMZN,0.04319211,tiingo,0,0,0,False,False,False,False,False,,skipped after max_calls limit
 2026-06-06,AMD,0.03732949,tiingo,0,0,0,False,False,False,False,False,,skipped after max_calls limit
 2026-06-06,GOOGL,0.0343483699999999,tiingo,0,0,0,False,False,False,False,False,,skipped after max_calls limit

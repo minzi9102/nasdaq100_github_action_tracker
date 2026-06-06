@@ -17,7 +17,10 @@ def make_settings(tmp_path, holdings):
         path.mkdir(parents=True, exist_ok=True)
     holdings.to_csv(latest_dir / "qqq_equity_holdings.csv", index=False)
     return SimpleNamespace(
-        api_limits={"tiingo": {"hourly_requests": 50, "max_calls_per_run": 40}},
+        api_limits={
+            "tiingo": {"hourly_requests": 50, "max_calls_per_run": 40},
+            "twelve_data": {"minute_credits": 8, "max_credits_per_run": 160, "batch_size": 8, "sleep_seconds_between_batches": 70},
+        },
         paths=SimpleNamespace(
             root=tmp_path,
             processed_dir=processed_dir,
@@ -53,6 +56,25 @@ class FakeTiingo:
         if isinstance(response, pd.DataFrame):
             return ProviderResult("tiingo", True, response, f"{symbol}: {len(response)} rows", {"rate_limited": False})
         return ProviderResult("tiingo", False, pd.DataFrame(), "failed", {"rate_limited": False})
+
+
+class FakeTwelveData:
+    available = True
+
+    def __init__(self, responses):
+        self.responses = responses
+        self.calls = []
+
+    def time_series(self, symbol, outputsize=260, interval="1day"):
+        self.calls.append((symbol, outputsize, interval))
+        response = self.responses.get(symbol)
+        if isinstance(response, str) and response == "429":
+            return ProviderResult("twelve_data", False, pd.DataFrame(), "429 received", {"rate_limited": True, "retry_after_seconds": 120})
+        if isinstance(response, pd.DataFrame):
+            df = response.copy()
+            df["source"] = "twelve_data"
+            return ProviderResult("twelve_data", True, df, f"{symbol}: {len(df)} rows", {"rate_limited": False})
+        return ProviderResult("twelve_data", False, pd.DataFrame(), "failed", {"rate_limited": False})
 
 
 def test_prepare_backfill_holdings_sorts_by_weight():
@@ -160,3 +182,100 @@ def test_successful_backfill_merges_sorts_and_deduplicates_cache(tmp_path):
     assert cached["date"].tolist() == ["2025-01-02", "2025-01-03", "2025-01-06"]
     assert cached["adjClose"].tolist() == [100.0, 101.5, 102.0]
     assert cache_quality.loc[0, "after_rows"] == 3
+
+
+def test_tiingo_success_does_not_call_twelve_data(tmp_path):
+    holdings = pd.DataFrame([{"symbol": "AAPL", "weight": 0.8}])
+    settings = make_settings(tmp_path, holdings)
+    tiingo = FakeTiingo({"AAPL": price_frame("AAPL", rows=220)})
+    twelve = FakeTwelveData({"AAPL": price_frame("AAPL", rows=220)})
+
+    cache_quality, api_usage, _ = backfill_price_cache(settings, tiingo, "2026-06-05", max_calls=1, twelve_data=twelve)
+
+    assert twelve.calls == []
+    assert api_usage["provider"].tolist() == ["tiingo", "twelve_data"]
+    assert api_usage.loc[api_usage["provider"] == "twelve_data", "calls_attempted"].iloc[0] == 0
+    assert cache_quality.loc[0, "provider"] == "tiingo"
+
+
+def test_tiingo_failure_uses_twelve_data_fallback(tmp_path):
+    holdings = pd.DataFrame([{"symbol": "AAPL", "weight": 0.8}])
+    settings = make_settings(tmp_path, holdings)
+    tiingo = FakeTiingo({"AAPL": pd.DataFrame()})
+    twelve = FakeTwelveData({"AAPL": price_frame("AAPL", rows=220)})
+
+    cache_quality, api_usage, _ = backfill_price_cache(settings, tiingo, "2026-06-05", max_calls=1, twelve_data=twelve)
+    cached = pd.read_csv(settings.paths.tiingo_price_cache_dir / "AAPL.csv")
+
+    assert [call[0] for call in twelve.calls] == ["AAPL"]
+    assert cache_quality.loc[0, "provider"] == "tiingo+twelve_data"
+    assert bool(cache_quality.loc[0, "is_complete"]) is True
+    assert set(cached["source"]) == {"twelve_data"}
+    twelve_usage = api_usage[api_usage["provider"] == "twelve_data"].iloc[0]
+    assert twelve_usage["endpoint"] == "time_series_cache_fallback"
+    assert twelve_usage["credits_used"] == 1
+
+
+def test_tiingo_429_falls_back_for_skipped_high_weight_symbols(tmp_path, monkeypatch):
+    holdings = pd.DataFrame(
+        [
+            {"symbol": "HIGH", "weight": 0.9},
+            {"symbol": "MID", "weight": 0.5},
+            {"symbol": "LOW", "weight": 0.1},
+        ]
+    )
+    settings = make_settings(tmp_path, holdings)
+    settings.api_limits["twelve_data"]["batch_size"] = 100
+    tiingo = FakeTiingo({"HIGH": "429"})
+    twelve = FakeTwelveData({"HIGH": price_frame("HIGH", rows=220), "MID": price_frame("MID", rows=220), "LOW": price_frame("LOW", rows=220)})
+    monkeypatch.setattr("qqq_tracker.pipeline.cache_backfill.time.sleep", lambda seconds: None)
+
+    cache_quality, api_usage, _ = backfill_price_cache(settings, tiingo, "2026-06-05", max_calls=40, twelve_data=twelve)
+
+    assert [call[0] for call in tiingo.calls] == ["HIGH"]
+    assert [call[0] for call in twelve.calls] == ["HIGH", "MID", "LOW"]
+    assert bool(api_usage.loc[api_usage["provider"] == "tiingo", "rate_limited"].iloc[0]) is True
+    assert api_usage.loc[api_usage["provider"] == "twelve_data", "calls_success"].iloc[0] == 3
+    assert cache_quality[cache_quality["symbol"] == "MID"].iloc[0]["provider"] == "twelve_data"
+
+
+def test_twelve_data_credit_limit_caps_fallback(tmp_path, monkeypatch):
+    holdings = pd.DataFrame(
+        [
+            {"symbol": "A", "weight": 0.9},
+            {"symbol": "B", "weight": 0.8},
+            {"symbol": "C", "weight": 0.7},
+        ]
+    )
+    settings = make_settings(tmp_path, holdings)
+    settings.api_limits["twelve_data"]["max_credits_per_run"] = 2
+    settings.api_limits["twelve_data"]["batch_size"] = 100
+    tiingo = FakeTiingo({"A": "429"})
+    twelve = FakeTwelveData({"A": price_frame("A", rows=220), "B": price_frame("B", rows=220), "C": price_frame("C", rows=220)})
+    monkeypatch.setattr("qqq_tracker.pipeline.cache_backfill.time.sleep", lambda seconds: None)
+
+    _, api_usage, _ = backfill_price_cache(settings, tiingo, "2026-06-05", max_calls=40, twelve_data=twelve)
+
+    assert [call[0] for call in twelve.calls] == ["A", "B"]
+    assert api_usage.loc[api_usage["provider"] == "twelve_data", "credits_used"].iloc[0] == 2
+
+
+def test_twelve_data_429_stops_fallback_only(tmp_path):
+    holdings = pd.DataFrame(
+        [
+            {"symbol": "A", "weight": 0.9},
+            {"symbol": "B", "weight": 0.8},
+        ]
+    )
+    settings = make_settings(tmp_path, holdings)
+    tiingo = FakeTiingo({"A": pd.DataFrame(), "B": pd.DataFrame()})
+    twelve = FakeTwelveData({"A": "429", "B": price_frame("B", rows=220)})
+
+    cache_quality, api_usage, _ = backfill_price_cache(settings, tiingo, "2026-06-05", max_calls=40, twelve_data=twelve)
+
+    assert [call[0] for call in tiingo.calls] == ["A", "B"]
+    assert [call[0] for call in twelve.calls] == ["A"]
+    twelve_usage = api_usage[api_usage["provider"] == "twelve_data"].iloc[0]
+    assert bool(twelve_usage["rate_limited"]) is True
+    assert twelve_usage["retry_after_seconds"] == 120
+    assert bool(cache_quality[cache_quality["symbol"] == "A"].iloc[0]["rate_limited"]) is True

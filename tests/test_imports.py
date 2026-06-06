@@ -1,5 +1,5 @@
 from qqq_tracker.settings import Settings
-from qqq_tracker.providers import AlphaVantageProvider, FREDProvider, FMPProvider, InvescoProvider, TiingoProvider
+from qqq_tracker.providers import AlphaVantageProvider, FREDProvider, FMPProvider, InvescoProvider, TiingoProvider, TwelveDataProvider
 from qqq_tracker.providers.base import sanitize_error_message
 
 
@@ -15,6 +15,7 @@ def test_providers_construct_without_key():
     assert not FMPProvider(None, "https://example.com").available
     assert InvescoProvider().available
     assert not TiingoProvider(None, "https://example.com").available
+    assert not TwelveDataProvider(None, "https://example.com").available
 
 
 def test_sanitize_error_message_redacts_api_keys():
