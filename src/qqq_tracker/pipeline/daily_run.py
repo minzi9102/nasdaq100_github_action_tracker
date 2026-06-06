@@ -682,8 +682,7 @@ def load_price_cache(settings: Settings, symbol: str) -> pd.DataFrame:
         return pd.DataFrame()
     if "date" not in df.columns:
         return pd.DataFrame()
-    if "date" in df.columns:
-        df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.date.astype(str)
+    df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.strftime("%Y-%m-%d")
     return df
 
 
@@ -1059,7 +1058,26 @@ def build_quote_diagnostics(
 def valid_history_row_count(df: pd.DataFrame) -> int:
     if df.empty or "date" not in df.columns:
         return 0
-    return len(df.dropna(subset=["date"]))
+    price_col = history_price_column(df)
+    if price_col is None:
+        return 0
+    valid_dates = pd.to_datetime(df["date"], errors="coerce").notna()
+    valid_prices = pd.to_numeric(df[price_col], errors="coerce").notna()
+    return int((valid_dates & valid_prices).sum())
+
+
+def history_price_column(df: pd.DataFrame) -> str | None:
+    for column in ("adjusted_close", "adjClose", "close"):
+        if column in df.columns:
+            return column
+    return None
+
+
+def history_latest_date(df: pd.DataFrame) -> str | None:
+    if df.empty or "date" not in df.columns:
+        return None
+    dates = pd.to_datetime(df["date"], errors="coerce").dropna()
+    return dates.max().date().isoformat() if not dates.empty else None
 
 
 def cached_or_seed_history_row_count(settings: Settings, symbol: str) -> int:
@@ -1736,7 +1754,6 @@ def run_daily(as_of: str = "auto") -> Dict:
     }
     optional_latest_files = {
         "provider_capability_probe_csv": latest_dir / "provider_capability_probe.csv",
-        "cache_quality_csv": latest_dir / "cache_quality.csv",
         "twelve_data_cache_quality_csv": latest_dir / "twelve_data_cache_quality.csv",
     }
     latest_files.update(

@@ -18,6 +18,8 @@ from .daily_run import (
     MIN_HISTORY_ROWS,
     api_usage_row,
     cache_path_for_symbol,
+    history_latest_date,
+    history_price_column,
     load_previous_csv,
     load_tiingo_cache,
     merge_price_history,
@@ -35,6 +37,10 @@ CACHE_QUALITY_COLUMNS = [
     "weight",
     "provider",
     "history_sources",
+    "cache_path",
+    "price_column",
+    "latest_date",
+    "ma200_ready",
     "before_rows",
     "after_rows",
     "fetched_rows",
@@ -124,6 +130,9 @@ def cache_quality_row(
     retry_after_seconds: float | None = None,
     message: str = "",
     history_sources: str = "",
+    cache_path: str = "",
+    price_column: str = "",
+    latest_date: str | None = None,
 ) -> Dict:
     return {
         "run_date": run_date,
@@ -131,6 +140,10 @@ def cache_quality_row(
         "weight": weight,
         "provider": provider,
         "history_sources": history_sources,
+        "cache_path": cache_path,
+        "price_column": price_column,
+        "latest_date": latest_date,
+        "ma200_ready": int(after_rows) >= 200,
         "before_rows": int(before_rows),
         "after_rows": int(after_rows),
         "fetched_rows": int(fetched_rows),
@@ -191,6 +204,9 @@ def backfill_price_cache(
         before_rows = valid_history_row_count(cache_df)
 
         if before_rows >= MIN_HISTORY_ROWS:
+            primary_cache_path = cache_path_for_symbol(settings, symbol)
+            if not primary_cache_path.exists():
+                write_tiingo_cache(settings, symbol, cache_df)
             sources = ",".join(sorted(cache_df.get("source", pd.Series(dtype="object")).dropna().astype(str).unique()))
             quality_rows.append(
                 cache_quality_row(
@@ -201,6 +217,9 @@ def backfill_price_cache(
                     before_rows,
                     ok=True,
                     history_sources=sources,
+                    cache_path=rel_path(primary_cache_path, settings.paths.root),
+                    price_column=history_price_column(cache_df) or "",
+                    latest_date=history_latest_date(cache_df),
                     message="cache complete",
                 )
             )
@@ -269,6 +288,9 @@ def backfill_price_cache(
             retry_after_seconds=retry_after,
             message=result.message,
             history_sources=",".join(sorted(merged.get("source", pd.Series(dtype="object")).dropna().astype(str).unique())),
+            cache_path=rel_path(cache_path_for_symbol(settings, symbol), settings.paths.root),
+            price_column=history_price_column(merged) or "",
+            latest_date=history_latest_date(merged),
         )
         if (not result.ok or fetched_rows == 0 or after_rows < MIN_HISTORY_ROWS) and calls_attempted <= max_calls_per_run:
             fallback_candidates.append({"row": row, "symbol": symbol, "weight": weight, "before_rows": before_rows, "reason": "tiingo_failed_or_incomplete"})
@@ -377,6 +399,10 @@ def run_twelve_data_fallback(
                 row["provider"] = "tiingo+twelve_data" if row.get("was_requested") else "twelve_data"
                 row["after_rows"] = after_rows
                 row["history_sources"] = ",".join(sorted(merged.get("source", pd.Series(dtype="object")).dropna().astype(str).unique()))
+                row["cache_path"] = rel_path(cache_path_for_symbol(settings, symbol), settings.paths.root)
+                row["price_column"] = history_price_column(merged) or ""
+                row["latest_date"] = history_latest_date(merged)
+                row["ma200_ready"] = after_rows >= 200
                 row["fetched_rows"] = int(row.get("fetched_rows") or 0) + len(result.data)
                 row["is_complete"] = True
                 row["was_requested"] = True
@@ -469,6 +495,9 @@ def repair_price_cache_with_twelve_data(
                 stopped_after_429=limited,
                 retry_after_seconds=retry_after,
                 history_sources=",".join(sorted(merged.get("source", pd.Series(dtype="object")).dropna().astype(str).unique())),
+                cache_path=rel_path(cache_path_for_symbol(settings, symbol), settings.paths.root),
+                price_column=history_price_column(merged) or "",
+                latest_date=history_latest_date(merged),
                 message=result.message,
             )
         )

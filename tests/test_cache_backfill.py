@@ -9,7 +9,7 @@ from qqq_tracker.pipeline.cache_backfill import (
     prioritize_backfill_holdings,
     repair_price_cache_with_twelve_data,
 )
-from qqq_tracker.pipeline.daily_run import API_USAGE_COLUMNS
+from qqq_tracker.pipeline.daily_run import API_USAGE_COLUMNS, valid_history_row_count
 from qqq_tracker.providers.base import ProviderResult
 
 
@@ -134,6 +134,40 @@ def test_complete_cache_is_not_requested(tmp_path):
     assert bool(cache_quality.loc[0, "was_requested"]) is False
     assert list(api_usage.columns) == API_USAGE_COLUMNS
     assert api_usage.loc[0, "calls_attempted"] == 0
+
+
+def test_complete_legacy_cache_is_migrated_to_provider_neutral_path(tmp_path):
+    holdings = pd.DataFrame([{"symbol": "NVDA", "weight": 0.8}])
+    settings = make_settings(tmp_path, holdings)
+    legacy_dir = settings.paths.tiingo_price_cache_dir
+    primary_dir = tmp_path / "cache" / "prices"
+    primary_dir.mkdir(parents=True)
+    settings.paths.price_cache_dir = primary_dir
+    price_frame("NVDA", rows=220).to_csv(legacy_dir / "NVDA.csv", index=False)
+    tiingo = FakeTiingo({})
+
+    cache_quality, _, _ = backfill_price_cache(settings, tiingo, "2026-06-05", max_calls=0)
+
+    migrated = pd.read_csv(primary_dir / "NVDA.csv")
+    assert tiingo.calls == []
+    assert len(migrated) == 220
+    assert cache_quality.loc[0, "cache_path"] == "cache/prices/NVDA.csv"
+    assert cache_quality.loc[0, "price_column"] == "adjClose"
+    assert bool(cache_quality.loc[0, "ma200_ready"]) is True
+
+
+def test_history_complete_requires_valid_date_and_price_values():
+    invalid = pd.DataFrame(
+        {
+            "date": pd.date_range("2025-01-01", periods=220, freq="B").astype(str),
+            "adjClose": [None] * 220,
+        }
+    )
+    partially_valid = invalid.copy()
+    partially_valid.loc[:198, "adjClose"] = range(199)
+
+    assert valid_history_row_count(invalid) == 0
+    assert valid_history_row_count(partially_valid) == 199
 
 
 def test_incomplete_cache_requests_by_weight_and_respects_max_calls(tmp_path):
