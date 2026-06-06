@@ -1339,7 +1339,11 @@ def fetch_breadth(
     missing_top_weight_symbols = compute_missing_top_weight_symbols(holdings, missing_symbols)
 
     quality_ok = not metrics.empty
-    quality_message = f"{len(used_symbols)}/{total_symbols} symbols with history+quote coverage"
+    quote_overlay_symbols = len(set(quote_map) & set(used_symbols))
+    quality_message = (
+        f"{len(used_symbols)}/{total_symbols} symbols with history coverage; "
+        f"{quote_overlay_symbols}/{len(used_symbols)} history symbols with Twelve Data quote overlay"
+    )
     if missing_top_weight_symbols:
         quality_message = f"{quality_message}; coverage insufficient for top-weight symbols"
     quality_rows.append(
@@ -1359,7 +1363,7 @@ def fetch_breadth(
             live_rows_fetched=int(history_meta["live_rows_fetched"]),
             fallback_provider=quote_provider,
             history_coverage_ratio=symbol_coverage_ratio,
-            quote_coverage_ratio=len(set(quote_map) & set(used_symbols)) / len(used_symbols) if used_symbols else 0.0,
+            quote_coverage_ratio=quote_overlay_symbols / len(used_symbols) if used_symbols else 0.0,
             actual_quote_provider="twelve_data" if quote_map else "",
             actual_history_provider=source_name.split("+")[0],
             message=quality_message,
@@ -1713,28 +1717,39 @@ def run_daily(as_of: str = "auto") -> Dict:
     archive_xlsx_path = archive_dir / f"nasdaq100_qqq_daily_tracker_{run_date}.xlsx"
     shutil.copy2(xlsx_path, archive_xlsx_path)
 
+    latest_files = {
+        "excel_report": rel_path(xlsx_path, settings.paths.root),
+        "manifest_json": rel_path(latest_dir / "manifest.json", settings.paths.root),
+        "model_input_metrics_csv": rel_path(latest_dir / "model_input_metrics.csv", settings.paths.root),
+        "price_daily_csv": rel_path(latest_dir / "price_daily.csv", settings.paths.root),
+        "price_metrics_csv": rel_path(latest_dir / "price_metrics.csv", settings.paths.root),
+        "macro_daily_csv": rel_path(latest_dir / "macro_daily.csv", settings.paths.root),
+        "macro_metrics_csv": rel_path(latest_dir / "macro_metrics.csv", settings.paths.root),
+        "qqq_holdings_csv": rel_path(latest_dir / "qqq_holdings.csv", settings.paths.root),
+        "qqq_equity_holdings_csv": rel_path(latest_dir / "qqq_equity_holdings.csv", settings.paths.root),
+        "breadth_metrics_csv": rel_path(latest_dir / "breadth_metrics.csv", settings.paths.root),
+        "top_holdings_quotes_csv": rel_path(latest_dir / "top_holdings_quotes.csv", settings.paths.root),
+        "quote_failures_csv": rel_path(latest_dir / "quote_failures.csv", settings.paths.root),
+        "data_quality_csv": rel_path(latest_dir / "data_quality.csv", settings.paths.root),
+        "api_usage_csv": rel_path(latest_dir / "api_usage.csv", settings.paths.root),
+        "run_log_csv": rel_path(latest_dir / "run_log.csv", settings.paths.root),
+    }
+    optional_latest_files = {
+        "provider_capability_probe_csv": latest_dir / "provider_capability_probe.csv",
+        "cache_quality_csv": latest_dir / "cache_quality.csv",
+        "twelve_data_cache_quality_csv": latest_dir / "twelve_data_cache_quality.csv",
+    }
+    latest_files.update(
+        {
+            key: rel_path(path, settings.paths.root)
+            for key, path in optional_latest_files.items()
+            if path.exists()
+        }
+    )
     manifest = {
         "as_of": run_date,
         "generated_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
-        "latest_files": {
-            "excel_report": rel_path(xlsx_path, settings.paths.root),
-            "manifest_json": rel_path(latest_dir / "manifest.json", settings.paths.root),
-            "model_input_metrics_csv": rel_path(latest_dir / "model_input_metrics.csv", settings.paths.root),
-            "price_daily_csv": rel_path(latest_dir / "price_daily.csv", settings.paths.root),
-            "price_metrics_csv": rel_path(latest_dir / "price_metrics.csv", settings.paths.root),
-            "macro_daily_csv": rel_path(latest_dir / "macro_daily.csv", settings.paths.root),
-            "macro_metrics_csv": rel_path(latest_dir / "macro_metrics.csv", settings.paths.root),
-            "qqq_holdings_csv": rel_path(latest_dir / "qqq_holdings.csv", settings.paths.root),
-            "qqq_equity_holdings_csv": rel_path(latest_dir / "qqq_equity_holdings.csv", settings.paths.root),
-            "breadth_metrics_csv": rel_path(latest_dir / "breadth_metrics.csv", settings.paths.root),
-            "top_holdings_quotes_csv": rel_path(latest_dir / "top_holdings_quotes.csv", settings.paths.root),
-            "quote_failures_csv": rel_path(latest_dir / "quote_failures.csv", settings.paths.root),
-            "provider_capability_probe_csv": rel_path(latest_dir / "provider_capability_probe.csv", settings.paths.root),
-            "cache_quality_csv": rel_path(latest_dir / "cache_quality.csv", settings.paths.root),
-            "data_quality_csv": rel_path(latest_dir / "data_quality.csv", settings.paths.root),
-            "api_usage_csv": rel_path(latest_dir / "api_usage.csv", settings.paths.root),
-            "run_log_csv": rel_path(latest_dir / "run_log.csv", settings.paths.root),
-        },
+        "latest_files": latest_files,
         "quality_summary": data_quality.to_dict(orient="records"),
         "api_usage": api_usage.to_dict(orient="records"),
         "provider_logs": logs,
