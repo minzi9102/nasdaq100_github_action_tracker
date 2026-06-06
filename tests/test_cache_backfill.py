@@ -180,7 +180,7 @@ def test_successful_backfill_merges_sorts_and_deduplicates_cache(tmp_path):
     cached = pd.read_csv(settings.paths.tiingo_price_cache_dir / "AAPL.csv")
 
     assert cached["date"].tolist() == ["2025-01-02", "2025-01-03", "2025-01-06"]
-    assert cached["adjClose"].tolist() == [100.0, 101.5, 102.0]
+    assert cached["adjusted_close"].tolist() == [100.0, 101.5, 102.0]
     assert cache_quality.loc[0, "after_rows"] == 3
 
 

@@ -18,12 +18,15 @@ from qqq_tracker.pipeline.daily_run import (
     build_macro_metric_rows,
     build_top_holdings_quotes,
     fetch_breadth,
+    fetch_qqq_price_history,
+    load_price_cache,
     merge_price_history,
     normalize_price_daily,
     quality_row,
     fetch_twelve_data_quotes,
     summarize_price,
     top_holdings_quote_quality,
+    write_price_cache,
 )
 from qqq_tracker.pipeline.report_builder import MODEL_INPUT_COLUMNS, build_model_input_metrics, build_model_input_metrics_v2
 from qqq_tracker.providers.base import APIError, ProviderResult, RateLimitError
@@ -593,7 +596,94 @@ def test_merge_price_history_deduplicates_and_sorts():
     merged = merge_price_history(cache_df, live_df, "AAPL")
 
     assert merged["date"].tolist() == ["2025-01-02", "2025-01-03", "2025-01-06"]
-    assert merged["adjClose"].tolist() == [100.0, 101.5, 102.0]
+    assert merged["adjusted_close"].tolist() == [100.0, 101.5, 102.0]
+
+
+def test_price_cache_reads_legacy_path_and_writes_provider_neutral_path(tmp_path):
+    price_cache_dir = tmp_path / "prices"
+    legacy_dir = price_cache_dir / "tiingo"
+    legacy_dir.mkdir(parents=True)
+    price_frame = pd.DataFrame({"date": ["2026-06-05"], "adjClose": [100.0], "symbol": ["QQQ"], "source": ["tiingo"]})
+    price_frame.to_csv(legacy_dir / "QQQ.csv", index=False)
+    settings = SimpleNamespace(paths=SimpleNamespace(price_cache_dir=price_cache_dir, tiingo_price_cache_dir=legacy_dir))
+
+    loaded = load_price_cache(settings, "QQQ")
+    write_price_cache(settings, "QQQ", merge_price_history(pd.DataFrame(), loaded, "QQQ"))
+
+    assert len(loaded) == 1
+    assert (price_cache_dir / "QQQ.csv").exists()
+    assert pd.read_csv(price_cache_dir / "QQQ.csv")["adjusted_close"].tolist() == [100.0]
+
+
+def test_qqq_price_history_initializes_cache_and_calculates_ma200(tmp_path):
+    price_cache_dir = tmp_path / "cache" / "prices"
+    legacy_dir = price_cache_dir / "tiingo"
+    raw_dir = tmp_path / "raw"
+    price_cache_dir.mkdir(parents=True)
+    legacy_dir.mkdir(parents=True)
+    raw_dir.mkdir()
+    settings = SimpleNamespace(
+        symbols={"primary_etf": "QQQ"},
+        sources={"providers": {"alpha_vantage": {"default_outputsize": "compact"}}},
+        api_limits={
+            "alpha_vantage": {"daily_requests": 25},
+            "tiingo": {"hourly_requests": 50},
+            "twelve_data": {"minute_credits": 8},
+        },
+        paths=SimpleNamespace(price_cache_dir=price_cache_dir, tiingo_price_cache_dir=legacy_dir),
+    )
+    alpha_df = pd.DataFrame(
+        {
+            "date": pd.date_range("2026-01-01", periods=100, freq="B").astype(str),
+            "close": range(300, 400),
+            "adjusted_close": range(300, 400),
+            "symbol": ["QQQ"] * 100,
+            "source": ["alpha_vantage"] * 100,
+        }
+    )
+    tiingo_df = pd.DataFrame(
+        {
+            "date": pd.date_range("2025-01-01", periods=300, freq="B").astype(str),
+            "adjClose": range(100, 400),
+            "symbol": ["QQQ"] * 300,
+            "source": ["tiingo"] * 300,
+        }
+    )
+
+    class FakeAlpha:
+        available = True
+
+        def daily(self, symbol, outputsize="compact"):
+            return ProviderResult("alpha_vantage", True, alpha_df, "100 rows", {})
+
+    class FakeTiingoHistory:
+        available = True
+
+        def daily_prices(self, symbol, start_date=None, end_date=None):
+            return ProviderResult("tiingo", True, tiingo_df, "300 rows", {})
+
+    class FakeTwelveHistory:
+        available = True
+
+        def time_series(self, symbol, outputsize=260, interval="1day"):
+            raise AssertionError("Twelve Data should not run after Tiingo completes the cache")
+
+    usage_rows = []
+    quality_rows = []
+    daily, metrics = fetch_qqq_price_history(
+        settings,
+        {"alpha_vantage": FakeAlpha(), "tiingo": FakeTiingoHistory(), "twelve_data": FakeTwelveHistory()},
+        "2026-06-05",
+        raw_dir,
+        [],
+        usage_rows,
+        quality_rows,
+    )
+
+    assert len(daily) == 260
+    assert pd.notna(metrics.loc[0, "ma_200"])
+    assert metrics.loc[0, "source"] == "alpha_vantage_compact+local_cache"
+    assert (price_cache_dir / "QQQ.csv").exists()
 
 
 def test_rate_limit_error_exposes_retry_after():

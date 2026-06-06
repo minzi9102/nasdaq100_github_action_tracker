@@ -127,6 +127,7 @@ BREATH_EXCLUDE_SYMBOLS = {"USD"}
 FULL_HISTORY_DAYS = 420
 INCREMENTAL_LOOKBACK_DAYS = 10
 MIN_HISTORY_ROWS = 220
+QQQ_OUTPUT_ROWS = 260
 MAX_BACKFILL_SYMBOLS_PER_RUN = 15
 TOP_WEIGHT_MISSING_LIMIT = 10
 
@@ -213,7 +214,7 @@ def normalize_price_daily(df: pd.DataFrame, symbol: str, source: str) -> pd.Data
     else:
         out["adjusted_close"] = d.get("close")
     out["volume"] = d.get("volume")
-    out["source"] = source
+    out["source"] = d["source"] if "source" in d.columns else source
     return out.dropna(subset=["date"]).sort_values(["symbol", "source", "date"]).reset_index(drop=True)
 
 
@@ -604,11 +605,16 @@ def build_equity_holdings(holdings: pd.DataFrame) -> pd.DataFrame:
 
 
 def cache_path_for_symbol(settings: Settings, symbol: str) -> Path:
-    return settings.paths.tiingo_price_cache_dir / f"{normalize_symbol(symbol)}.csv"
+    price_cache_dir = getattr(settings.paths, "price_cache_dir", settings.paths.tiingo_price_cache_dir)
+    return price_cache_dir / f"{normalize_symbol(symbol)}.csv"
 
 
-def load_tiingo_cache(settings: Settings, symbol: str) -> pd.DataFrame:
+def load_price_cache(settings: Settings, symbol: str) -> pd.DataFrame:
     cache_path = cache_path_for_symbol(settings, symbol)
+    legacy_dir = getattr(settings.paths, "tiingo_price_cache_dir", None)
+    legacy_path = legacy_dir / f"{normalize_symbol(symbol)}.csv" if legacy_dir is not None else None
+    if not cache_path.exists() and legacy_path is not None and legacy_path.exists():
+        cache_path = legacy_path
     if not cache_path.exists():
         return pd.DataFrame()
     try:
@@ -620,6 +626,10 @@ def load_tiingo_cache(settings: Settings, symbol: str) -> pd.DataFrame:
     if "date" in df.columns:
         df["date"] = pd.to_datetime(df["date"], errors="coerce").dt.date.astype(str)
     return df
+
+
+def load_tiingo_cache(settings: Settings, symbol: str) -> pd.DataFrame:
+    return load_price_cache(settings, symbol)
 
 
 def load_tiingo_seed_from_raw(settings: Settings, symbol: str) -> pd.DataFrame:
@@ -638,22 +648,28 @@ def load_tiingo_seed_from_raw(settings: Settings, symbol: str) -> pd.DataFrame:
 
 
 def merge_price_history(cache_df: pd.DataFrame, live_df: pd.DataFrame, symbol: str) -> pd.DataFrame:
-    frames = [frame for frame in [cache_df, live_df] if not frame.empty]
+    frames = []
+    for frame in [cache_df, live_df]:
+        if frame.empty:
+            continue
+        source = str(frame["source"].dropna().iloc[-1]) if "source" in frame.columns and not frame["source"].dropna().empty else "unknown"
+        frames.append(normalize_price_daily(frame, symbol, source))
     if not frames:
-        return pd.DataFrame()
+        return pd.DataFrame(columns=PRICE_DAILY_COLUMNS)
     merged = pd.concat(frames, ignore_index=True)
-    merged["symbol"] = merged.get("symbol", symbol)
-    if "source" not in merged.columns:
-        merged["source"] = "tiingo"
     merged["date"] = pd.to_datetime(merged["date"], errors="coerce").dt.date.astype(str)
     merged = merged.dropna(subset=["date"]).sort_values("date").drop_duplicates(subset=["date"], keep="last").reset_index(drop=True)
-    return merged
+    return merged.reindex(columns=PRICE_DAILY_COLUMNS)
 
 
-def write_tiingo_cache(settings: Settings, symbol: str, df: pd.DataFrame) -> None:
+def write_price_cache(settings: Settings, symbol: str, df: pd.DataFrame) -> None:
     if df.empty:
         return
     write_csv(df, cache_path_for_symbol(settings, symbol))
+
+
+def write_tiingo_cache(settings: Settings, symbol: str, df: pd.DataFrame) -> None:
+    write_price_cache(settings, symbol, df)
 
 
 def quote_map_from_batch(df: pd.DataFrame) -> dict[str, dict]:
@@ -1263,6 +1279,120 @@ def fetch_breadth(
     return metrics
 
 
+def fetch_qqq_price_history(
+    settings: Settings,
+    providers: Dict[str, object],
+    run_date: str,
+    raw_dir: Path,
+    logs: list[Dict],
+    api_usage_rows: list[Dict],
+    quality_rows: list[Dict],
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    symbol = settings.symbols.get("primary_etf", "QQQ")
+    cache_df = load_price_cache(settings, symbol)
+    av: AlphaVantageProvider = providers["alpha_vantage"]  # type: ignore[assignment]
+    outputsize = provider_config(settings, "alpha_vantage").get("default_outputsize", "compact")
+    av_result = av.daily(symbol, outputsize=outputsize)
+    logs.append({"provider": av_result.name, "method": "daily", "symbol": symbol, "ok": av_result.ok, "message": av_result.message})
+    av_rate_limited, av_retry_after = result_rate_limit_meta(av_result)
+    api_usage_rows.append(
+        api_usage_row(
+            settings,
+            run_date,
+            "alpha_vantage",
+            "TIME_SERIES_DAILY",
+            1 if av.available else 0,
+            1 if av_result.ok else 0,
+            symbols_requested=symbol,
+            symbols_loaded=symbol if av_result.ok else "",
+            rate_limited=av_rate_limited,
+            stopped_after_429=av_rate_limited,
+            retry_after_seconds=av_retry_after,
+            message=av_result.message,
+        )
+    )
+    if av_result.ok:
+        write_csv(av_result.data, raw_dir / f"alpha_vantage_{symbol}_daily.csv")
+        cache_df = merge_price_history(cache_df, av_result.data, symbol)
+
+    tiingo_attempted = 0
+    tiingo_success = 0
+    twelve_attempted = 0
+    twelve_success = 0
+    if valid_history_row_count(cache_df) < QQQ_OUTPUT_ROWS:
+        start = (datetime.fromisoformat(run_date) - timedelta(days=FULL_HISTORY_DAYS)).date().isoformat()
+        tiingo: TiingoProvider = providers["tiingo"]  # type: ignore[assignment]
+        if tiingo.available:
+            tiingo_attempted = 1
+            result = tiingo.daily_prices(symbol, start_date=start, end_date=run_date)
+            logs.append({"provider": result.name, "method": "qqq_cache_initialize", "symbol": symbol, "ok": result.ok, "message": result.message})
+            if result.ok and not result.data.empty:
+                tiingo_success = 1
+                write_csv(result.data, raw_dir / f"tiingo_{symbol}_cache_initialize.csv")
+                cache_df = merge_price_history(cache_df, result.data, symbol)
+
+    if valid_history_row_count(cache_df) < QQQ_OUTPUT_ROWS:
+        twelve_data: TwelveDataProvider = providers["twelve_data"]  # type: ignore[assignment]
+        if twelve_data.available:
+            twelve_attempted = 1
+            result = twelve_data.time_series(symbol, outputsize=QQQ_OUTPUT_ROWS, interval="1day")
+            logs.append({"provider": result.name, "method": "qqq_cache_initialize", "symbol": symbol, "ok": result.ok, "message": result.message})
+            if result.ok and not result.data.empty:
+                twelve_success = 1
+                write_csv(result.data, raw_dir / f"twelve_data_{symbol}_cache_initialize.csv")
+                cache_df = merge_price_history(cache_df, result.data, symbol)
+
+    api_usage_rows.append(
+        api_usage_row(
+            settings,
+            run_date,
+            "tiingo",
+            "qqq_cache_initialize",
+            tiingo_attempted,
+            tiingo_success,
+            symbols_requested=symbol if tiingo_attempted else "",
+            symbols_loaded=symbol if tiingo_success else "",
+            message="called only when QQQ cache had fewer than 260 rows",
+        )
+    )
+    api_usage_rows.append(
+        api_usage_row(
+            settings,
+            run_date,
+            "twelve_data",
+            "qqq_cache_initialize",
+            twelve_attempted,
+            twelve_success,
+            symbols_requested=symbol if twelve_attempted else "",
+            symbols_loaded=symbol if twelve_success else "",
+            message="fallback initialization when QQQ cache remained below 260 rows",
+        )
+    )
+
+    if not cache_df.empty:
+        write_price_cache(settings, symbol, cache_df)
+    output = cache_df.sort_values("date").tail(QQQ_OUTPUT_ROWS).reset_index(drop=True)
+    metric_source = "alpha_vantage_compact+local_cache"
+    metrics = pd.DataFrame([summarize_price(symbol, output, metric_source)], columns=PRICE_METRICS_COLUMNS)
+    rows = valid_history_row_count(output)
+    quality_rows.append(
+        quality_row(
+            "price_daily",
+            metric_source,
+            rows > 0,
+            rows,
+            symbol_coverage_ratio=1.0 if rows else 0.0,
+            weight_coverage_ratio=1.0 if rows else 0.0,
+            missing_symbols=[] if rows else [symbol],
+            cache_rows_used=rows,
+            live_rows_fetched=len(av_result.data) if av_result.ok else 0,
+            fallback_provider="tiingo+twelve_data",
+            message="QQQ cache ready" if rows >= QQQ_OUTPUT_ROWS else "insufficient_history_for_ma200",
+        )
+    )
+    return output.reindex(columns=PRICE_DAILY_COLUMNS), metrics
+
+
 def run_daily(as_of: str = "auto") -> Dict:
     settings = Settings()
     settings.ensure_dirs()
@@ -1279,102 +1409,15 @@ def run_daily(as_of: str = "auto") -> Dict:
     logs: List[Dict] = []
     quality_rows: list[Dict] = []
     api_usage_rows: list[Dict] = []
-    price_source_frames: dict[str, list[tuple[str, pd.DataFrame]]] = {}
-    price_daily_frames: list[pd.DataFrame] = []
-    av_success: dict[str, bool] = {}
-
-    if settings.pipeline.get("run", {}).get("fetch_alpha_vantage_prices", True):
-        av: AlphaVantageProvider = providers["alpha_vantage"]  # type: ignore[assignment]
-        for symbol in settings.symbols.get("price_symbols", ["QQQ"]):
-            result = av.daily_adjusted(symbol, outputsize=provider_config(settings, "alpha_vantage").get("default_outputsize", "compact"))
-            logs.append({"provider": result.name, "method": "daily_adjusted", "symbol": symbol, "ok": result.ok, "message": result.message})
-            av_success[symbol] = result.ok
-            rate_limited, retry_after = result_rate_limit_meta(result)
-            api_usage_rows.append(
-                api_usage_row(
-                    settings,
-                    run_date,
-                    result.name,
-                    "TIME_SERIES_DAILY_ADJUSTED",
-                    1 if av.available else 0,
-                    1 if result.ok else 0,
-                    symbols_requested=symbol,
-                    symbols_loaded=symbol if result.ok else "",
-                    rate_limited=rate_limited,
-                    stopped_after_429=rate_limited,
-                    retry_after_seconds=retry_after,
-                    message=result.message,
-                )
-            )
-            if result.ok:
-                df = result.data
-                write_csv(df, raw_dir / f"alpha_vantage_{symbol}_daily.csv")
-                price_source_frames.setdefault(symbol, []).append(("alpha_vantage", df))
-                price_daily_frames.append(normalize_price_daily(df, symbol, "alpha_vantage"))
-            quality_rows.append(
-                quality_row(
-                    "price_daily",
-                    result.name,
-                    result.ok,
-                    len(result.data),
-                    symbol_coverage_ratio=1.0 if result.ok else 0.0,
-                    weight_coverage_ratio=1.0 if result.ok else 0.0,
-                    missing_symbols=[] if result.ok else [symbol],
-                    message=result.message,
-                )
-            )
-
-    if settings.pipeline.get("run", {}).get("fetch_tiingo_prices", True):
-        tiingo: TiingoProvider = providers["tiingo"]  # type: ignore[assignment]
-        end = run_date if run_date != "auto" else date.today().isoformat()
-        start = (datetime.fromisoformat(end) - timedelta(days=FULL_HISTORY_DAYS)).date().isoformat()
-        for symbol in settings.symbols.get("price_symbols", ["QQQ"]):
-            if av_success.get(symbol, False):
-                continue
-            result = tiingo.daily_prices(symbol, start_date=start, end_date=end)
-            logs.append({"provider": result.name, "method": "daily_prices", "symbol": symbol, "ok": result.ok, "message": result.message})
-            rate_limited, retry_after = result_rate_limit_meta(result)
-            api_usage_rows.append(
-                api_usage_row(
-                    settings,
-                    run_date,
-                    result.name,
-                    "daily_prices",
-                    1 if tiingo.available else 0,
-                    1 if result.ok else 0,
-                    symbols_requested=symbol,
-                    symbols_loaded=symbol if result.ok else "",
-                    rate_limited=rate_limited,
-                    stopped_after_429=rate_limited,
-                    retry_after_seconds=retry_after,
-                    message=result.message,
-                )
-            )
-            if result.ok:
-                df = result.data
-                write_csv(df, raw_dir / f"tiingo_{symbol}_daily.csv")
-                price_source_frames.setdefault(symbol, []).append(("tiingo", df))
-                price_daily_frames.append(normalize_price_daily(df, symbol, "tiingo"))
-            quality_rows.append(
-                quality_row(
-                    "price_daily",
-                    result.name,
-                    result.ok,
-                    len(result.data),
-                    symbol_coverage_ratio=1.0 if result.ok else 0.0,
-                    weight_coverage_ratio=1.0 if result.ok else 0.0,
-                    missing_symbols=[] if result.ok else [symbol],
-                    message=result.message,
-                )
-            )
-
-    price_daily = pd.concat(price_daily_frames, ignore_index=True) if price_daily_frames else pd.DataFrame(columns=PRICE_DAILY_COLUMNS)
-    price_daily = price_daily.reindex(columns=PRICE_DAILY_COLUMNS).sort_values(["symbol", "source", "date"]) if not price_daily.empty else price_daily
-    price_metrics_rows = []
-    for symbol, frames in price_source_frames.items():
-        source, frame = choose_metric_frame(frames)
-        price_metrics_rows.append(summarize_price(symbol, frame, source))
-    price_metrics = pd.DataFrame(price_metrics_rows, columns=PRICE_METRICS_COLUMNS)
+    price_daily, price_metrics = fetch_qqq_price_history(
+        settings,
+        providers,
+        run_date,
+        raw_dir,
+        logs,
+        api_usage_rows,
+        quality_rows,
+    )
     write_csv(price_daily, processed_dir / "price_daily.csv")
     write_csv(price_metrics, processed_dir / "price_metrics.csv")
 

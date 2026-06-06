@@ -8,9 +8,9 @@ from .base import BaseProvider, ProviderResult
 class AlphaVantageProvider(BaseProvider):
     provider_name = "alpha_vantage"
 
-    def daily_adjusted(self, symbol: str, outputsize: str = "compact") -> ProviderResult:
+    def daily(self, symbol: str, outputsize: str = "compact") -> ProviderResult:
         if not self.available:
-            return self.unavailable_result("daily_adjusted")
+            return self.unavailable_result("daily")
         params = {
             "function": "TIME_SERIES_DAILY",
             "symbol": symbol,
@@ -43,3 +43,6 @@ class AlphaVantageProvider(BaseProvider):
             return ProviderResult(self.provider_name, True, df, f"{symbol}: {len(df)} rows", data)
         except Exception as exc:  # noqa: BLE001
             return ProviderResult(self.provider_name, False, pd.DataFrame(), str(exc))
+
+    def daily_adjusted(self, symbol: str, outputsize: str = "compact") -> ProviderResult:
+        return self.daily(symbol, outputsize=outputsize)

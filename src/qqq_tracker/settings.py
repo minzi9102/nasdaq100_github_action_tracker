@@ -25,6 +25,7 @@ class ProjectPaths:
     raw_dir: Path = ROOT / "data" / "raw"
     processed_dir: Path = ROOT / "data" / "processed"
     cache_dir: Path = ROOT / "data" / "cache"
+    price_cache_dir: Path = ROOT / "data" / "cache" / "prices"
     tiingo_price_cache_dir: Path = ROOT / "data" / "cache" / "prices" / "tiingo"
     reports_latest_dir: Path = ROOT / "reports" / "latest"
     reports_archive_dir: Path = ROOT / "reports" / "archive"
@@ -52,6 +53,7 @@ class Settings:
             self.paths.raw_dir,
             self.paths.processed_dir,
             self.paths.cache_dir,
+            self.paths.price_cache_dir,
             self.paths.tiingo_price_cache_dir,
             self.paths.reports_latest_dir,
             self.paths.reports_archive_dir,
