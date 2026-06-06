@@ -1,16 +1,10 @@
-# 如何新增数据接口
+# 新增数据 Provider
 
-本项目使用 Provider 结构。新增接口分三步。
+当前 provider 配置不是动态插件加载。新增 provider 时需要同时修改代码、配置、流水线和测试。
 
-## 1. 新建 Provider 文件
+## 1. 实现 Provider
 
-例如新增 Polygon：
-
-```text
-src/qqq_tracker/providers/polygon.py
-```
-
-参考结构：
+在 `src/qqq_tracker/providers/` 新建模块，继承 `BaseProvider`，返回 `ProviderResult`：
 
 ```python
 from __future__ import annotations
@@ -26,11 +20,18 @@ class PolygonProvider(BaseProvider):
     def daily_prices(self, symbol: str) -> ProviderResult:
         if not self.available:
             return self.unavailable_result("daily_prices")
-        # 调用接口，整理成DataFrame
         return ProviderResult(self.provider_name, True, pd.DataFrame(), "ok")
 ```
 
-## 2. 注册到 config/sources.yml
+通过 `request_json()` 发起请求，以复用重试、429 识别和密钥脱敏。不要在异常、URL 或日志中暴露 API key。
+
+## 2. 导出 Provider
+
+在 `src/qqq_tracker/providers/__init__.py` 中导入，并加入 `__all__`。
+
+## 3. 注册配置
+
+在 `config/sources.yml` 中增加：
 
 ```yaml
 providers:
@@ -41,31 +42,48 @@ providers:
     base_url: https://api.polygon.io
 ```
 
-## 3. 在 daily_run.py 中调用
+注意：当前 `class_path` 是注册信息，不会自动实例化 provider。
 
-在 `make_providers()` 中初始化，在 `run_daily()` 中写入输出。
+如有调用额度，在 `config/api_limits.yml` 中增加预算、保留额度、节流和遇到 429 后的停止策略。
 
-## 输出字段要求
+## 4. 接入流水线
 
-价格类接口建议统一输出：
+根据用途修改相应入口：
 
-| 字段 | 说明 |
-|---|---|
-| date | 交易日期 |
-| symbol | 代码 |
-| open | 开盘价 |
-| high | 最高价 |
-| low | 最低价 |
-| close | 收盘价 |
-| adjusted_close | 复权收盘价 |
-| volume | 成交量 |
-| source | 数据源 |
+- 生产日报：`make_providers()` 和 `run_daily()`。
+- 历史缓存：`pipeline/cache_backfill.py`。
+- 能力探测：`pipeline/capability_probe.py`。
 
-宏观类接口建议统一输出：
+新增调用时应同步写入：
 
-| 字段 | 说明 |
-|---|---|
-| date | 日期 |
-| series_id | 序列代码 |
-| value | 数值 |
-| source | 数据源 |
+- 原始或标准化数据。
+- `data_quality.csv`。
+- `api_usage.csv`。
+- manifest 的文件索引或摘要。
+
+## 5. 输出契约
+
+价格日线统一字段：
+
+```text
+date,symbol,open,high,low,close,adjusted_close,volume,source
+```
+
+所有输出必须保留实际 provider，并对缺失、限速和回退进行客观记录。
+
+## 6. 测试与文档
+
+至少增加：
+
+- 响应规范化测试。
+- 缺失 key、API 错误和 429 测试。
+- 回退、缓存合并或调用预算测试。
+- 输出字段和 manifest 测试。
+
+运行：
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest
+```
+
+最后同步 README、数据模型、Secrets 和工作流说明。

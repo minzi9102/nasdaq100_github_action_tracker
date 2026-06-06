@@ -1,78 +1,78 @@
 # GitHub Actions 部署说明
 
-## 1. 新建仓库
+## 1. Secrets
 
-在 GitHub 创建一个新仓库，例如：
-
-```text
-nasdaq100-qqq-daily-tracker
-```
-
-把本项目所有文件上传到该仓库。
-
-## 2. 添加 Secrets
-
-进入仓库：
+进入：
 
 ```text
-Settings -> Secrets and variables -> Actions -> New repository secret
+Settings > Secrets and variables > Actions > New repository secret
 ```
 
-添加：
+生产日报与缓存维护需要：
 
 - `ALPHA_VANTAGE_API_KEY`
 - `FRED_API_KEY`
-- `FMP_API_KEY`
 - `TIINGO_API_TOKEN`
+- `TWELVE_DATA_API_KEY`
 
-不要把真实密钥写进仓库文件。
+能力探测额外使用：
 
-## 3. 启用工作流
+- `FMP_API_KEY`
 
-工作流文件：
+Invesco 官方持仓接口不需要 API key。
 
-```text
-.github/workflows/daily-tracker.yml
+## 2. 工作流
+
+GitHub cron 使用 UTC，所有工作流也支持 `workflow_dispatch` 手动触发。
+
+| 工作流 | 文件 | UTC 计划 | 主要职责 |
+| --- | --- | --- | --- |
+| Nasdaq-100 QQQ Daily Tracker | `.github/workflows/daily-tracker.yml` | 周二至周六 `10:30` | 生成生产日报 |
+| Provider Capability Probe | `.github/workflows/provider_capability_probe.yml` | 每天 `09:15` | 探测 Alpha Vantage、FMP、Twelve Data |
+| Tiingo Price Cache Backfill | `.github/workflows/tiingo_cache_backfill.yml` | 周一至周五 `03:00`、`05:10`、`07:20` | 维护历史缓存，Twelve Data 可兜底 |
+| Twelve Data History Repair | `.github/workflows/twelve_data_history_repair.yml` | 周一至周五 `08:40` | 修复高优先级缓存缺口 |
+
+换算本地时间时需考虑时区和夏令时。生产日报的 `10:30 UTC` 在新加坡/北京时间为 `18:30`。
+
+## 3. 权限与提交
+
+工作流使用：
+
+```yaml
+permissions:
+  contents: write
 ```
 
-它支持：
+运行完成后，GitHub Actions 会将对应报告、缓存和 state manifest 提交回触发分支。若启用了分支保护，需要允许 GitHub Actions 写入，或改为通过 PR 更新生成数据。
 
-- 手动运行：`workflow_dispatch`
-- 定时运行：周二到周六 00:00 UTC，即新加坡时间 08:00
+## 4. Artifact 与仓库输出
 
-## 4. 输出文件
-
-每日运行后会自动提交：
+生产日报 artifact 包含：
 
 ```text
-reports/latest/model_input_metrics.csv
-reports/latest/manifest.json
-reports/latest/price_daily.csv
-reports/latest/price_metrics.csv
-reports/latest/macro_daily.csv
-reports/latest/macro_metrics.csv
-reports/latest/qqq_holdings.csv
-reports/latest/breadth_metrics.csv
-reports/latest/data_quality.csv
-reports/latest/nasdaq100_qqq_daily_tracker.xlsx
-reports/latest/run_log.csv
+reports/latest/
+data/processed/
+data/cache/prices/
+data/cache/quotes/
 state/latest_manifest.json
 ```
 
-这些文件被提交到仓库后，你可以把仓库链接发给 ChatGPT 读取分析。
+Tiingo 缓存维护 artifact 还包含：
 
-## 5. 如果不想把原始数据提交进仓库
-
-编辑 `.github/workflows/daily-tracker.yml`，把：
-
-```bash
-git add reports/latest reports/archive data/raw data/processed state/latest_manifest.json
+```text
+reports/latest/cache_quality.csv
+reports/latest/price_cache_api_usage.csv
+state/latest_cache_backfill_manifest.json
 ```
 
-改为：
+各工作流提交的准确路径以对应 YAML 中的 `git add` 和 artifact `path` 为准。
 
-```bash
-git add reports/latest state/latest_manifest.json
-```
+## 5. 减少仓库存档
 
-这样只提交最新报告，不提交全部原始数据。
+如果不希望提交 `data/raw/`、`data/processed/` 或归档 Excel，应同时修改：
+
+1. 对应工作流的 `git add` 路径。
+2. artifact 路径。
+3. 下游读取逻辑和文档。
+
+不要只改 `.gitignore`，因为工作流对缓存使用了 `git add -f`。
