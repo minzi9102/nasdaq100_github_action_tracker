@@ -6,7 +6,16 @@ from typing import Dict
 import pandas as pd
 
 
-MODEL_INPUT_COLUMNS = ["metric_name", "metric_value", "unit_or_method", "data_date", "source", "is_missing"]
+MODEL_INPUT_COLUMNS = [
+    "metric_name",
+    "metric_value",
+    "metric_date",
+    "source",
+    "provider",
+    "coverage_ratio",
+    "is_missing",
+    "quality_message",
+]
 
 
 def _is_missing(value: object) -> bool:
@@ -19,52 +28,88 @@ def build_model_input_metrics(
     macro_metrics: pd.DataFrame,
     fmp_summary: pd.DataFrame,
 ) -> pd.DataFrame:
-    rows = []
+    rows: list[dict] = []
+
+    def add_row(
+        metric_name: str,
+        metric_value: object,
+        metric_date: object,
+        source: str,
+        provider: object,
+        quality_message: str,
+        coverage_ratio: object = None,
+    ) -> None:
+        rows.append(
+            {
+                "metric_name": metric_name,
+                "metric_value": metric_value,
+                "metric_date": metric_date,
+                "source": source,
+                "provider": provider,
+                "coverage_ratio": coverage_ratio,
+                "is_missing": _is_missing(metric_value),
+                "quality_message": quality_message,
+            }
+        )
+
     if not price_metrics.empty:
         for _, r in price_metrics.iterrows():
             symbol = r.get("symbol")
-            source = r.get("source")
-            date = r.get("date")
-            rows.extend([
-                [f"{symbol}_latest_close", r.get("latest_close"), "latest adjusted close", date, source, _is_missing(r.get("latest_close"))],
-                [f"{symbol}_return_20d", r.get("return_20d"), "20 trading day return", date, source, _is_missing(r.get("return_20d"))],
-                [f"{symbol}_return_60d", r.get("return_60d"), "60 trading day return", date, source, _is_missing(r.get("return_60d"))],
-                [f"{symbol}_vol_20d", r.get("vol_20d"), "20 trading day annualized volatility", date, source, _is_missing(r.get("vol_20d"))],
-                [f"{symbol}_current_drawdown", r.get("current_drawdown"), "current drawdown from period high", date, source, _is_missing(r.get("current_drawdown"))],
-                [f"{symbol}_max_drawdown", r.get("max_drawdown"), "maximum drawdown over fetched period", date, source, _is_missing(r.get("max_drawdown"))],
-                [f"{symbol}_ma_50", r.get("ma_50"), "50 trading day moving average", date, source, _is_missing(r.get("ma_50"))],
-                [f"{symbol}_ma_200", r.get("ma_200"), "200 trading day moving average", date, source, _is_missing(r.get("ma_200"))],
-            ])
+            provider = r.get("source")
+            metric_date = r.get("date")
+            add_row(f"{symbol}_latest_close", r.get("latest_close"), metric_date, "price_metrics", provider, "latest adjusted close")
+            add_row(f"{symbol}_return_20d", r.get("return_20d"), metric_date, "price_metrics", provider, "20 trading day return")
+            add_row(f"{symbol}_return_60d", r.get("return_60d"), metric_date, "price_metrics", provider, "60 trading day return")
+            add_row(f"{symbol}_vol_20d", r.get("vol_20d"), metric_date, "price_metrics", provider, "20 trading day annualized volatility")
+            add_row(
+                f"{symbol}_current_drawdown",
+                r.get("current_drawdown"),
+                metric_date,
+                "price_metrics",
+                provider,
+                "current drawdown from period high",
+            )
+            add_row(
+                f"{symbol}_max_drawdown",
+                r.get("max_drawdown"),
+                metric_date,
+                "price_metrics",
+                provider,
+                "maximum drawdown over fetched period",
+            )
+            add_row(f"{symbol}_ma_50", r.get("ma_50"), metric_date, "price_metrics", provider, "50 trading day moving average")
+            add_row(f"{symbol}_ma_200", r.get("ma_200"), metric_date, "price_metrics", provider, "200 trading day moving average")
     if not macro_daily.empty:
         for _, r in macro_daily.iterrows():
-            rows.append([
+            add_row(
                 f"{r.get('series_id')}_latest_value",
                 r.get("latest_value"),
-                "latest FRED observation value",
                 r.get("latest_date"),
+                "macro_daily",
                 r.get("source"),
-                _is_missing(r.get("latest_value")),
-            ])
+                "latest FRED observation value",
+            )
     if not macro_metrics.empty:
         for _, r in macro_metrics.iterrows():
-            rows.append([
+            add_row(
                 r.get("metric_name"),
                 r.get("metric_value"),
-                r.get("unit_or_method"),
                 r.get("data_date"),
+                "macro_metrics",
                 r.get("source"),
-                _is_missing(r.get("metric_value")),
-            ])
+                str(r.get("unit_or_method") or ""),
+            )
     if not fmp_summary.empty:
         available_ratio = fmp_summary["ok"].mean() if "ok" in fmp_summary.columns and len(fmp_summary) else None
-        rows.append([
+        add_row(
             "fmp_quote_available_ratio",
             available_ratio,
-            "successful quote responses / requested symbols",
             pd.Timestamp.today().date().isoformat(),
-            "FMP",
-            _is_missing(available_ratio),
-        ])
+            "fmp_summary",
+            "fmp",
+            "successful quote responses / requested symbols",
+            coverage_ratio=available_ratio,
+        )
     return pd.DataFrame(rows, columns=MODEL_INPUT_COLUMNS)
 
 
@@ -77,45 +122,65 @@ def build_model_input_metrics_v2(
     data_quality: pd.DataFrame,
 ) -> pd.DataFrame:
     model_input = build_model_input_metrics(price_metrics, macro_daily, macro_metrics, fmp_summary)
-    rows = model_input.values.tolist()
+    rows = model_input.to_dict(orient="records")
     if not breadth_metrics.empty:
         for _, r in breadth_metrics.iterrows():
-            rows.append([
-                r.get("metric_name"),
-                r.get("metric_value"),
-                f"breadth metric; denominator={r.get('denominator')}",
-                r.get("data_date"),
-                r.get("source"),
-                _is_missing(r.get("metric_value")),
-            ])
+            metric_value = r.get("metric_value")
+            rows.append(
+                {
+                    "metric_name": r.get("metric_name"),
+                    "metric_value": metric_value,
+                    "metric_date": r.get("data_date"),
+                    "source": "breadth_metrics",
+                    "provider": r.get("source"),
+                    "coverage_ratio": None,
+                    "is_missing": _is_missing(metric_value),
+                    "quality_message": f"breadth metric; denominator={r.get('denominator')}",
+                }
+            )
     if not data_quality.empty:
         for _, r in data_quality.iterrows():
             dataset = r.get("dataset")
             provider = r.get("provider")
-            rows.append([
-                f"{dataset}_{provider}_symbol_coverage_ratio",
-                r.get("symbol_coverage_ratio"),
-                f"data quality symbol coverage; ok={r.get('ok')}; rows={r.get('rows')}",
-                pd.Timestamp.today().date().isoformat(),
-                provider,
-                _is_missing(r.get("symbol_coverage_ratio")),
-            ])
-            rows.append([
-                f"{dataset}_{provider}_weight_coverage_ratio",
-                r.get("weight_coverage_ratio"),
-                f"data quality weight coverage; rate_limited={r.get('rate_limited')}; fallback_provider={r.get('fallback_provider')}",
-                pd.Timestamp.today().date().isoformat(),
-                provider,
-                _is_missing(r.get("weight_coverage_ratio")),
-            ])
-            rows.append([
-                f"{dataset}_{provider}_rate_limited",
-                float(bool(r.get("rate_limited"))),
-                f"1 means provider hit 429 and breadth stopped_after_429={r.get('stopped_after_429')}",
-                pd.Timestamp.today().date().isoformat(),
-                provider,
-                False,
-            ])
+            metric_date = pd.Timestamp.today().date().isoformat()
+            symbol_coverage = r.get("symbol_coverage_ratio")
+            weight_coverage = r.get("weight_coverage_ratio")
+            rows.append(
+                {
+                    "metric_name": f"{dataset}_{provider}_symbol_coverage_ratio",
+                    "metric_value": symbol_coverage,
+                    "metric_date": metric_date,
+                    "source": "data_quality",
+                    "provider": provider,
+                    "coverage_ratio": symbol_coverage,
+                    "is_missing": _is_missing(symbol_coverage),
+                    "quality_message": f"symbol coverage; ok={r.get('ok')}; rows={r.get('rows')}; message={r.get('message')}",
+                }
+            )
+            rows.append(
+                {
+                    "metric_name": f"{dataset}_{provider}_weight_coverage_ratio",
+                    "metric_value": weight_coverage,
+                    "metric_date": metric_date,
+                    "source": "data_quality",
+                    "provider": provider,
+                    "coverage_ratio": weight_coverage,
+                    "is_missing": _is_missing(weight_coverage),
+                    "quality_message": f"weight coverage; rate_limited={r.get('rate_limited')}; fallback_provider={r.get('fallback_provider')}",
+                }
+            )
+            rows.append(
+                {
+                    "metric_name": f"{dataset}_{provider}_rate_limited",
+                    "metric_value": float(bool(r.get("rate_limited"))),
+                    "metric_date": metric_date,
+                    "source": "data_quality",
+                    "provider": provider,
+                    "coverage_ratio": None,
+                    "is_missing": False,
+                    "quality_message": f"1 means provider hit a limit; stopped_after_429={r.get('stopped_after_429')}",
+                }
+            )
     return pd.DataFrame(rows, columns=MODEL_INPUT_COLUMNS)
 
 

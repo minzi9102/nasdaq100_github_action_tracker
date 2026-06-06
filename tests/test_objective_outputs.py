@@ -1,5 +1,8 @@
-import pandas as pd
+import json
+from pathlib import Path
 from types import SimpleNamespace
+
+import pandas as pd
 
 from qqq_tracker.pipeline.daily_run import (
     API_USAGE_COLUMNS,
@@ -133,7 +136,27 @@ def test_model_input_metrics_columns_are_fixed():
     model_input = build_model_input_metrics(price_metrics, macro_daily, macro_metrics, fmp_summary)
 
     assert list(model_input.columns) == MODEL_INPUT_COLUMNS
-    assert {"状态", "方向/解读", "阈值/比较基准"}.isdisjoint(model_input.columns)
+    assert MODEL_INPUT_COLUMNS == [
+        "metric_name",
+        "metric_value",
+        "metric_date",
+        "source",
+        "provider",
+        "coverage_ratio",
+        "is_missing",
+        "quality_message",
+    ]
+    latest_close = model_input[model_input["metric_name"] == "QQQ_latest_close"].iloc[0]
+    assert latest_close["source"] == "price_metrics"
+    assert latest_close["provider"] == "test_source"
+    assert pd.isna(latest_close["coverage_ratio"])
+    macro_value = model_input[model_input["metric_name"] == "DGS10_latest_value"].iloc[0]
+    assert macro_value["source"] == "macro_daily"
+    assert macro_value["provider"] == "FRED"
+    fmp_coverage = model_input[model_input["metric_name"] == "fmp_quote_available_ratio"].iloc[0]
+    assert fmp_coverage["source"] == "fmp_summary"
+    assert fmp_coverage["provider"] == "fmp"
+    assert fmp_coverage["coverage_ratio"] == 1.0
 
 
 def test_price_daily_standard_columns_and_sorting():
@@ -503,9 +526,52 @@ def test_model_input_v2_keeps_objective_columns():
     )
 
     assert list(model_input.columns) == MODEL_INPUT_COLUMNS
-    forbidden = {"状态", "方向/解读", "阈值/比较基准", "signal", "status", "direction", "建议"}
-    assert forbidden.isdisjoint(model_input.columns)
+    breadth_row = model_input[model_input["metric_name"] == "advancing_ratio"].iloc[0]
+    assert breadth_row["source"] == "breadth_metrics"
+    assert breadth_row["provider"] == "fmp+tiingo_cache"
+    assert pd.isna(breadth_row["coverage_ratio"])
+    coverage_row = model_input[
+        model_input["metric_name"] == "breadth_metrics_fmp+tiingo_cache_symbol_coverage_ratio"
+    ].iloc[0]
+    assert coverage_row["source"] == "data_quality"
+    assert coverage_row["provider"] == "fmp+tiingo_cache"
+    assert coverage_row["coverage_ratio"] == 1.0
+    assert "symbol coverage" in coverage_row["quality_message"]
     assert "breadth_metrics_fmp+tiingo_cache_symbol_coverage_ratio" in set(model_input["metric_name"])
+
+
+def test_model_input_csv_contains_no_subjective_output(tmp_path):
+    model_input = pd.DataFrame(
+        [
+            {
+                "metric_name": "QQQ_return_20d",
+                "metric_value": 0.02,
+                "metric_date": "2026-06-05",
+                "source": "price_metrics",
+                "provider": "alpha_vantage",
+                "coverage_ratio": None,
+                "is_missing": False,
+                "quality_message": "20 trading day return",
+            }
+        ],
+        columns=MODEL_INPUT_COLUMNS,
+    )
+    path = tmp_path / "model_input_metrics.csv"
+    model_input.to_csv(path, index=False)
+    text = path.read_text(encoding="utf-8").lower()
+    forbidden = ["买入", "卖出", "加仓", "观望", "风险颜色", "方向判断", "主观解释", "analysis_summary", "ai_input"]
+
+    assert all(term not in text for term in forbidden)
+
+
+def test_latest_manifest_has_no_subjective_output_files():
+    root = Path(__file__).resolve().parents[1]
+    manifest = json.loads((root / "reports/latest/manifest.json").read_text(encoding="utf-8"))
+    paths = json.dumps(manifest.get("latest_files", {}), ensure_ascii=False).lower()
+
+    assert "analysis_summary" not in paths
+    assert "ai_input" not in paths
+    assert "model_input_metrics_csv" in manifest["latest_files"]
 
 
 def test_merge_price_history_deduplicates_and_sorts():

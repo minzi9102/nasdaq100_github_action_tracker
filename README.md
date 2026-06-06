@@ -105,6 +105,14 @@ state/latest_manifest.json
 - `reports/latest/nasdaq100_qqq_daily_tracker.xlsx`
 - `state/latest_manifest.json`
 
+其中 `model_input_metrics.csv` 固定使用以下客观字段：
+
+```text
+metric_name, metric_value, metric_date, source, provider, coverage_ratio, is_missing, quality_message
+```
+
+仓库不会生成投资建议、颜色状态、方向判断或买卖动作；这些判断应由外部分析流程基于客观输出完成。
+
 以后你可以把 GitHub 仓库链接发给 ChatGPT，并说：
 
 > 请读取这个仓库里的 `reports/latest/model_input_metrics.csv`、`reports/latest/price_metrics.csv`、`reports/latest/macro_daily.csv`、`reports/latest/macro_metrics.csv` 和 `state/latest_manifest.json`，基于客观指标分析今天的纳斯达克100 / QQQ。

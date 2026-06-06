@@ -10,6 +10,12 @@
 - reports/latest/data_quality.csv
 - reports/latest/manifest.json
 
+其中 `model_input_metrics.csv` 的字段为：
+
+```text
+metric_name, metric_value, metric_date, source, provider, coverage_ratio, is_missing, quality_message
+```
+
 请根据这些文件，基于客观指标生成今天的纳斯达克100 / QQQ 分析，包括：
 
 1. 数据质量是否足够。

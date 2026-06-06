@@ -1,6 +1,6 @@
 {
   "as_of": "2026-06-06",
-  "generated_at": "2026-06-06T01:15:35Z",
+  "generated_at": "2026-06-06T01:30:18Z",
   "latest_files": {
     "excel_report": "reports/latest/nasdaq100_qqq_daily_tracker.xlsx",
     "manifest_json": "reports/latest/manifest.json",
@@ -211,17 +211,17 @@
       "provider": "fmp+twelve_data",
       "ok": true,
       "rows": 20,
-      "symbol_coverage_ratio": 1.0,
-      "weight_coverage_ratio": 1.0,
-      "missing_symbols": "",
-      "missing_top_weight_symbols": "",
+      "symbol_coverage_ratio": 0.9,
+      "weight_coverage_ratio": 0.9,
+      "missing_symbols": "GOOG,AVGO",
+      "missing_top_weight_symbols": "GOOG,AVGO",
       "rate_limited": false,
       "stopped_after_429": false,
       "remaining_symbols_skipped": 0,
       "cache_rows_used": 0,
       "live_rows_fetched": 0,
       "fallback_provider": "twelve_data",
-      "message": "20/20 top20 quotes available; 10/10 top10 quotes available"
+      "message": "18/20 top20 quotes available; 8/10 top10 quotes available"
     },
     {
       "dataset": "breadth_metrics",
@@ -315,14 +315,14 @@
       "provider": "twelve_data",
       "endpoint": "quote_fallback",
       "calls_attempted": 20,
-      "calls_success": 20,
-      "calls_failed": 0,
+      "calls_success": 18,
+      "calls_failed": 2,
       "rate_limited": false,
       "limit_window": "minute",
       "limit_value": 8,
       "credits_used": 20,
       "symbols_requested": "NVDA,AAPL,MSFT,MU,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,KLAC",
-      "symbols_loaded": "NVDA,AAPL,MSFT,MU,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,KLAC",
+      "symbols_loaded": "NVDA,AAPL,MSFT,MU,AMZN,AMD,GOOGL,TSLA,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,KLAC",
       "stopped_after_429": false,
       "retry_after_seconds": null,
       "message": "NVDA: quote loaded; AAPL: quote loaded; MSFT: quote loaded; MU: quote loaded; AMZN: quote loaded; ..."
