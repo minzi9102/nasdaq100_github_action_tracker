@@ -1,129 +1,193 @@
-# Nasdaq-100 / QQQ Daily Tracker for GitHub Actions
+# Nasdaq-100 / QQQ Daily Tracker
 
-这是一个可部署到 GitHub Actions 的纳斯达克100 / QQQ 每日数据收集项目。
+这是一个运行在 GitHub Actions 上的 Nasdaq-100 / QQQ 客观数据流水线。项目每天采集 QQQ 价格、FRED 宏观序列、Invesco 官方持仓和 Twelve Data 报价，并结合本地历史价格缓存生成 CSV、Excel、质量报告和统一模型输入。
 
-目标：每天自动读取 Alpha Vantage、FRED、Invesco 和 Twelve Data，结合 Tiingo/Twelve Data 历史缓存生成结构化数据、Excel 报表和模型输入指标文件。
+项目只生产客观数据，不生成投资建议、颜色状态、方向判断或买卖动作。
 
-## 功能
+## 当前数据流
 
-- 读取四个接口：
-  - Alpha Vantage：QQQ / 股票日线价格。
-  - FRED：美债收益率、利率、通胀等宏观数据。
-  - Twelve Data：前 20 持仓生产报价和历史缓存修复。
-  - Tiingo：QQQ / 成分股历史价格缓存主源。
-  - Financial Modeling Prep：仅用于独立能力探测。
-  - Invesco：QQQ 官方持仓公开下载，不需要 API key。
-- GitHub Actions 每日自动运行。
-- 使用 GitHub Secrets 保存 API key，不把密钥写入代码。
-- 自动输出：
-  - `data/raw/YYYY-MM-DD/`：原始接口数据。
-  - `data/processed/YYYY-MM-DD/`：标准化数据。
-  - `reports/latest/`：最新指标文件和 Excel 数据汇总。
-  - `state/latest_manifest.json`：最新输出文件清单。
-- 便于扩展：新增数据接口只需要实现一个 provider 类，并在 `config/sources.yml` 中注册。
+1. 使用 Alpha Vantage compact 日线更新 QQQ 本地价格缓存。
+2. 当 QQQ 缓存不足 260 行时，依次使用 Tiingo 和 Twelve Data 补齐历史。
+3. 从 FRED 获取配置在 `config/fred_series.yml` 中的宏观序列。
+4. 从 Invesco 官方 DNG API 获取 QQQ 全量持仓，并筛选股票持仓池。
+5. 使用 Twelve Data 获取前 20 大股票持仓报价；失败时可以复用报价缓存。
+6. 市场广度只读取 `data/cache/prices/` 中合格的历史缓存，并叠加 Twelve Data 最新报价。
+7. 生成标准化数据、数据质量、API 用量、模型输入、Excel 和 manifest。
+
+历史缓存必须同时满足以下条件才会进入每日市场广度计算：
+
+- 至少 220 条有效日线记录。
+- 最新记录相对运行日期不超过 5 个自然日。
+
+缓存维护由独立工作流完成，日常市场广度流程不会现场批量请求 Tiingo 历史数据。
+
+## 数据源职责
+
+| 数据源 | 当前用途 | 是否参与生产日报 |
+| --- | --- | --- |
+| Alpha Vantage | QQQ compact 日线更新 | 是 |
+| FRED | 利率、通胀和就业等宏观序列 | 是 |
+| Invesco | QQQ 官方全量持仓 | 是，无需 API key |
+| Twelve Data | 前 20 大持仓报价、QQQ/成分股历史兜底 | 是 |
+| Tiingo | QQQ 和成分股历史缓存主源 | 是 |
+| Financial Modeling Prep | 独立 provider 能力探测 | 否，诊断用途 |
+
+各 provider 的注册地址和职责在 `config/sources.yml`，调用预算与节流参数在 `config/api_limits.yml`，流水线开关在 `config/pipeline.yml`。
 
 ## 快速开始
 
-### 1. 本地安装
+### 1. 创建项目虚拟环境
+
+项目要求 Python 3.10 或更高版本，并使用 `uv` 管理项目内 `.venv`：
+
+```powershell
+uv venv .venv
+uv pip install --python .venv\Scripts\python.exe -r requirements.txt
+```
+
+Linux/macOS：
 
 ```bash
 uv venv .venv
-source .venv/bin/activate
-uv pip install -r requirements.txt
+uv pip install --python .venv/bin/python -r requirements.txt
 ```
+
+### 2. 配置密钥
+
+复制 `.env.example` 为 `.env`，并按需要填写：
+
+```env
+ALPHA_VANTAGE_API_KEY=
+FRED_API_KEY=
+TIINGO_API_TOKEN=
+TWELVE_DATA_API_KEY=
+FMP_API_KEY=
+```
+
+其中 `FMP_API_KEY` 只用于独立能力探测。不要提交 `.env` 或在日志、Issue、README、提交记录和报表中暴露真实密钥。
+
+### 3. 运行
 
 Windows：
 
-```bat
-uv venv .venv
-.venv\Scripts\activate
-uv pip install -r requirements.txt
+```powershell
+.\.venv\Scripts\python.exe scripts\run_daily.py --as-of auto
 ```
 
-### 2. 本地配置密钥
-
-复制：
+Linux/macOS：
 
 ```bash
-cp .env.example .env
+.venv/bin/python scripts/run_daily.py --as-of auto
 ```
 
-在 `.env` 中填写你自己的密钥：
+也可以传入固定报告日期：
 
-```env
-ALPHA_VANTAGE_API_KEY=你的密钥
-FRED_API_KEY=你的密钥
-FMP_API_KEY=你的密钥
-TIINGO_API_TOKEN=你的密钥
-TWELVE_DATA_API_KEY=你的密钥
+```powershell
+.\.venv\Scripts\python.exe scripts\run_daily.py --as-of 2026-06-06
 ```
 
-不要把 `.env` 提交到 GitHub。
+辅助命令：
 
-### 3. 本地测试
+```powershell
+# 使用 Tiingo 主源维护历史缓存，必要时由 Twelve Data 兜底
+.\.venv\Scripts\python.exe scripts\backfill_price_cache.py --as-of auto
 
-```bash
-python scripts/run_daily.py --as-of auto
+# 使用 Twelve Data 修复高优先级缓存缺口
+.\.venv\Scripts\python.exe scripts\repair_twelve_data_history.py --as-of auto
+
+# 探测配置的数据源能力，不改变生产数据源选择
+.\.venv\Scripts\python.exe scripts\probe_provider_capabilities.py --as-of auto
+
+# 检查关键日报文件是否存在
+.\.venv\Scripts\python.exe scripts\print_repo_status.py
 ```
 
-生成结果会出现在：
+## GitHub Actions
 
-```text
-reports/latest/
-data/processed/YYYY-MM-DD/
-state/latest_manifest.json
-```
+仓库当前包含四个工作流：
 
-### 4. GitHub Actions 部署
+| 工作流 | 文件 | UTC 计划 |
+| --- | --- | --- |
+| 每日生产日报 | `.github/workflows/daily-tracker.yml` | 周二至周六 `10:30` |
+| Provider 能力探测 | `.github/workflows/provider_capability_probe.yml` | 每天 `09:15` |
+| Tiingo 历史缓存维护 | `.github/workflows/tiingo_cache_backfill.yml` | 周一至周五 `03:00`、`05:10`、`07:20` |
+| Twelve Data 历史修复 | `.github/workflows/twelve_data_history_repair.yml` | 周一至周五 `08:40` |
 
-把整个项目上传到 GitHub 仓库，然后在仓库设置里添加 Secrets：
+所有工作流都支持手动触发。GitHub cron 使用 UTC，换算到本地时间时需要考虑时区。
+
+在仓库 `Settings > Secrets and variables > Actions` 中配置：
 
 - `ALPHA_VANTAGE_API_KEY`
 - `FRED_API_KEY`
-- `FMP_API_KEY`
 - `TIINGO_API_TOKEN`
+- `TWELVE_DATA_API_KEY`
+- `FMP_API_KEY`，仅 provider 能力探测需要
 
-工作流文件在：
+生产日报会上传 artifact，并把生成的数据、缓存和 manifest 提交回当前分支。
+
+## 输出
+
+目录职责：
 
 ```text
-.github/workflows/daily-tracker.yml
+data/raw/YYYY-MM-DD/         原始接口响应的标准化 CSV
+data/processed/YYYY-MM-DD/   当次运行的完整处理结果
+data/cache/prices/           provider 中立的历史价格缓存
+data/cache/quotes/           报价缓存
+reports/latest/              最新日报
+reports/archive/YYYY-MM-DD/  按日期归档的日报
+state/                       各流水线最新 manifest
 ```
 
-默认会在新加坡时间周二到周六早上 8:00 自动运行一次，也可以手动点击运行。
+`reports/latest/` 的主要文件：
 
-## 给 ChatGPT 分析的方式
+| 文件 | 内容 |
+| --- | --- |
+| `model_input_metrics.csv` | 面向外部模型的统一客观指标 |
+| `price_daily.csv` / `price_metrics.csv` | QQQ 日线与收益、波动率、均线指标 |
+| `macro_daily.csv` / `macro_metrics.csv` | FRED 最新值和衍生宏观指标 |
+| `qqq_holdings.csv` | Invesco 官方 QQQ 持仓 |
+| `qqq_equity_holdings.csv` | 用于市场广度的股票持仓池 |
+| `top_holdings_quotes.csv` | 前 20 大股票持仓报价 |
+| `quote_failures.csv` | 报价失败诊断 |
+| `breadth_metrics.csv` | 涨跌、均线上方比例和新高新低等市场广度 |
+| `data_quality.csv` | 覆盖率、缓存新鲜度、缺失标的和实际 provider |
+| `api_usage.csv` | 每个 provider 的调用、额度、限速和端点信息 |
+| `run_log.csv` | 当次生产流水线调用日志 |
+| `provider_capability_probe.csv` | 独立 provider 能力探测结果 |
+| `cache_quality.csv` / `price_cache_api_usage.csv` | Tiingo 缓存维护质量与调用记录 |
+| `twelve_data_cache_quality.csv` / `twelve_data_history_api_usage.csv` | Twelve Data 修复质量与调用记录 |
+| `nasdaq100_qqq_daily_tracker.xlsx` | 汇总上述核心数据的 Excel 报表 |
+| `manifest.json` | 最新文件、质量摘要、API 用量和校验信息 |
 
-每日运行后，仓库里会更新：
+`state/latest_manifest.json` 与 `reports/latest/manifest.json` 保存同一份生产日报清单。辅助工作流分别维护：
 
-- `reports/latest/manifest.json`
-- `reports/latest/model_input_metrics.csv`
-- `reports/latest/price_daily.csv`
-- `reports/latest/price_metrics.csv`
-- `reports/latest/macro_daily.csv`
-- `reports/latest/macro_metrics.csv`
-- `reports/latest/qqq_holdings.csv`
-- `reports/latest/breadth_metrics.csv`
-- `reports/latest/top_holdings_quotes.csv`
-- `reports/latest/quote_failures.csv`
-- `reports/latest/provider_capability_probe.csv`
+- `state/latest_cache_backfill_manifest.json`
+- `state/latest_twelve_data_history_repair_manifest.json`
+- `state/latest_provider_capability_probe_manifest.json`
+
+## 模型输入契约
+
+`reports/latest/model_input_metrics.csv` 固定使用以下字段：
+
+```text
+metric_name,metric_value,metric_date,source,provider,coverage_ratio,is_missing,quality_message
+```
+
+使用这些指标分析前，应同时检查：
+
 - `reports/latest/data_quality.csv`
-- `reports/latest/nasdaq100_qqq_daily_tracker.xlsx`
+- `reports/latest/api_usage.csv`
 - `state/latest_manifest.json`
 
-其中 `model_input_metrics.csv` 固定使用以下客观字段：
+示例提示词：
 
-```text
-metric_name, metric_value, metric_date, source, provider, coverage_ratio, is_missing, quality_message
+> 请读取仓库中的 `reports/latest/model_input_metrics.csv`、`reports/latest/data_quality.csv`、`reports/latest/api_usage.csv` 和 `state/latest_manifest.json`。先检查数据日期、覆盖率、缺失值、缓存新鲜度和 provider 限速情况，再基于客观指标分析 Nasdaq-100 / QQQ；不要把缺失数据解释为中性信号。
+
+## 测试
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest
 ```
 
-仓库不会生成投资建议、颜色状态、方向判断或买卖动作；这些判断应由外部分析流程基于客观输出完成。
-
-以后你可以把 GitHub 仓库链接发给 ChatGPT，并说：
-
-> 请读取这个仓库里的 `reports/latest/model_input_metrics.csv`、`reports/latest/price_metrics.csv`、`reports/latest/macro_daily.csv`、`reports/latest/macro_metrics.csv` 和 `state/latest_manifest.json`，基于客观指标分析今天的纳斯达克100 / QQQ。
-
-如果你启用了 GitHub 连接器或把仓库文件上传给 ChatGPT，我就可以读取并分析这些文件。
-
-## 安全提醒
-
-真实 API key 只放在 `.env` 或 GitHub Secrets 中。不要写进代码、README、issue、提交记录、日志或 Excel 输出文件。
+测试覆盖 provider 规范化、缓存合并与资格判断、历史回退、客观输出契约、manifest 和数据质量字段。
