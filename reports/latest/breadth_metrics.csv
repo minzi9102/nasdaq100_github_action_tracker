@@ -1,9 +1,9 @@
 ﻿metric_name,metric_value,denominator,data_date,source,is_missing
-advancing_count,36.0,98,2026-06-05,mixed_history_cache+twelve_data_quote,False
-declining_count,62.0,98,2026-06-05,mixed_history_cache+twelve_data_quote,False
-advancing_ratio,0.3673469387755102,98,2026-06-05,mixed_history_cache+twelve_data_quote,False
-above_20d_ma_ratio,0.5102040816326531,98,2026-06-05,mixed_history_cache+twelve_data_quote,False
-above_50d_ma_ratio,0.5204081632653061,98,2026-06-05,mixed_history_cache+twelve_data_quote,False
-above_200d_ma_ratio,0.5816326530612245,98,2026-06-05,mixed_history_cache+twelve_data_quote,False
-new_high_20d_count,8.0,98,2026-06-05,mixed_history_cache+twelve_data_quote,False
-new_low_20d_count,14.0,98,2026-06-05,mixed_history_cache+twelve_data_quote,False
+advancing_count,32.0,98,2026-06-05,mixed_history_cache+twelve_data_quote,False
+declining_count,66.0,98,2026-06-05,mixed_history_cache+twelve_data_quote,False
+advancing_ratio,0.32653061224489793,98,2026-06-05,mixed_history_cache+twelve_data_quote,False
+above_20d_ma_ratio,0.4897959183673469,98,2026-06-05,mixed_history_cache+twelve_data_quote,False
+above_50d_ma_ratio,0.5102040816326531,98,2026-06-05,mixed_history_cache+twelve_data_quote,False
+above_200d_ma_ratio,0.5918367346938775,98,2026-06-05,mixed_history_cache+twelve_data_quote,False
+new_high_20d_count,5.0,98,2026-06-05,mixed_history_cache+twelve_data_quote,False
+new_low_20d_count,15.0,98,2026-06-05,mixed_history_cache+twelve_data_quote,False

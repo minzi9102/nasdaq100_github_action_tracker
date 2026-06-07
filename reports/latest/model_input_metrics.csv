@@ -28,14 +28,14 @@ PCEPI_RECENT_PCT_CHANGE_2,0.006647621988882024,2026-04-01,macro_metrics,FRED,,Fa
 PCEPI_RECENT_PCT_CHANGE_3,0.003995981009502714,2026-04-01,macro_metrics,FRED,,False,PCE近3次变化; pct_change between consecutive observations
 PCEPI_LATEST_PCT_CHANGE,0.003995981009502714,2026-04-01,macro_metrics,FRED,,False,PCE近3次变化; latest pct_change between consecutive observations
 UNRATE_3_OBSERVATION_CHANGE,-0.10000000000000053,2026-05-01,macro_metrics,FRED,,False,current unemployment rate minus value 3 observations ago
-advancing_count,36.0,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
-declining_count,62.0,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
-advancing_ratio,0.3673469387755102,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
-above_20d_ma_ratio,0.5102040816326531,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
-above_50d_ma_ratio,0.5204081632653061,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
-above_200d_ma_ratio,0.5816326530612245,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
-new_high_20d_count,8.0,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
-new_low_20d_count,14.0,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
+advancing_count,32.0,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
+declining_count,66.0,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
+advancing_ratio,0.32653061224489793,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
+above_20d_ma_ratio,0.4897959183673469,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
+above_50d_ma_ratio,0.5102040816326531,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
+above_200d_ma_ratio,0.5918367346938775,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
+new_high_20d_count,5.0,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
+new_low_20d_count,15.0,2026-06-05,breadth_metrics,mixed_history_cache+twelve_data_quote,,False,breadth metric; denominator=98
 price_daily_alpha_vantage_compact+local_cache_symbol_coverage_ratio,1.0,2026-06-07,data_quality,alpha_vantage_compact+local_cache,1.0,False,symbol coverage; ok=True; rows=260; message=QQQ cache ready
 price_daily_alpha_vantage_compact+local_cache_weight_coverage_ratio,1.0,2026-06-07,data_quality,alpha_vantage_compact+local_cache,1.0,False,weight coverage; rate_limited=False; fallback_provider=tiingo+twelve_data
 price_daily_alpha_vantage_compact+local_cache_rate_limited,0.0,2026-06-07,data_quality,alpha_vantage_compact+local_cache,,False,1 means provider hit a limit; stopped_after_429=False
@@ -69,6 +69,6 @@ qqq_equity_holdings_invesco_filter_rate_limited,0.0,2026-06-07,data_quality,inve
 top_holdings_quotes_twelve_data_symbol_coverage_ratio,1.0,2026-06-07,data_quality,twelve_data,1.0,False,symbol coverage; ok=True; rows=20; message=20/20 top20 quotes available; 10/10 top10 quotes available
 top_holdings_quotes_twelve_data_weight_coverage_ratio,1.0,2026-06-07,data_quality,twelve_data,1.0,False,weight coverage; rate_limited=False; fallback_provider=quote_cache
 top_holdings_quotes_twelve_data_rate_limited,0.0,2026-06-07,data_quality,twelve_data,,False,1 means provider hit a limit; stopped_after_429=False
-breadth_metrics_mixed_history_cache+twelve_data_quote_symbol_coverage_ratio,1.0,2026-06-07,data_quality,mixed_history_cache+twelve_data_quote,1.0,False,symbol coverage; ok=True; rows=8; message=98/98 symbols with history coverage; 20/98 history symbols with Twelve Data quote overlay; target_date=2026-06-05; target_aligned=88/98; non_target_aligned=10/98; min_latest_date=2026-06-04; max_latest_date=2026-06-05; target_date_source=current price_daily
+breadth_metrics_mixed_history_cache+twelve_data_quote_symbol_coverage_ratio,1.0,2026-06-07,data_quality,mixed_history_cache+twelve_data_quote,1.0,False,symbol coverage; ok=True; rows=8; message=98/98 symbols with history coverage; 20/98 history symbols with Twelve Data quote overlay; target_date=2026-06-05; target_aligned=98/98; non_target_aligned=0/98; min_latest_date=2026-06-05; max_latest_date=2026-06-05; target_date_source=current price_daily
 breadth_metrics_mixed_history_cache+twelve_data_quote_weight_coverage_ratio,1.0,2026-06-07,data_quality,mixed_history_cache+twelve_data_quote,1.0,False,weight coverage; rate_limited=False; fallback_provider=twelve_data_quote
 breadth_metrics_mixed_history_cache+twelve_data_quote_rate_limited,0.0,2026-06-07,data_quality,mixed_history_cache+twelve_data_quote,,False,1 means provider hit a limit; stopped_after_429=False
