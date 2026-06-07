@@ -70,9 +70,10 @@ FMP_API_KEY
 ```text
 reports/latest/model_input_metrics.csv
 reports/latest/data_quality.csv
+reports/latest/breadth_constituents.csv
 reports/latest/api_usage.csv
 reports/latest/manifest.json
 state/latest_manifest.json
 ```
 
-不要在未检查数据日期、覆盖率、缓存新鲜度和限速状态时直接分析指标。
+先确认 `data_quality.csv` 中 `breadth_metrics` 行的 `message` 是否包含 `target_date`、`target_aligned`、`min_latest_date` 和 `max_latest_date`，再用 `breadth_constituents.csv` 定位未对齐标的。不要在未检查目标日覆盖、缓存新鲜度和限速状态时直接分析指标。

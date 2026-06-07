@@ -11,13 +11,16 @@
 3. 从 FRED 获取配置在 `config/fred_series.yml` 中的宏观序列。
 4. 从 Invesco 官方 DNG API 获取 QQQ 全量持仓，并筛选股票持仓池。
 5. 使用 Twelve Data 获取前 20 大股票持仓报价；失败时可以复用报价缓存。
-6. 市场广度只读取 `data/cache/prices/` 中合格的历史缓存，并叠加 Twelve Data 最新报价。
-7. 生成标准化数据、数据质量、API 用量、模型输入、Excel 和 manifest。
+6. 缓存维护以 QQQ 最新有效收盘日作为 `target_date`，增量补齐完整且新鲜但尚未对齐目标日的成分股。
+7. 市场广度读取 `data/cache/prices/` 中合格的历史缓存，并叠加 Twelve Data 最新报价。
+8. 生成聚合广度、逐成分股日期与涨跌明细、数据质量、API 用量、模型输入、Excel 和 manifest。
 
 历史缓存必须同时满足以下条件才会进入每日市场广度计算：
 
 - 至少 220 条有效日线记录。
 - 最新记录相对运行日期不超过 5 个自然日。
+
+`is_qualified` 只表示缓存完整且不陈旧，不代表已经对齐目标交易日。目标日期默认取 QQQ 最新有效收盘日；缓存维护通过 `is_target_date` 和 `needs_target_update` 区分已对齐与待补齐标的。目标日来源不可用时回退到 `run_date`，并在 manifest 中记录原因。
 
 缓存维护由独立工作流完成，日常市场广度流程不会现场批量请求 Tiingo 历史数据。
 
@@ -151,13 +154,14 @@ state/                       各流水线最新 manifest
 | `top_holdings_quotes.csv` | 前 20 大股票持仓报价 |
 | `quote_failures.csv` | 报价失败诊断 |
 | `breadth_metrics.csv` | 涨跌、均线上方比例和新高新低等市场广度 |
-| `data_quality.csv` | 覆盖率、缓存新鲜度、缺失标的和实际 provider |
+| `breadth_constituents.csv` | 每只成分股的目标日、最近两条有效价格、涨跌方向及 recent/strict 广度资格 |
+| `data_quality.csv` | 覆盖率、目标日对齐数量、缓存日期范围、缺失标的和实际 provider |
 | `api_usage.csv` | 每个 provider 的调用、额度、限速和端点信息 |
 | `run_log.csv` | 当次生产流水线调用日志 |
 | `provider_capability_probe.csv` | 独立 provider 能力探测结果 |
-| `cache_quality.csv` / `price_cache_api_usage.csv` | Tiingo 缓存维护质量与调用记录 |
+| `cache_quality.csv` / `price_cache_api_usage.csv` | 缓存完整性、新鲜度、目标日对齐状态及 Tiingo/Twelve Data 调用记录 |
 | `twelve_data_cache_quality.csv` / `twelve_data_history_api_usage.csv` | Twelve Data 修复质量与调用记录 |
-| `nasdaq100_qqq_daily_tracker.xlsx` | 汇总上述核心数据的 Excel 报表 |
+| `nasdaq100_qqq_daily_tracker.xlsx` | 汇总核心聚合数据的 Excel 报表；逐成分股广度明细保留在 CSV |
 | `manifest.json` | 最新文件、质量摘要、API 用量和校验信息 |
 
 `state/latest_manifest.json` 与 `reports/latest/manifest.json` 保存同一份生产日报清单。辅助工作流分别维护：
@@ -178,11 +182,12 @@ metric_name,metric_value,metric_date,source,provider,coverage_ratio,is_missing,q
 
 - `reports/latest/data_quality.csv`
 - `reports/latest/api_usage.csv`
+- `reports/latest/breadth_constituents.csv`
 - `state/latest_manifest.json`
 
 示例提示词：
 
-> 请读取仓库中的 `reports/latest/model_input_metrics.csv`、`reports/latest/data_quality.csv`、`reports/latest/api_usage.csv` 和 `state/latest_manifest.json`。先检查数据日期、覆盖率、缺失值、缓存新鲜度和 provider 限速情况，再基于客观指标分析 Nasdaq-100 / QQQ；不要把缺失数据解释为中性信号。
+> 请读取仓库中的 `reports/latest/model_input_metrics.csv`、`reports/latest/data_quality.csv`、`reports/latest/breadth_constituents.csv`、`reports/latest/api_usage.csv` 和 `state/latest_manifest.json`。先检查 target_date、目标日对齐率、缓存日期范围、覆盖率、缺失值和 provider 限速情况，再基于客观指标分析 Nasdaq-100 / QQQ；不要把未对齐或缺失数据解释为中性信号。
 
 ## 测试
 
@@ -190,4 +195,4 @@ metric_name,metric_value,metric_date,source,provider,coverage_ratio,is_missing,q
 .\.venv\Scripts\python.exe -m pytest
 ```
 
-测试覆盖 provider 规范化、缓存合并与资格判断、历史回退、客观输出契约、manifest 和数据质量字段。
+测试覆盖 provider 规范化、缓存合并与目标日资格判断、历史回退、逐成分股广度明细、客观输出契约、manifest 和数据质量字段。

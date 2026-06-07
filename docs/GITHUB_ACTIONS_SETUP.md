@@ -65,6 +65,8 @@ reports/latest/price_cache_api_usage.csv
 state/latest_cache_backfill_manifest.json
 ```
 
+其中缓存质量输出包含 QQQ `target_date`、各成分股目标日对齐状态和仍待补齐数量。生产日报的 `reports/latest/` 还包含 `breadth_constituents.csv`，用于审计逐股票 recent/strict 广度资格。
+
 各工作流提交的准确路径以对应 YAML 中的 `git add` 和 artifact `path` 为准。
 
 ## 5. 减少仓库存档
