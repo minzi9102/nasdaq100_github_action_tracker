@@ -50,6 +50,26 @@ QQQ_HOLDINGS_COLUMNS = [
 ]
 QQQ_EQUITY_HOLDINGS_COLUMNS = QQQ_HOLDINGS_COLUMNS.copy()
 BREADTH_METRICS_COLUMNS = ["metric_name", "metric_value", "denominator", "data_date", "source", "is_missing"]
+BREADTH_CONSTITUENTS_COLUMNS = [
+    "run_date",
+    "target_date",
+    "symbol",
+    "company_name",
+    "weight",
+    "latest_date",
+    "previous_date",
+    "latest_close",
+    "previous_close",
+    "daily_return",
+    "direction",
+    "is_complete",
+    "is_fresh",
+    "is_qualified",
+    "is_target_date",
+    "included_in_recent_breadth",
+    "included_in_strict_breadth",
+    "source",
+]
 TOP_HOLDINGS_QUOTES_COLUMNS = [
     "symbol",
     "company_name",
@@ -1231,6 +1251,83 @@ def build_breadth_metrics(
     return pd.DataFrame(rows, columns=BREADTH_METRICS_COLUMNS)
 
 
+def build_breadth_constituents(
+    settings: Settings,
+    equity_holdings: pd.DataFrame,
+    run_date: str,
+    target_date: str,
+) -> pd.DataFrame:
+    if equity_holdings.empty or "symbol" not in equity_holdings.columns:
+        return pd.DataFrame(columns=BREADTH_CONSTITUENTS_COLUMNS)
+
+    holdings = equity_holdings.copy()
+    holdings["symbol"] = holdings["symbol"].map(normalize_symbol)
+    holdings["weight"] = pd.to_numeric(holdings.get("weight"), errors="coerce")
+    rows: list[dict[str, object]] = []
+    for _, holding in holdings.iterrows():
+        symbol = holding["symbol"]
+        cache_df = load_primary_price_cache(settings, symbol)
+        status = history_cache_status(cache_df, run_date, target_date)
+        latest_date = status["latest_date"]
+        previous_date = None
+        latest_close = None
+        previous_close = None
+        daily_return = None
+        direction = "missing"
+        source = ""
+
+        price_col = history_price_column(cache_df)
+        if price_col is not None and not cache_df.empty:
+            valid = cache_df.copy()
+            valid["date"] = pd.to_datetime(valid["date"], errors="coerce")
+            valid[price_col] = pd.to_numeric(valid[price_col], errors="coerce")
+            valid = valid.dropna(subset=["date", price_col]).sort_values("date")
+            if not valid.empty:
+                latest = valid.iloc[-1]
+                latest_date = latest["date"].date().isoformat()
+                latest_close = float(latest[price_col])
+                source_value = latest.get("source")
+                source = "" if pd.isna(source_value) else str(source_value)
+            if len(valid) >= 2:
+                previous = valid.iloc[-2]
+                previous_date = previous["date"].date().isoformat()
+                previous_close = float(previous[price_col])
+                if previous_close != 0:
+                    daily_return = latest_close / previous_close - 1
+                if latest_close > previous_close:
+                    direction = "up"
+                elif latest_close < previous_close:
+                    direction = "down"
+                else:
+                    direction = "flat"
+
+        included_in_recent = bool(status["is_qualified"])
+        included_in_strict = included_in_recent and bool(status["is_target_date"])
+        rows.append(
+            {
+                "run_date": run_date,
+                "target_date": target_date,
+                "symbol": symbol,
+                "company_name": holding.get("company_name"),
+                "weight": holding.get("weight"),
+                "latest_date": latest_date,
+                "previous_date": previous_date,
+                "latest_close": latest_close,
+                "previous_close": previous_close,
+                "daily_return": daily_return,
+                "direction": direction,
+                "is_complete": bool(status["is_complete"]),
+                "is_fresh": bool(status["is_fresh"]),
+                "is_qualified": included_in_recent,
+                "is_target_date": bool(status["is_target_date"]),
+                "included_in_recent_breadth": included_in_recent,
+                "included_in_strict_breadth": included_in_strict,
+                "source": source,
+            }
+        )
+    return pd.DataFrame(rows, columns=BREADTH_CONSTITUENTS_COLUMNS)
+
+
 def fetch_tiingo_history_for_breadth(
     settings: Settings,
     tiingo: TiingoProvider,
@@ -1357,7 +1454,10 @@ def fetch_breadth(
     logs: list[Dict],
     quality_rows: list[Dict],
     quote_map: dict[str, dict] | None = None,
+    target_date: str | None = None,
+    target_date_source: str = "",
 ) -> pd.DataFrame:
+    target_date = target_date or run_date
     if equity_holdings.empty or "symbol" not in equity_holdings.columns:
         quality_rows.append(
             quality_row(
@@ -1367,7 +1467,10 @@ def fetch_breadth(
                 0,
                 symbol_coverage_ratio=0.0,
                 weight_coverage_ratio=0.0,
-                message="no equity holdings available",
+                message=(
+                    f"no equity holdings available; target_date={target_date}"
+                    + (f"; target_date_source={target_date_source}" if target_date_source else "")
+                ),
             )
         )
         return pd.DataFrame(columns=BREADTH_METRICS_COLUMNS)
@@ -1377,8 +1480,10 @@ def fetch_breadth(
     holdings["symbol"] = holdings["symbol"].map(normalize_symbol)
     holdings["weight"] = pd.to_numeric(holdings["weight"], errors="coerce").fillna(0.0)
     symbol_priority = []
+    symbol_statuses: dict[str, dict[str, object]] = {}
     for symbol in holdings["symbol"].dropna().astype(str).unique().tolist():
-        status = history_cache_status(load_primary_price_cache(settings, symbol), run_date)
+        status = history_cache_status(load_primary_price_cache(settings, symbol), run_date, target_date)
+        symbol_statuses[symbol] = status
         symbol_priority.append((symbol, bool(status["is_qualified"]), int(status["valid_rows"])))
     priority_map = {symbol: (has_ready_cache, history_rows) for symbol, has_ready_cache, history_rows in symbol_priority}
     holdings["has_ready_cache"] = holdings["symbol"].map(lambda symbol: priority_map.get(symbol, (False, 0))[0])
@@ -1429,10 +1534,23 @@ def fetch_breadth(
 
     quality_ok = not metrics.empty
     quote_overlay_symbols = len(set(quote_map) & set(used_symbols))
+    target_aligned = sum(
+        1
+        for status in symbol_statuses.values()
+        if status["is_qualified"] and status["is_target_date"]
+    )
+    latest_dates = [str(status["latest_date"]) for status in symbol_statuses.values() if status["latest_date"]]
+    min_latest_date = min(latest_dates) if latest_dates else ""
+    max_latest_date = max(latest_dates) if latest_dates else ""
     quality_message = (
         f"{len(used_symbols)}/{total_symbols} symbols with history coverage; "
-        f"{quote_overlay_symbols}/{len(used_symbols)} history symbols with Twelve Data quote overlay"
+        f"{quote_overlay_symbols}/{len(used_symbols)} history symbols with Twelve Data quote overlay; "
+        f"target_date={target_date}; target_aligned={target_aligned}/{total_symbols}; "
+        f"non_target_aligned={total_symbols - target_aligned}/{total_symbols}; "
+        f"min_latest_date={min_latest_date}; max_latest_date={max_latest_date}"
     )
+    if target_date_source:
+        quality_message = f"{quality_message}; target_date_source={target_date_source}"
     if missing_top_weight_symbols:
         quality_message = f"{quality_message}; coverage insufficient for top-weight symbols"
     quality_rows.append(
@@ -1609,6 +1727,10 @@ def run_daily(as_of: str = "auto") -> Dict:
         api_usage_rows,
         quality_rows,
     )
+    target_date = history_latest_date(price_daily)
+    target_date_source = "current price_daily"
+    if target_date is None:
+        target_date, target_date_source = determine_target_date(settings, run_date)
     write_csv(price_daily, processed_dir / "price_daily.csv")
     write_csv(price_metrics, processed_dir / "price_metrics.csv")
 
@@ -1755,9 +1877,20 @@ def run_daily(as_of: str = "auto") -> Dict:
 
     breadth_metrics = pd.DataFrame(columns=BREADTH_METRICS_COLUMNS)
     if settings.pipeline.get("run", {}).get("fetch_breadth_metrics", True):
-        breadth_metrics = fetch_breadth(settings, qqq_equity_holdings, run_date, logs, quality_rows, quote_map)
+        breadth_metrics = fetch_breadth(
+            settings,
+            qqq_equity_holdings,
+            run_date,
+            logs,
+            quality_rows,
+            quote_map,
+            target_date=target_date,
+            target_date_source=target_date_source,
+        )
     breadth_metrics = breadth_metrics.reindex(columns=BREADTH_METRICS_COLUMNS)
+    breadth_constituents = build_breadth_constituents(settings, qqq_equity_holdings, run_date, target_date)
     write_csv(breadth_metrics, processed_dir / "breadth_metrics.csv")
+    write_csv(breadth_constituents, processed_dir / "breadth_constituents.csv")
 
     logs_df = pd.DataFrame(logs)
     data_quality = pd.DataFrame(quality_rows, columns=DATA_QUALITY_COLUMNS)
@@ -1777,6 +1910,7 @@ def run_daily(as_of: str = "auto") -> Dict:
     write_csv(qqq_holdings, latest_dir / "qqq_holdings.csv")
     write_csv(qqq_equity_holdings, latest_dir / "qqq_equity_holdings.csv")
     write_csv(breadth_metrics, latest_dir / "breadth_metrics.csv")
+    write_csv(breadth_constituents, latest_dir / "breadth_constituents.csv")
     write_csv(top_holdings_quotes, latest_dir / "top_holdings_quotes.csv")
     write_csv(quote_failures, latest_dir / "quote_failures.csv")
     write_csv(data_quality, latest_dir / "data_quality.csv")
@@ -1817,6 +1951,7 @@ def run_daily(as_of: str = "auto") -> Dict:
         "qqq_holdings_csv": rel_path(latest_dir / "qqq_holdings.csv", settings.paths.root),
         "qqq_equity_holdings_csv": rel_path(latest_dir / "qqq_equity_holdings.csv", settings.paths.root),
         "breadth_metrics_csv": rel_path(latest_dir / "breadth_metrics.csv", settings.paths.root),
+        "breadth_constituents_csv": rel_path(latest_dir / "breadth_constituents.csv", settings.paths.root),
         "top_holdings_quotes_csv": rel_path(latest_dir / "top_holdings_quotes.csv", settings.paths.root),
         "quote_failures_csv": rel_path(latest_dir / "quote_failures.csv", settings.paths.root),
         "data_quality_csv": rel_path(latest_dir / "data_quality.csv", settings.paths.root),

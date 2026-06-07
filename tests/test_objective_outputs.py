@@ -6,6 +6,7 @@ import pandas as pd
 
 from qqq_tracker.pipeline.daily_run import (
     API_USAGE_COLUMNS,
+    BREADTH_CONSTITUENTS_COLUMNS,
     BREADTH_METRICS_COLUMNS,
     DATA_QUALITY_COLUMNS,
     PRICE_DAILY_COLUMNS,
@@ -13,6 +14,7 @@ from qqq_tracker.pipeline.daily_run import (
     QQQ_HOLDINGS_COLUMNS,
     TOP_HOLDINGS_QUOTES_COLUMNS,
     api_usage_row,
+    build_breadth_constituents,
     build_breadth_metrics,
     build_equity_holdings,
     build_macro_metric_rows,
@@ -281,6 +283,58 @@ def test_fetch_breadth_daily_mode_uses_cache_only(monkeypatch, tmp_path):
     assert metrics.loc[metrics["metric_name"] == "advancing_count", "denominator"].iloc[0] == 1
     assert quality_rows[0]["rate_limited"] is False
     assert quality_rows[0]["stopped_after_429"] is False
+    assert "target_date=2026-06-05" in quality_rows[0]["message"]
+    assert "target_aligned=1/1" in quality_rows[0]["message"]
+
+
+def test_breadth_constituents_explains_recent_and_strict_eligibility(tmp_path):
+    price_cache_dir = tmp_path / "cache" / "prices"
+    price_cache_dir.mkdir(parents=True)
+    settings = SimpleNamespace(
+        paths=SimpleNamespace(
+            price_cache_dir=price_cache_dir,
+            tiingo_price_cache_dir=price_cache_dir / "tiingo",
+        )
+    )
+    aapl = pd.DataFrame(
+        {
+            "date": pd.bdate_range(end="2026-06-05", periods=220).astype(str),
+            "adjClose": list(range(100, 320)),
+            "symbol": ["AAPL"] * 220,
+            "source": ["tiingo"] * 220,
+        }
+    )
+    nvda = pd.DataFrame(
+        {
+            "date": pd.bdate_range(end="2026-06-04", periods=220).astype(str),
+            "adjClose": list(range(320, 100, -1)),
+            "symbol": ["NVDA"] * 220,
+            "source": ["tiingo"] * 220,
+        }
+    )
+    aapl.to_csv(price_cache_dir / "AAPL.csv", index=False)
+    nvda.to_csv(price_cache_dir / "NVDA.csv", index=False)
+    holdings = pd.DataFrame(
+        [
+            {"symbol": "AAPL", "company_name": "Apple", "weight": 0.6},
+            {"symbol": "NVDA", "company_name": "NVIDIA", "weight": 0.4},
+        ]
+    )
+
+    constituents = build_breadth_constituents(settings, holdings, "2026-06-07", "2026-06-05")
+
+    assert list(constituents.columns) == BREADTH_CONSTITUENTS_COLUMNS
+    aapl_row = constituents[constituents["symbol"] == "AAPL"].iloc[0]
+    nvda_row = constituents[constituents["symbol"] == "NVDA"].iloc[0]
+    assert aapl_row["direction"] == "up"
+    assert bool(aapl_row["included_in_recent_breadth"]) is True
+    assert bool(aapl_row["included_in_strict_breadth"]) is True
+    assert nvda_row["direction"] == "down"
+    assert bool(nvda_row["included_in_recent_breadth"]) is True
+    assert bool(nvda_row["included_in_strict_breadth"]) is False
+    assert nvda_row["latest_date"] == "2026-06-04"
+    assert nvda_row["previous_date"] < nvda_row["latest_date"]
+    assert nvda_row["daily_return"] < 0
 
 
 def test_fetch_breadth_missing_cache_still_records_quality(tmp_path):
