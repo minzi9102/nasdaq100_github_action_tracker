@@ -1,0 +1,11 @@
+﻿provider,method,symbol,ok,message
+alpha_vantage,daily,QQQ,True,QQQ: 100 rows
+fred,observations,DGS10,True,DGS10: 365 rows
+fred,observations,DGS2,True,DGS2: 365 rows
+fred,observations,DGS3MO,True,DGS3MO: 365 rows
+fred,observations,DFF,True,DFF: 365 rows
+fred,observations,CPIAUCSL,True,CPIAUCSL: 365 rows
+fred,observations,PCEPI,True,PCEPI: 365 rows
+fred,observations,UNRATE,True,UNRATE: 365 rows
+invesco,qqq_holdings,QQQ,True,QQQ: holdings rows=104 effective_date=2026-06-06
+tiingo_cache,load_cached_history_for_breadth,98 symbols,True,98/98 symbols loaded from local cache/raw seed
