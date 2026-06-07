@@ -19,9 +19,11 @@ from .daily_run import (
     MIN_HISTORY_ROWS,
     api_usage_row,
     cache_path_for_symbol,
+    determine_target_date,
     history_cache_status,
     history_freshness,
     history_price_column,
+    history_target_alignment,
     load_previous_csv,
     load_tiingo_cache,
     merge_price_history,
@@ -41,6 +43,7 @@ CACHE_QUALITY_COLUMNS = [
     "cache_path",
     "price_column",
     "latest_date",
+    "target_date",
     "staleness_days",
     "ma200_ready",
     "before_rows",
@@ -49,6 +52,8 @@ CACHE_QUALITY_COLUMNS = [
     "is_complete",
     "is_fresh",
     "is_qualified",
+    "is_target_date",
+    "needs_target_update",
     "was_requested",
     "ok",
     "rate_limited",
@@ -137,9 +142,12 @@ def cache_quality_row(
     cache_path: str = "",
     price_column: str = "",
     latest_date: str | None = None,
+    target_date: str | None = None,
 ) -> Dict:
     staleness_days, is_fresh = history_freshness(latest_date, run_date)
     is_complete = int(after_rows) >= MIN_HISTORY_ROWS
+    is_qualified = is_complete and is_fresh
+    is_target_date, is_before_target = history_target_alignment(latest_date, target_date)
     return {
         "run_date": run_date,
         "symbol": normalize_symbol(symbol),
@@ -149,6 +157,7 @@ def cache_quality_row(
         "cache_path": cache_path,
         "price_column": price_column,
         "latest_date": latest_date,
+        "target_date": target_date,
         "staleness_days": staleness_days,
         "ma200_ready": int(after_rows) >= 200,
         "before_rows": int(before_rows),
@@ -156,7 +165,9 @@ def cache_quality_row(
         "fetched_rows": int(fetched_rows),
         "is_complete": is_complete,
         "is_fresh": is_fresh,
-        "is_qualified": is_complete and is_fresh,
+        "is_qualified": is_qualified,
+        "is_target_date": is_target_date,
+        "needs_target_update": is_qualified and is_before_target,
         "was_requested": bool(was_requested),
         "ok": bool(ok),
         "rate_limited": bool(rate_limited),
@@ -174,6 +185,7 @@ def backfill_price_cache(
     twelve_data: TwelveDataProvider | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
     holdings = prioritize_backfill_holdings(settings, load_backfill_holdings(settings, run_date))
+    target_date, target_date_source = determine_target_date(settings, run_date)
     max_calls_per_run = int(max_calls if max_calls is not None else settings.api_limits.get("tiingo", {}).get("max_calls_per_run", 40))
     raw_dir = settings.paths.raw_dir / run_date
 
@@ -210,11 +222,11 @@ def backfill_price_cache(
         symbol = holding["symbol"]
         weight = float(holding.get("weight", 0.0))
         cache_df = load_tiingo_cache(settings, symbol)
-        before_status = history_cache_status(cache_df, run_date)
+        before_status = history_cache_status(cache_df, run_date, target_date)
         before_rows = int(before_status["valid_rows"])
         before_latest_date = before_status["latest_date"]
 
-        if before_status["is_qualified"]:
+        if (before_status["is_qualified"] and not before_status["needs_target_update"]) or before_status["is_after_target"]:
             primary_cache_path = cache_path_for_symbol(settings, symbol)
             if not primary_cache_path.exists():
                 write_tiingo_cache(settings, symbol, cache_df)
@@ -231,7 +243,12 @@ def backfill_price_cache(
                     cache_path=rel_path(primary_cache_path, settings.paths.root),
                     price_column=history_price_column(cache_df) or "",
                     latest_date=before_latest_date,
-                    message="cache complete and fresh",
+                    target_date=target_date,
+                    message=(
+                        "cache complete, fresh and target-aligned"
+                        if before_status["is_target_date"]
+                        else "cache complete and fresh but latest date is after target date"
+                    ),
                 )
             )
             continue
@@ -248,6 +265,7 @@ def backfill_price_cache(
                 stopped_after_429=True,
                 retry_after_seconds=retry_after_seconds,
                 latest_date=before_latest_date,
+                target_date=target_date,
                 message="skipped after Tiingo 429",
             )
             fallback_candidates.append({"row": row, "symbol": symbol, "weight": weight, "before_rows": before_rows, "reason": "tiingo_429_skip"})
@@ -264,6 +282,7 @@ def backfill_price_cache(
                     before_rows,
                     ok=False,
                     latest_date=before_latest_date,
+                    target_date=target_date,
                     message="skipped after max_calls limit",
                 )
             )
@@ -291,11 +310,11 @@ def backfill_price_cache(
             messages.append(f"{symbol}: {result.message}")
 
         merged = merge_price_history(cache_df, live_df, symbol)
-        after_status = history_cache_status(merged, run_date)
+        after_status = history_cache_status(merged, run_date, target_date)
         after_rows = int(after_status["valid_rows"])
         if after_rows > 0:
             write_tiingo_cache(settings, symbol, merged)
-        if result.ok and after_status["is_qualified"]:
+        if result.ok and after_status["is_qualified"] and not after_status["needs_target_update"]:
             loaded_symbols.append(symbol)
 
         if result_rate_limited:
@@ -311,7 +330,7 @@ def backfill_price_cache(
             after_rows,
             fetched_rows=fetched_rows,
             was_requested=True,
-            ok=result.ok and bool(after_status["is_qualified"]),
+            ok=result.ok and bool(after_status["is_qualified"]) and not bool(after_status["needs_target_update"]),
             rate_limited=result_rate_limited,
             stopped_after_429=result_rate_limited,
             retry_after_seconds=retry_after,
@@ -320,12 +339,18 @@ def backfill_price_cache(
             cache_path=rel_path(cache_path_for_symbol(settings, symbol), settings.paths.root),
             price_column=history_price_column(merged) or "",
             latest_date=after_status["latest_date"],
+            target_date=target_date,
         )
-        if (not result.ok or fetched_rows == 0 or not after_status["is_qualified"]) and calls_attempted <= max_calls_per_run:
+        if (
+            not result.ok
+            or fetched_rows == 0
+            or not after_status["is_qualified"]
+            or after_status["needs_target_update"]
+        ) and calls_attempted <= max_calls_per_run:
             fallback_candidates.append({"row": row, "symbol": symbol, "weight": weight, "before_rows": before_rows, "reason": "tiingo_failed_or_incomplete"})
         quality_rows.append(row)
 
-    twelve_usage = run_twelve_data_fallback(settings, twelve_data, run_date, raw_dir, fallback_candidates)
+    twelve_usage = run_twelve_data_fallback(settings, twelve_data, run_date, target_date, raw_dir, fallback_candidates)
 
     cache_quality = pd.DataFrame(quality_rows, columns=CACHE_QUALITY_COLUMNS)
     for candidate in fallback_candidates:
@@ -358,8 +383,13 @@ def backfill_price_cache(
     manifest = {
         "ok": True,
         "run_date": run_date,
+        "target_date": target_date,
+        "target_date_source": target_date_source,
         "symbols_total": int(len(holdings)),
         "symbols_complete": int(cache_quality["is_qualified"].sum()) if not cache_quality.empty else 0,
+        "symbols_qualified": int(cache_quality["is_qualified"].sum()) if not cache_quality.empty else 0,
+        "symbols_target_aligned": int((cache_quality["is_qualified"] & cache_quality["is_target_date"]).sum()) if not cache_quality.empty else 0,
+        "symbols_needing_target_update": int(cache_quality["needs_target_update"].sum()) if not cache_quality.empty else 0,
         "calls_attempted": calls_attempted,
         "calls_success": calls_success,
         "rate_limited": rate_limited,
@@ -376,6 +406,7 @@ def run_twelve_data_fallback(
     settings: Settings,
     twelve_data: TwelveDataProvider | None,
     run_date: str,
+    target_date: str,
     raw_dir: Path,
     candidates: list[dict],
 ) -> Dict:
@@ -418,7 +449,7 @@ def run_twelve_data_fallback(
             write_csv(result.data, raw_dir / f"twelve_data_{symbol}_cache_fallback.csv")
             cache_df = load_tiingo_cache(settings, symbol)
             merged = merge_price_history(cache_df, result.data, symbol)
-            after_status = history_cache_status(merged, run_date)
+            after_status = history_cache_status(merged, run_date, target_date)
             after_rows = int(after_status["valid_rows"])
             if after_rows > 0:
                 write_tiingo_cache(settings, symbol, merged)
@@ -429,16 +460,19 @@ def run_twelve_data_fallback(
             row["cache_path"] = rel_path(cache_path_for_symbol(settings, symbol), settings.paths.root)
             row["price_column"] = history_price_column(merged) or ""
             row["latest_date"] = after_status["latest_date"]
+            row["target_date"] = target_date
             row["staleness_days"] = after_status["staleness_days"]
             row["ma200_ready"] = after_rows >= 200
             row["fetched_rows"] = int(row.get("fetched_rows") or 0) + len(result.data)
             row["is_complete"] = bool(after_status["is_complete"])
             row["is_fresh"] = bool(after_status["is_fresh"])
             row["is_qualified"] = bool(after_status["is_qualified"])
+            row["is_target_date"] = bool(after_status["is_target_date"])
+            row["needs_target_update"] = bool(after_status["needs_target_update"])
             row["was_requested"] = True
-            row["ok"] = bool(after_status["is_qualified"])
+            row["ok"] = bool(after_status["is_qualified"]) and not bool(after_status["needs_target_update"])
             row["message"] = f"{row.get('message')}; twelve_data fallback: {len(result.data)} rows"
-            if after_status["is_qualified"]:
+            if after_status["is_qualified"] and not after_status["needs_target_update"]:
                 calls_success += 1
                 loaded.append(symbol)
             messages.append(f"{symbol}: {len(result.data)} rows")
@@ -478,6 +512,7 @@ def repair_price_cache_with_twelve_data(
     max_calls: int | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
     holdings = prioritize_backfill_holdings(settings, load_backfill_holdings(settings, run_date))
+    target_date, target_date_source = determine_target_date(settings, run_date)
     cfg = settings.api_limits.get("twelve_data", {})
     max_credits = int(max_calls if max_calls is not None else cfg.get("max_time_series_symbols_backfill", 80))
     batch_size = int(cfg.get("time_series_batch_size", cfg.get("max_credits_per_minute", 8)))
@@ -495,9 +530,9 @@ def repair_price_cache_with_twelve_data(
         symbol = holding["symbol"]
         weight = float(holding.get("weight", 0.0))
         cache_df = load_tiingo_cache(settings, symbol)
-        before_status = history_cache_status(cache_df, run_date)
+        before_status = history_cache_status(cache_df, run_date, target_date)
         before_rows = int(before_status["valid_rows"])
-        if before_status["is_qualified"]:
+        if (before_status["is_qualified"] and not before_status["needs_target_update"]) or before_status["is_after_target"]:
             continue
         if len(attempted) >= max_credits or rate_limited:
             break
@@ -507,13 +542,13 @@ def repair_price_cache_with_twelve_data(
         result = twelve_data.time_series(symbol, outputsize=outputsize, interval="1day")
         limited, retry_after = result_rate_limit_meta(result)
         merged = merge_price_history(cache_df, result.data if result.ok else pd.DataFrame(), symbol)
-        after_status = history_cache_status(merged, run_date)
+        after_status = history_cache_status(merged, run_date, target_date)
         after_rows = int(after_status["valid_rows"])
         if after_rows > 0:
             write_tiingo_cache(settings, symbol, merged)
         if result.ok:
             write_csv(result.data, raw_dir / f"twelve_data_{symbol}_history_repair.csv")
-        if after_status["is_qualified"]:
+        if after_status["is_qualified"] and not after_status["needs_target_update"]:
             loaded.append(symbol)
         quality_rows.append(
             cache_quality_row(
@@ -525,7 +560,7 @@ def repair_price_cache_with_twelve_data(
                 provider="twelve_data",
                 fetched_rows=len(result.data) if result.ok else 0,
                 was_requested=True,
-                ok=bool(after_status["is_qualified"]),
+                ok=bool(after_status["is_qualified"]) and not bool(after_status["needs_target_update"]),
                 rate_limited=limited,
                 stopped_after_429=limited,
                 retry_after_seconds=retry_after,
@@ -533,6 +568,7 @@ def repair_price_cache_with_twelve_data(
                 cache_path=rel_path(cache_path_for_symbol(settings, symbol), settings.paths.root),
                 price_column=history_price_column(merged) or "",
                 latest_date=after_status["latest_date"],
+                target_date=target_date,
                 message=result.message,
             )
         )
@@ -565,6 +601,8 @@ def repair_price_cache_with_twelve_data(
     manifest = {
         "ok": True,
         "run_date": run_date,
+        "target_date": target_date,
+        "target_date_source": target_date_source,
         "provider": "twelve_data",
         "calls_attempted": len(attempted),
         "symbols_loaded": loaded,

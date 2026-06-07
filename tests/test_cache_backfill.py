@@ -9,7 +9,13 @@ from qqq_tracker.pipeline.cache_backfill import (
     prioritize_backfill_holdings,
     repair_price_cache_with_twelve_data,
 )
-from qqq_tracker.pipeline.daily_run import API_USAGE_COLUMNS, history_cache_status, history_latest_date, valid_history_row_count
+from qqq_tracker.pipeline.daily_run import (
+    API_USAGE_COLUMNS,
+    determine_target_date,
+    history_cache_status,
+    history_latest_date,
+    valid_history_row_count,
+)
 from qqq_tracker.providers.base import ProviderResult
 
 
@@ -33,8 +39,10 @@ def make_settings(tmp_path, holdings):
             reports_latest_dir=latest_dir,
             raw_dir=raw_dir,
             tiingo_price_cache_dir=cache_dir,
+            price_cache_dir=cache_dir,
             state_dir=state_dir,
         ),
+        symbols={"primary_etf": "QQQ"},
     )
 
 
@@ -135,6 +143,8 @@ def test_complete_cache_is_not_requested(tmp_path):
     assert cache_quality.loc[0, "staleness_days"] == 0
     assert bool(cache_quality.loc[0, "is_fresh"]) is True
     assert bool(cache_quality.loc[0, "is_qualified"]) is True
+    assert bool(cache_quality.loc[0, "is_target_date"]) is True
+    assert bool(cache_quality.loc[0, "needs_target_update"]) is False
     assert bool(cache_quality.loc[0, "was_requested"]) is False
     assert manifest["symbols_complete"] == 1
     assert list(api_usage.columns) == API_USAGE_COLUMNS
@@ -183,13 +193,96 @@ def test_cache_status_uses_latest_valid_price_date_and_five_day_boundary():
     assert history_cache_status(fresh, "2026-06-10") == {
         "valid_rows": 220,
         "latest_date": "2026-06-05",
+        "target_date": None,
         "staleness_days": 5,
         "is_complete": True,
         "is_fresh": True,
         "is_qualified": True,
+        "is_target_date": False,
+        "needs_target_update": False,
+        "is_after_target": False,
     }
     assert history_cache_status(fresh, "2026-06-11")["is_qualified"] is False
     assert history_cache_status(fresh, "2026-06-04")["is_fresh"] is False
+
+
+def test_target_date_prefers_latest_price_report_then_qqq_cache(tmp_path):
+    settings = make_settings(tmp_path, pd.DataFrame([{"symbol": "AAPL", "weight": 0.8}]))
+    price_frame("QQQ", rows=220).to_csv(settings.paths.price_cache_dir / "QQQ.csv", index=False)
+    report = price_frame("QQQ", rows=2)
+    report["date"] = ["2026-06-04", "2026-06-06"]
+    report.to_csv(settings.paths.reports_latest_dir / "price_daily.csv", index=False)
+
+    assert determine_target_date(settings, "2026-06-07") == ("2026-06-06", "reports/latest/price_daily.csv")
+
+    (settings.paths.reports_latest_dir / "price_daily.csv").unlink()
+    assert determine_target_date(settings, "2026-06-07") == ("2026-06-05", "price cache for QQQ")
+
+
+def test_target_date_falls_back_to_run_date(tmp_path):
+    settings = make_settings(tmp_path, pd.DataFrame([{"symbol": "AAPL", "weight": 0.8}]))
+
+    target_date, source = determine_target_date(settings, "2026-06-07")
+
+    assert target_date == "2026-06-07"
+    assert source == "fallback to run_date because QQQ latest price date unavailable"
+
+
+def test_complete_fresh_cache_before_target_requests_incremental_update(tmp_path):
+    holdings = pd.DataFrame([{"symbol": "NVDA", "weight": 0.8}])
+    settings = make_settings(tmp_path, holdings)
+    qqq = price_frame("QQQ")
+    qqq.to_csv(settings.paths.reports_latest_dir / "price_daily.csv", index=False)
+    nvda = price_frame("NVDA")
+    nvda["date"] = pd.bdate_range(end="2026-06-04", periods=220).astype(str)
+    nvda.to_csv(settings.paths.price_cache_dir / "NVDA.csv", index=False)
+    updated = nvda.copy()
+    updated.loc[len(updated)] = {"date": "2026-06-05", "adjClose": 205.10, "symbol": "NVDA", "source": "tiingo"}
+    tiingo = FakeTiingo({"NVDA": updated})
+
+    quality, _, manifest = backfill_price_cache(settings, tiingo, "2026-06-07", max_calls=1)
+
+    assert tiingo.calls == [("NVDA", "2026-05-25", "2026-06-07")]
+    assert quality.loc[0, "latest_date"] == "2026-06-05"
+    assert bool(quality.loc[0, "is_target_date"]) is True
+    assert bool(quality.loc[0, "needs_target_update"]) is False
+    assert manifest["symbols_target_aligned"] == 1
+
+
+def test_future_cache_date_is_not_target_aligned_and_does_not_fetch(tmp_path):
+    holdings = pd.DataFrame([{"symbol": "AAPL", "weight": 0.8}])
+    settings = make_settings(tmp_path, holdings)
+    price_frame("QQQ").to_csv(settings.paths.reports_latest_dir / "price_daily.csv", index=False)
+    future = price_frame("AAPL")
+    future["date"] = pd.bdate_range(end="2026-06-08", periods=220).astype(str)
+    future.to_csv(settings.paths.price_cache_dir / "AAPL.csv", index=False)
+    tiingo = FakeTiingo({})
+
+    quality, _, _ = backfill_price_cache(settings, tiingo, "2026-06-07", max_calls=1)
+
+    assert tiingo.calls == []
+    assert bool(quality.loc[0, "is_target_date"]) is False
+    assert bool(quality.loc[0, "needs_target_update"]) is False
+    assert quality.loc[0, "message"] == "cache complete and fresh but latest date is after target date"
+
+
+def test_target_update_without_progress_uses_twelve_data_fallback(tmp_path):
+    holdings = pd.DataFrame([{"symbol": "NVDA", "weight": 0.8}])
+    settings = make_settings(tmp_path, holdings)
+    price_frame("QQQ").to_csv(settings.paths.reports_latest_dir / "price_daily.csv", index=False)
+    stale = price_frame("NVDA")
+    stale["date"] = pd.bdate_range(end="2026-06-04", periods=220).astype(str)
+    stale.to_csv(settings.paths.price_cache_dir / "NVDA.csv", index=False)
+    repaired = stale.copy()
+    repaired.loc[len(repaired)] = {"date": "2026-06-05", "adjClose": 205.10, "symbol": "NVDA", "source": "twelve_data"}
+    tiingo = FakeTiingo({"NVDA": stale})
+    twelve = FakeTwelveData({"NVDA": repaired})
+
+    quality, _, _ = backfill_price_cache(settings, tiingo, "2026-06-07", max_calls=1, twelve_data=twelve)
+
+    assert [call[0] for call in twelve.calls] == ["NVDA"]
+    assert bool(quality.loc[0, "is_target_date"]) is True
+    assert bool(quality.loc[0, "needs_target_update"]) is False
 
 
 def test_incomplete_cache_requests_full_history_window(tmp_path):

@@ -1093,19 +1093,55 @@ def history_freshness(latest_date: str | None, run_date: str) -> tuple[int | Non
     return staleness_days, 0 <= staleness_days <= MAX_STALE_CALENDAR_DAYS
 
 
-def history_cache_status(df: pd.DataFrame, run_date: str) -> dict[str, object]:
+def history_target_alignment(latest_date: str | None, target_date: str | None) -> tuple[bool, bool]:
+    if latest_date is None or target_date is None:
+        return False, False
+    try:
+        latest = datetime.fromisoformat(latest_date).date()
+        target = datetime.fromisoformat(target_date).date()
+    except ValueError:
+        return False, False
+    return latest == target, latest < target
+
+
+def history_cache_status(df: pd.DataFrame, run_date: str, target_date: str | None = None) -> dict[str, object]:
     valid_rows = valid_history_row_count(df)
     latest_date = history_latest_date(df)
     staleness_days, is_fresh = history_freshness(latest_date, run_date)
     is_complete = valid_rows >= MIN_HISTORY_ROWS
+    is_qualified = is_complete and is_fresh
+    is_target_date, is_before_target = history_target_alignment(latest_date, target_date)
+    is_after_target = bool(latest_date and target_date and not is_target_date and not is_before_target)
     return {
         "valid_rows": valid_rows,
         "latest_date": latest_date,
+        "target_date": target_date,
         "staleness_days": staleness_days,
         "is_complete": is_complete,
         "is_fresh": is_fresh,
-        "is_qualified": is_complete and is_fresh,
+        "is_qualified": is_qualified,
+        "is_target_date": is_target_date,
+        "needs_target_update": is_qualified and is_before_target,
+        "is_after_target": is_after_target,
     }
+
+
+def determine_target_date(settings: Settings, run_date: str) -> tuple[str, str]:
+    latest_price_path = settings.paths.reports_latest_dir / "price_daily.csv"
+    if latest_price_path.exists():
+        try:
+            latest_price = pd.read_csv(latest_price_path)
+        except Exception:  # noqa: BLE001
+            latest_price = pd.DataFrame()
+        latest_date = history_latest_date(latest_price)
+        if latest_date is not None:
+            return latest_date, "reports/latest/price_daily.csv"
+
+    primary_symbol = getattr(settings, "symbols", {}).get("primary_etf", "QQQ")
+    latest_date = history_latest_date(load_price_cache(settings, primary_symbol))
+    if latest_date is not None:
+        return latest_date, f"price cache for {primary_symbol}"
+    return run_date, "fallback to run_date because QQQ latest price date unavailable"
 
 
 def load_primary_price_cache(settings: Settings, symbol: str) -> pd.DataFrame:
