@@ -1,21 +1,21 @@
 ﻿symbol,company_name,weight,price,change,changes_percentage,market_cap,pe,eps,provider,quote_time,is_missing,error_type,attempted_symbol,was_api_success,was_parse_success,was_merge_success
-NVDA,NVIDIA Corp,0.08305721999999999,208.64,3.53999,1.72598,,,,twelve_data,1780925400,False,,NVDA,True,True,True
-AAPL,Apple Inc,0.07510277,301.54001,-5.79999,-1.88716,,,,twelve_data,1780925400,False,,AAPL,True,True,True
-MSFT,Microsoft Corp,0.051607349999999996,411.73999,-4.93002,-1.1832,,,,twelve_data,1780925400,False,,MSFT,True,True,True
-MU,Micron Technology Inc,0.04467906,949.28003,85.27002,9.8691,,,,twelve_data,1780925400,False,,MU,True,True,True
-AMZN,Amazon.com Inc,0.04395981,245.22,-0.80999756,-0.32922715,,,,twelve_data,1780925400,False,,AMZN,True,True,True
-GOOGL,Alphabet Inc Class A,0.03570688,363.31,-5.22,-1.41644,,,,twelve_data,1780925400,False,,GOOGL,True,True,True
-AMD,Advanced Micro Devices Inc,0.03493509,490.32999,23.94998,5.13529,,,,twelve_data,1780925400,False,,AMD,True,True,True
-GOOG,Alphabet Inc Class C,0.0331087,361.17001,-4.59,-1.25492,,,,twelve_data,1780925400,False,,GOOG,True,True,True
-TSLA,Tesla Inc,0.03247962,408.95001,17.95001,4.5908,,,,twelve_data,1780925400,False,,TSLA,True,True,True
-AVGO,Broadcom Inc,0.030438220000000002,396.60001,10.87,2.81803,,,,twelve_data,1780925400,False,,AVGO,True,True,True
-META,Meta Platforms Inc,0.02911241,585.39001,-7.60999,-1.2833,,,,twelve_data,1780925400,False,,META,True,True,True
-WMT,Walmart Inc,0.02669419,119.83,0.95000458,0.79912904,,,,twelve_data,1780925400,False,,WMT,True,True,True
-INTC,Intel Corp,0.02276136,110.27,11.099998,11.1929,,,,twelve_data,1780925400,False,,INTC,True,True,True
-CSCO,Cisco Systems Inc,0.02207737,124.15,2.51,2.063468,,,,twelve_data,1780925400,False,,CSCO,True,True,True
-COST,Costco Wholesale Corp,0.01982251,974.75,2.88,0.29633643,,,,twelve_data,1780925400,False,,COST,True,True,True
-LRCX,Lam Research Corp,0.01739432,324.45001,21.17001,6.98035,,,,twelve_data,1780925400,False,,LRCX,True,True,True
-AMAT,Applied Materials Inc,0.01653103,492.17001,39.16,8.6444,,,,twelve_data,1780925400,False,,AMAT,True,True,True
-NFLX,Netflix Inc,0.01593612,82.64,0.45999908,0.55974578,,,,twelve_data,1780925400,False,,NFLX,True,True,True
-PLTR,Palantir Technologies Inc,0.01426369,136.47,0.94000244,0.69357519,,,,twelve_data,1780925400,False,,PLTR,True,True,True
-TXN,Texas Instruments Inc,0.011882029999999998,290.89999,5.84,2.04869,,,,twelve_data,1780925400,False,,TXN,True,True,True
+NVDA,NVIDIA Corp,0.08317661,208.64,3.53999,1.72598,,,,twelve_data,1780925400,False,,NVDA,True,True,True
+AAPL,Apple Inc,0.07254025,301.54001,-5.79999,-1.88716,,,,twelve_data,1780925400,False,,AAPL,True,True,True
+MSFT,Microsoft Corp,0.05020625,411.73999,-4.93002,-1.1832,,,,twelve_data,1780925400,False,,MSFT,True,True,True
+MU,Micron Technology Inc,0.048325560000000004,949.28003,85.27002,9.8691,,,,twelve_data,1780925400,False,,MU,True,True,True
+AMZN,Amazon.com Inc,0.04313407,245.22,-0.80999756,-0.32922715,,,,twelve_data,1780925400,False,,AMZN,True,True,True
+AMD,Advanced Micro Devices Inc,0.036158260000000005,490.32999,23.94998,5.13529,,,,twelve_data,1780925400,False,,AMD,True,True,True
+GOOGL,Alphabet Inc Class A,0.03467499,363.31,-5.22,-1.41644,,,,twelve_data,1780925400,False,,GOOGL,True,True,True
+TSLA,Tesla Inc,0.033442690000000004,408.95001,17.95001,4.5908,,,,twelve_data,1780925400,False,,TSLA,True,True,True
+GOOG,Alphabet Inc Class C,0.03220472,361.17001,-4.59,-1.25492,,,,twelve_data,1780925400,False,,GOOG,True,True,True
+AVGO,Broadcom Inc,0.03080958,396.60001,10.87,2.81803,,,,twelve_data,1780925400,False,,AVGO,True,True,True
+META,Meta Platforms Inc,0.028292130000000002,585.39001,-7.60999,-1.2833,,,,twelve_data,1780925400,False,,META,True,True,True
+WMT,Walmart Inc,0.0264893,119.83,0.95000458,0.79912904,,,,twelve_data,1780925400,False,,WMT,True,True,True
+INTC,Intel Corp,0.024915660000000003,110.27,11.099998,11.1929,,,,twelve_data,1780925400,False,,INTC,True,True,True
+CSCO,Cisco Systems Inc,0.02218272,124.15,2.51,2.063468,,,,twelve_data,1780925400,False,,CSCO,True,True,True
+COST,Costco Wholesale Corp,0.01957227,974.75,2.88,0.29633643,,,,twelve_data,1780925400,False,,COST,True,True,True
+LRCX,Lam Research Corp,0.0183193,324.45001,21.17001,6.98035,,,,twelve_data,1780925400,False,,LRCX,True,True,True
+AMAT,Applied Materials Inc,0.01767941,492.17001,39.16,8.6444,,,,twelve_data,1780925400,False,,AMAT,True,True,True
+NFLX,Netflix Inc,0.015776250000000002,82.64,0.45999908,0.55974578,,,,twelve_data,1780925400,False,,NFLX,True,True,True
+PLTR,Palantir Technologies Inc,0.01413938,136.47,0.94000244,0.69357519,,,,twelve_data,1780925400,False,,PLTR,True,True,True
+KLAC,KLA Corp,0.0124935,2108.060059,178.86011,9.27121,,,,twelve_data,1780925400,False,,KLAC,True,True,True

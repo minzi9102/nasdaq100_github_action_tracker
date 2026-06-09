@@ -1,6 +1,6 @@
 {
   "as_of": "2026-06-09",
-  "generated_at": "2026-06-09T09:03:19Z",
+  "generated_at": "2026-06-09T13:07:39Z",
   "latest_files": {
     "excel_report": "reports/latest/nasdaq100_qqq_daily_tracker.xlsx",
     "manifest_json": "reports/latest/manifest.json",
@@ -236,7 +236,7 @@
       "ma200_available": null,
       "actual_quote_provider": "",
       "actual_history_provider": "",
-      "message": "QQQ: holdings rows=104 effective_date=2026-06-07"
+      "message": "QQQ: holdings rows=104 effective_date=2026-06-08"
     },
     {
       "dataset": "qqq_equity_holdings",
@@ -244,7 +244,7 @@
       "ok": true,
       "rows": 98,
       "symbol_coverage_ratio": 0.9423076923076923,
-      "weight_coverage_ratio": 0.9876918382952856,
+      "weight_coverage_ratio": 0.9875161205231037,
       "missing_symbols": "ARM,ASML,NQM6,NQM6_,PDD,USD",
       "missing_top_weight_symbols": "",
       "rate_limited": false,
@@ -298,7 +298,7 @@
       "rate_limited": false,
       "stopped_after_429": false,
       "remaining_symbols_skipped": 0,
-      "cache_rows_used": 28218,
+      "cache_rows_used": 28317,
       "live_rows_fetched": 0,
       "fallback_provider": "twelve_data_quote",
       "history_coverage_ratio": 1.0,
@@ -308,7 +308,7 @@
       "ma200_available": null,
       "actual_quote_provider": "twelve_data",
       "actual_history_provider": "mixed_history_cache",
-      "message": "98/98 symbols with history coverage; 20/98 history symbols with Twelve Data quote overlay; target_date=2026-06-08; target_aligned=0/98; non_target_aligned=98/98; min_latest_date=2026-06-05; max_latest_date=2026-06-05; target_date_source=current price_daily"
+      "message": "98/98 symbols with history coverage; 20/98 history symbols with Twelve Data quote overlay; target_date=2026-06-08; target_aligned=98/98; non_target_aligned=0/98; min_latest_date=2026-06-08; max_latest_date=2026-06-08; target_date_source=current price_daily"
     }
   ],
   "api_usage": [
@@ -473,8 +473,8 @@
       "limit_window": "minute",
       "limit_value": 8,
       "credits_used": 20,
-      "symbols_requested": "NVDA,AAPL,MSFT,MU,AMZN,GOOGL,AMD,GOOG,TSLA,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,TXN",
-      "symbols_loaded": "NVDA,AAPL,MSFT,MU,AMZN,GOOGL,AMD,GOOG,TSLA,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,TXN",
+      "symbols_requested": "NVDA,AAPL,MSFT,MU,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,KLAC",
+      "symbols_loaded": "NVDA,AAPL,MSFT,MU,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,KLAC",
       "stopped_after_429": false,
       "retry_after_seconds": null,
       "http_status": 200.0,
@@ -550,7 +550,7 @@
       "method": "qqq_holdings",
       "symbol": "QQQ",
       "ok": true,
-      "message": "QQQ: holdings rows=104 effective_date=2026-06-07"
+      "message": "QQQ: holdings rows=104 effective_date=2026-06-08"
     },
     {
       "provider": "tiingo_cache",
