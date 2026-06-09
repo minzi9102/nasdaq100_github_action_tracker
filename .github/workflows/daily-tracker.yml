@@ -70,24 +70,204 @@ jobs:
       - name: Prepare email notification
         if: always()
         run: |
-          {
-            echo "Workflow: $GITHUB_WORKFLOW"
-            echo "Status: ${{ job.status }}"
-            echo "Repository: $GITHUB_REPOSITORY"
-            echo "Branch: $GITHUB_REF_NAME"
-            echo "Commit: $GITHUB_SHA"
-            echo "Run URL: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          } > mail_body.txt
+          .venv/bin/python - <<'PY'
+          from __future__ import annotations
 
-          if [ -f reports/latest/nasdaq100_qqq_daily_tracker.xlsx ]; then
-            echo "MAIL_ATTACHMENTS=reports/latest/nasdaq100_qqq_daily_tracker.xlsx" >> "$GITHUB_ENV"
-          else
-            echo "MAIL_ATTACHMENTS=" >> "$GITHUB_ENV"
-            {
-              echo ""
-              echo "Attachment: reports/latest/nasdaq100_qqq_daily_tracker.xlsx was not generated."
-            } >> mail_body.txt
-          fi
+          import csv
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          REPORT_DIR = Path("reports/latest")
+          EXCEL_REPORT = REPORT_DIR / "nasdaq100_qqq_daily_tracker.xlsx"
+          MAIL_BODY = Path("mail_body.txt")
+
+          def read_json(path: Path) -> dict:
+              if not path.exists():
+                  return {}
+              with path.open("r", encoding="utf-8") as handle:
+                  return json.load(handle)
+
+          def read_csv(path: Path) -> list[dict[str, str]]:
+              if not path.exists():
+                  return []
+              with path.open("r", encoding="utf-8-sig", newline="") as handle:
+                  return list(csv.DictReader(handle))
+
+          def first_row(rows: list[dict[str, str]], key: str, value: str) -> dict[str, str]:
+              return next((row for row in rows if row.get(key) == value), {})
+
+          def safe_float(value: str | None) -> float | None:
+              if value in (None, ""):
+                  return None
+              try:
+                  return float(value)
+              except ValueError:
+                  return None
+
+          def text(value: object) -> str:
+              if value in (None, ""):
+                  return "暂无"
+              return str(value)
+
+          def number(value: str | None, digits: int = 2) -> str:
+              parsed = safe_float(value)
+              if parsed is None:
+                  return "暂无"
+              return f"{parsed:,.{digits}f}"
+
+          def percent(value: str | None) -> str:
+              parsed = safe_float(value)
+              if parsed is None:
+                  return "暂无"
+              return f"{parsed * 100:.2f}%"
+
+          def yield_percent(value: str | None) -> str:
+              parsed = safe_float(value)
+              if parsed is None:
+                  return "暂无"
+              return f"{parsed:.2f}%"
+
+          def boolean_status(value: object) -> str:
+              if isinstance(value, bool):
+                  return "正常" if value else "异常"
+              normalized = str(value).strip().lower()
+              return "正常" if normalized in {"true", "1", "yes", "success"} else "异常"
+
+          def missing(value: str | None) -> str:
+              value = (value or "").strip()
+              return value if value else "暂无"
+
+          def metric(rows: list[dict[str, str]], name: str) -> str | None:
+              row = first_row(rows, "metric_name", name)
+              return row.get("metric_value")
+
+          def metric_any(tables: list[list[dict[str, str]]], name: str) -> str | None:
+              for rows in tables:
+                  value = metric(rows, name)
+                  if value not in (None, ""):
+                      return value
+              return None
+
+          def target_summary(message: str) -> str:
+              if not message:
+                  return "暂无"
+              parts = []
+              for key, label in (
+                  ("target_date", "目标日期"),
+                  ("target_aligned", "目标日对齐"),
+                  ("min_latest_date", "最早缓存日期"),
+                  ("max_latest_date", "最晚缓存日期"),
+              ):
+                  match = re.search(rf"{key}=([^;]+)", message)
+                  if match:
+                      parts.append(f"{label}：{match.group(1).strip()}")
+              return "；".join(parts) if parts else "暂无"
+
+          manifest = read_json(REPORT_DIR / "manifest.json")
+          price_rows = read_csv(REPORT_DIR / "price_metrics.csv")
+          breadth_rows = read_csv(REPORT_DIR / "breadth_metrics.csv")
+          macro_rows = read_csv(REPORT_DIR / "macro_metrics.csv")
+          model_input_rows = read_csv(REPORT_DIR / "model_input_metrics.csv")
+          quality_rows = read_csv(REPORT_DIR / "data_quality.csv")
+
+          price = first_row(price_rows, "symbol", "QQQ")
+          quality_by_dataset = {row.get("dataset", ""): row for row in quality_rows}
+          breadth_quality = quality_by_dataset.get("breadth_metrics", {})
+          attachment_status = "已附加 Excel 报表" if EXCEL_REPORT.exists() else "未生成 Excel 附件"
+          report_available = bool(manifest or price_rows or breadth_rows or macro_rows or quality_rows)
+          status = "${{ job.status }}"
+
+          lines = [
+              "Nasdaq-100 / QQQ 每日报告",
+              "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+              "",
+              "【运行状态】",
+              f"工作流：{os.getenv('GITHUB_WORKFLOW', '暂无')}",
+              f"运行结果：{boolean_status(status)}（{status}）",
+              f"仓库：{os.getenv('GITHUB_REPOSITORY', '暂无')}",
+              f"分支：{os.getenv('GITHUB_REF_NAME', '暂无')}",
+              f"Commit：{os.getenv('GITHUB_SHA', '暂无')}",
+              f"Actions 链接：{os.getenv('GITHUB_SERVER_URL', 'https://github.com')}/{os.getenv('GITHUB_REPOSITORY', '')}/actions/runs/{os.getenv('GITHUB_RUN_ID', '')}",
+              "",
+              "【报告概览】",
+              f"报告日期：{text(manifest.get('as_of'))}",
+              f"生成时间：{text(manifest.get('generated_at'))}",
+              f"附件状态：{attachment_status}",
+          ]
+
+          if not report_available:
+              lines.extend([
+                  "报告摘要：不可用，可能是日报生成步骤未完成或已失败。",
+                  "",
+                  "【说明】",
+                  "本邮件仅汇总客观数据，不构成投资建议。",
+                  "完整明细请查看 Actions 日志、仓库 reports/latest/ 目录和邮件附件。",
+              ])
+          else:
+              lines.extend([
+                  "",
+                  "【QQQ 核心指标】",
+                  f"数据日期：{text(price.get('date'))}",
+                  f"最新收盘价：{number(price.get('latest_close'))}",
+                  f"20日收益：{percent(price.get('return_20d'))}",
+                  f"60日收益：{percent(price.get('return_60d'))}",
+                  f"20日年化波动率：{percent(price.get('vol_20d'))}",
+                  f"当前回撤：{percent(price.get('current_drawdown'))}",
+                  f"50日均线：{number(price.get('ma_50'))}",
+                  f"200日均线：{number(price.get('ma_200'))}",
+                  "",
+                  "【市场广度】",
+                  f"上涨数量：{number(metric(breadth_rows, 'advancing_count'), 0)} / {text(first_row(breadth_rows, 'metric_name', 'advancing_count').get('denominator'))}",
+                  f"下跌数量：{number(metric(breadth_rows, 'declining_count'), 0)} / {text(first_row(breadth_rows, 'metric_name', 'declining_count').get('denominator'))}",
+                  f"上涨比例：{percent(metric(breadth_rows, 'advancing_ratio'))}",
+                  f"高于20日均线比例：{percent(metric(breadth_rows, 'above_20d_ma_ratio'))}",
+                  f"高于50日均线比例：{percent(metric(breadth_rows, 'above_50d_ma_ratio'))}",
+                  f"高于200日均线比例：{percent(metric(breadth_rows, 'above_200d_ma_ratio'))}",
+                  f"20日新高数量：{number(metric(breadth_rows, 'new_high_20d_count'), 0)}",
+                  f"20日新低数量：{number(metric(breadth_rows, 'new_low_20d_count'), 0)}",
+                  "",
+                  "【宏观指标】",
+                  f"10年期美债收益率：{yield_percent(metric_any([macro_rows, model_input_rows], 'DGS10_latest_value'))}",
+                  f"2年期美债收益率：{yield_percent(metric_any([macro_rows, model_input_rows], 'DGS2_latest_value'))}",
+                  f"3个月美债收益率：{yield_percent(metric_any([macro_rows, model_input_rows], 'DGS3MO_latest_value'))}",
+                  f"10Y-2Y 利差：{yield_percent(metric_any([macro_rows, model_input_rows], 'DGS10_DGS2_SPREAD'))}",
+                  f"失业率：{yield_percent(metric_any([macro_rows, model_input_rows], 'UNRATE_latest_value'))}",
+                  "",
+                  "【数据质量】",
+              ])
+
+              for dataset, label in (
+                  ("price_daily", "QQQ 价格"),
+                  ("qqq_equity_holdings", "成分股池"),
+                  ("top_holdings_quotes", "Top20 报价"),
+                  ("breadth_metrics", "市场广度"),
+              ):
+                  row = quality_by_dataset.get(dataset, {})
+                  lines.append(
+                      f"{label}：{boolean_status(row.get('ok'))}；"
+                      f"覆盖率 {percent(row.get('symbol_coverage_ratio'))}；"
+                      f"缺失标的 {missing(row.get('missing_symbols'))}；"
+                      f"限速 {'异常' if str(row.get('rate_limited')).lower() == 'true' else '正常'}"
+                  )
+
+              lines.extend([
+                  f"目标日状态：{target_summary(breadth_quality.get('message', ''))}",
+                  "",
+                  "【说明】",
+                  "本邮件仅汇总客观数据，不构成投资建议。",
+                  "完整明细请查看邮件附件、仓库 reports/latest/ 目录和 Actions artifact。",
+              ])
+
+          MAIL_BODY.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+          github_env = os.getenv("GITHUB_ENV")
+          if github_env:
+              attachments = str(EXCEL_REPORT) if EXCEL_REPORT.exists() else ""
+              with open(github_env, "a", encoding="utf-8") as handle:
+                  handle.write(f"MAIL_ATTACHMENTS={attachments}\n")
+          PY
 
       - name: Send email notification
         if: always()
