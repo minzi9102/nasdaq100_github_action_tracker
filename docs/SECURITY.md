@@ -17,9 +17,11 @@ FRED_API_KEY
 TIINGO_API_TOKEN
 TWELVE_DATA_API_KEY
 FMP_API_KEY
+MAIL_USERNAME
+MAIL_PASSWORD
 ```
 
-`FMP_API_KEY` 仅供独立能力探测使用。Invesco 持仓接口无需密钥。
+`FMP_API_KEY` 仅供独立能力探测使用。`MAIL_USERNAME` 和 `MAIL_PASSWORD` 仅供生产日报邮件通知使用，其中 `MAIL_PASSWORD` 是 QQ 邮箱 SMTP 授权码，不是邮箱登录密码。Invesco 持仓接口无需密钥。
 
 ## 日志与异常
 

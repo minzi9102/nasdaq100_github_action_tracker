@@ -66,3 +66,40 @@ jobs:
             git commit -m "Update daily Nasdaq-100 QQQ tracker outputs"
             git push
           fi
+
+      - name: Prepare email notification
+        if: always()
+        run: |
+          {
+            echo "Workflow: $GITHUB_WORKFLOW"
+            echo "Status: ${{ job.status }}"
+            echo "Repository: $GITHUB_REPOSITORY"
+            echo "Branch: $GITHUB_REF_NAME"
+            echo "Commit: $GITHUB_SHA"
+            echo "Run URL: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          } > mail_body.txt
+
+          if [ -f reports/latest/nasdaq100_qqq_daily_tracker.xlsx ]; then
+            echo "MAIL_ATTACHMENTS=reports/latest/nasdaq100_qqq_daily_tracker.xlsx" >> "$GITHUB_ENV"
+          else
+            echo "MAIL_ATTACHMENTS=" >> "$GITHUB_ENV"
+            {
+              echo ""
+              echo "Attachment: reports/latest/nasdaq100_qqq_daily_tracker.xlsx was not generated."
+            } >> mail_body.txt
+          fi
+
+      - name: Send email notification
+        if: always()
+        uses: dawidd6/action-send-mail@v17
+        with:
+          server_address: smtp.qq.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: "[${{ job.status }}] Nasdaq-100 QQQ Daily Tracker #${{ github.run_number }}"
+          to: 997415931@qq.com
+          from: "Nasdaq-100 QQQ Tracker <${{ secrets.MAIL_USERNAME }}>"
+          body: file://mail_body.txt
+          attachments: ${{ env.MAIL_ATTACHMENTS }}

@@ -125,8 +125,10 @@ Linux/macOS：
 - `TIINGO_API_TOKEN`
 - `TWELVE_DATA_API_KEY`
 - `FMP_API_KEY`，仅 provider 能力探测需要
+- `MAIL_USERNAME`，生产日报邮件通知的 QQ SMTP 发件邮箱
+- `MAIL_PASSWORD`，生产日报邮件通知的 QQ 邮箱 SMTP 授权码，不是邮箱登录密码
 
-生产日报会上传 artifact，并把生成的数据、缓存和 manifest 提交回当前分支。
+生产日报会上传 artifact，把生成的数据、缓存和 manifest 提交回当前分支，并在工作流结束后发送邮件到 `997415931@qq.com`。邮件会附上 `reports/latest/nasdaq100_qqq_daily_tracker.xlsx`；如果日报生成失败导致附件不存在，仍会发送包含运行状态和 Actions 链接的通知。
 
 ## 输出
 
