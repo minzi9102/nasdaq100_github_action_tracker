@@ -2,9 +2,6 @@ name: Nasdaq-100 QQQ Daily Tracker
 
 on:
   workflow_dispatch:
-  schedule:
-    # GitHub cron uses UTC. 10:30 UTC runs after the prior U.S. market close data window.
-    - cron: "30 10 * * 2-6"
 
 permissions:
   contents: write
