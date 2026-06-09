@@ -55,13 +55,27 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          push_with_rebase_retry() {
+            for attempt in 1 2 3; do
+              if git push origin HEAD:main; then
+                return 0
+              fi
+              if [ "${attempt}" -eq 3 ]; then
+                break
+              fi
+              echo "Push failed on attempt ${attempt}; rebasing on origin/main before retry."
+              git pull --rebase origin main
+            done
+            echo "Push failed after 3 attempts."
+            return 1
+          }
           git add -f data/cache/prices data/cache/quotes
           git add reports/latest reports/archive data/raw data/processed state/latest_manifest.json
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
             git commit -m "Update daily Nasdaq-100 QQQ tracker outputs"
-            git push
+            push_with_rebase_retry
           fi
 
       - name: Prepare email notification
