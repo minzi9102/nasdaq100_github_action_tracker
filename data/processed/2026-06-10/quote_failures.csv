@@ -1,0 +1,21 @@
+﻿symbol,company_name,weight,provider,endpoint,attempted_symbol,http_status,api_status,raw_error,parse_error,was_api_success,was_parse_success,was_merge_success,final_missing
+NVDA,NVIDIA Corp,0.08317661,twelve_data,quote,NVDA,200,success,,,True,True,True,False
+AAPL,Apple Inc,0.07254025,twelve_data,quote,AAPL,200,success,,,True,True,True,False
+MSFT,Microsoft Corp,0.05020625,twelve_data,quote,MSFT,200,success,,,True,True,True,False
+MU,Micron Technology Inc,0.048325560000000004,twelve_data,quote,MU,200,success,,,True,True,True,False
+AMZN,Amazon.com Inc,0.04313407,twelve_data,quote,AMZN,200,success,,,True,True,True,False
+AMD,Advanced Micro Devices Inc,0.036158260000000005,twelve_data,quote,AMD,200,success,,,True,True,True,False
+GOOGL,Alphabet Inc Class A,0.03467499,twelve_data,quote,GOOGL,200,success,,,True,True,True,False
+TSLA,Tesla Inc,0.033442690000000004,twelve_data,quote,TSLA,200,success,,,True,True,True,False
+GOOG,Alphabet Inc Class C,0.03220472,twelve_data,quote,GOOG,200,success,,,True,True,True,False
+AVGO,Broadcom Inc,0.03080958,twelve_data,quote,AVGO,200,success,,,True,True,True,False
+META,Meta Platforms Inc,0.028292130000000002,twelve_data,quote,META,200,success,,,True,True,True,False
+WMT,Walmart Inc,0.0264893,twelve_data,quote,WMT,200,success,,,True,True,True,False
+INTC,Intel Corp,0.024915660000000003,twelve_data,quote,INTC,200,success,,,True,True,True,False
+CSCO,Cisco Systems Inc,0.02218272,twelve_data,quote,CSCO,200,success,,,True,True,True,False
+COST,Costco Wholesale Corp,0.01957227,twelve_data,quote,COST,200,success,,,True,True,True,False
+LRCX,Lam Research Corp,0.0183193,twelve_data,quote,LRCX,200,success,,,True,True,True,False
+AMAT,Applied Materials Inc,0.01767941,twelve_data,quote,AMAT,200,success,,,True,True,True,False
+NFLX,Netflix Inc,0.015776250000000002,twelve_data,quote,NFLX,200,success,,,True,True,True,False
+PLTR,Palantir Technologies Inc,0.01413938,twelve_data,quote,PLTR,200,success,,,True,True,True,False
+KLAC,KLA Corp,0.0124935,twelve_data,quote,KLAC,200,success,,,True,True,True,False

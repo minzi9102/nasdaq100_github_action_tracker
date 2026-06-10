@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-06-09",
-  "generated_at": "2026-06-09T13:07:39Z",
+  "as_of": "2026-06-10",
+  "generated_at": "2026-06-10T10:32:48Z",
   "latest_files": {
     "excel_report": "reports/latest/nasdaq100_qqq_daily_tracker.xlsx",
     "manifest_json": "reports/latest/manifest.json",
@@ -308,12 +308,12 @@
       "ma200_available": null,
       "actual_quote_provider": "twelve_data",
       "actual_history_provider": "mixed_history_cache",
-      "message": "98/98 symbols with history coverage; 20/98 history symbols with Twelve Data quote overlay; target_date=2026-06-08; target_aligned=98/98; non_target_aligned=0/98; min_latest_date=2026-06-08; max_latest_date=2026-06-08; target_date_source=current price_daily"
+      "message": "98/98 symbols with history coverage; 20/98 history symbols with Twelve Data quote overlay; target_date=2026-06-09; target_aligned=0/98; non_target_aligned=98/98; min_latest_date=2026-06-08; max_latest_date=2026-06-08; target_date_source=current price_daily"
     }
   ],
   "api_usage": [
     {
-      "run_date": "2026-06-09",
+      "run_date": "2026-06-10",
       "provider": "alpha_vantage",
       "endpoint": "TIME_SERIES_DAILY",
       "calls_attempted": 1,
@@ -338,7 +338,7 @@
       "message": "QQQ: 100 rows"
     },
     {
-      "run_date": "2026-06-09",
+      "run_date": "2026-06-10",
       "provider": "tiingo",
       "endpoint": "qqq_cache_initialize",
       "calls_attempted": 0,
@@ -363,7 +363,7 @@
       "message": "called only when QQQ cache had fewer than 260 rows"
     },
     {
-      "run_date": "2026-06-09",
+      "run_date": "2026-06-10",
       "provider": "twelve_data",
       "endpoint": "qqq_cache_initialize",
       "calls_attempted": 0,
@@ -388,7 +388,7 @@
       "message": "fallback initialization when QQQ cache remained below 260 rows"
     },
     {
-      "run_date": "2026-06-09",
+      "run_date": "2026-06-10",
       "provider": "fred",
       "endpoint": "series_observations",
       "calls_attempted": 7,
@@ -413,7 +413,7 @@
       "message": "DGS10: DGS10: 365 rows; DGS2: DGS2: 365 rows; DGS3MO: DGS3MO: 365 rows; ..."
     },
     {
-      "run_date": "2026-06-09",
+      "run_date": "2026-06-10",
       "provider": "invesco",
       "endpoint": "qqq_holdings",
       "calls_attempted": 1,
@@ -438,7 +438,7 @@
       "message": "holdings rows=104"
     },
     {
-      "run_date": "2026-06-09",
+      "run_date": "2026-06-10",
       "provider": "fmp",
       "endpoint": "diagnostic_only",
       "calls_attempted": 0,
@@ -463,7 +463,7 @@
       "message": "FMP production quote collection disabled; use provider capability probe"
     },
     {
-      "run_date": "2026-06-09",
+      "run_date": "2026-06-10",
       "provider": "twelve_data",
       "endpoint": "quote",
       "calls_attempted": 20,
