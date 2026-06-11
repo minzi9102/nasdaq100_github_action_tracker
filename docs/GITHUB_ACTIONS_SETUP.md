@@ -32,7 +32,7 @@ Invesco 官方持仓接口不需要 API key。
 
 | 工作流 | 文件 | 计划 | 主要职责 |
 | --- | --- | --- | --- |
-| Daily Target Date Refresh | `.github/workflows/daily-target-refresh.yml` | 华为云：北京时间周二至周五 `10:45` | 读取 QQQ 日线并刷新 Tiingo 回填目标日期 |
+| Daily Target Date Refresh | `.github/workflows/daily-target-refresh.yml` | 华为云：北京时间周二至周六 `10:45` | 读取 QQQ 日线并刷新 Tiingo 回填目标日期 |
 | Nasdaq-100 QQQ Daily Tracker | `.github/workflows/daily-tracker.yml` | 华为云：北京时间周二至周六 `18:30` | 整理已刷新/回填的数据，生成生产日报并发送邮件通知 |
 | Provider Capability Probe | `.github/workflows/provider_capability_probe.yml` | GitHub cron：每天 `09:15 UTC` | 探测 Alpha Vantage、FMP、Twelve Data |
 | Tiingo Price Cache Backfill | `.github/workflows/tiingo_cache_backfill.yml` | 华为云：北京时间周一至周五 `11:00`、`13:10`、`15:20` | 维护历史缓存，Twelve Data 可兜底 |
