@@ -28,16 +28,16 @@ Invesco 官方持仓接口不需要 API key。
 
 ## 2. 工作流
 
-GitHub cron 使用 UTC，所有工作流也支持 `workflow_dispatch` 手动触发。
+所有工作流都支持 `workflow_dispatch` 手动触发。生产日报和 Tiingo 缓存回填由华为云 FunctionGraph 定时触发 GitHub `workflow_dispatch`；Provider 探测和 Twelve Data 修复仍使用 GitHub cron。
 
-| 工作流 | 文件 | UTC 计划 | 主要职责 |
+| 工作流 | 文件 | 计划 | 主要职责 |
 | --- | --- | --- | --- |
-| Nasdaq-100 QQQ Daily Tracker | `.github/workflows/daily-tracker.yml` | 周二至周六 `10:30` | 生成生产日报并发送邮件通知 |
-| Provider Capability Probe | `.github/workflows/provider_capability_probe.yml` | 每天 `09:15` | 探测 Alpha Vantage、FMP、Twelve Data |
-| Tiingo Price Cache Backfill | `.github/workflows/tiingo_cache_backfill.yml` | 周一至周五 `03:00`、`05:10`、`07:20` | 维护历史缓存，Twelve Data 可兜底 |
-| Twelve Data History Repair | `.github/workflows/twelve_data_history_repair.yml` | 周一至周五 `08:40` | 修复高优先级缓存缺口 |
+| Nasdaq-100 QQQ Daily Tracker | `.github/workflows/daily-tracker.yml` | 华为云：北京时间周二至周六 `18:30` | 生成生产日报并发送邮件通知 |
+| Provider Capability Probe | `.github/workflows/provider_capability_probe.yml` | GitHub cron：每天 `09:15 UTC` | 探测 Alpha Vantage、FMP、Twelve Data |
+| Tiingo Price Cache Backfill | `.github/workflows/tiingo_cache_backfill.yml` | 华为云：北京时间周一至周五 `11:00`、`13:10`、`15:20` | 维护历史缓存，Twelve Data 可兜底 |
+| Twelve Data History Repair | `.github/workflows/twelve_data_history_repair.yml` | GitHub cron：周一至周五 `08:40 UTC` | 修复高优先级缓存缺口 |
 
-换算本地时间时需考虑时区和夏令时。生产日报的 `10:30 UTC` 在新加坡/北京时间为 `18:30`。
+华为云 FunctionGraph 的函数名称、环境变量、定时触发器和函数代码见 `docs/HUAWEI_FUNCTIONGRAPH_SCHEDULES.md`。
 
 ## 3. 权限与提交
 

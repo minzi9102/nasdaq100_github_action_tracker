@@ -19,9 +19,10 @@ TWELVE_DATA_API_KEY
 FMP_API_KEY
 MAIL_USERNAME
 MAIL_PASSWORD
+GITHUB_TOKEN
 ```
 
-`FMP_API_KEY` 仅供独立能力探测使用。`MAIL_USERNAME` 和 `MAIL_PASSWORD` 仅供生产日报邮件通知使用，其中 `MAIL_PASSWORD` 是 QQ 邮箱 SMTP 授权码，不是邮箱登录密码。Invesco 持仓接口无需密钥。
+`FMP_API_KEY` 仅供独立能力探测使用。`MAIL_USERNAME` 和 `MAIL_PASSWORD` 仅供生产日报邮件通知使用，其中 `MAIL_PASSWORD` 是 QQ 邮箱 SMTP 授权码，不是邮箱登录密码。`GITHUB_TOKEN` 仅供华为云 FunctionGraph 调用 GitHub `workflow_dispatch` API，建议使用只授权本仓库 Actions read/write 的 fine-grained token。Invesco 持仓接口无需密钥。
 
 ## 日志与异常
 
@@ -39,6 +40,10 @@ provider 应通过 `BaseProvider.request_json()` 请求。该实现会：
 Secrets 仅在需要的 step 中通过 `${{ secrets.NAME }}` 注入。不要将 secret 提升到整个 workflow 的全局 `env`，也不要把包含认证信息的原始响应上传为 artifact。
 
 生产和辅助工作流拥有 `contents: write`，会向仓库提交生成数据。启用第三方 Action 前应检查来源和版本，并优先固定到可信版本。
+
+## 华为云 FunctionGraph
+
+华为云函数中的 `GITHUB_TOKEN` 只能配置为环境变量或密钥管理项，不得写入函数代码、测试事件、日志、截图或仓库文档。函数日志可以记录 workflow 文件名、ref 和 HTTP 状态码，但不要记录 Authorization header 或 token 值。
 
 ## 泄露处置
 
