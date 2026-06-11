@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "run_date": "2026-06-10",
+  "run_date": "2026-06-11",
   "target_date": "2026-06-09",
   "target_date_source": "reports/latest/price_daily.csv",
   "symbols_total": 98,
@@ -23,7 +23,7 @@
   },
   "cache_quality_summary": [
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "NVDA",
       "weight": 0.08317661,
       "provider": "tiingo",
@@ -32,7 +32,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -50,7 +50,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "AAPL",
       "weight": 0.07254025,
       "provider": "tiingo",
@@ -59,7 +59,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -77,7 +77,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "MSFT",
       "weight": 0.05020625,
       "provider": "tiingo",
@@ -86,7 +86,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -104,7 +104,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "MU",
       "weight": 0.04832556,
       "provider": "tiingo",
@@ -113,7 +113,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -131,7 +131,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "AMZN",
       "weight": 0.04313407,
       "provider": "tiingo",
@@ -140,7 +140,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -158,7 +158,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "AMD",
       "weight": 0.03615826,
       "provider": "tiingo",
@@ -167,7 +167,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -185,7 +185,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "GOOGL",
       "weight": 0.03467499,
       "provider": "tiingo",
@@ -194,7 +194,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 262,
       "after_rows": 262,
@@ -212,7 +212,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "TSLA",
       "weight": 0.03344269,
       "provider": "tiingo",
@@ -221,7 +221,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 262,
       "after_rows": 262,
@@ -239,7 +239,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "GOOG",
       "weight": 0.03220472,
       "provider": "tiingo",
@@ -248,7 +248,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -266,7 +266,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "AVGO",
       "weight": 0.03080958,
       "provider": "tiingo",
@@ -275,7 +275,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -293,7 +293,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "META",
       "weight": 0.02829213,
       "provider": "tiingo",
@@ -302,7 +302,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -320,7 +320,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "WMT",
       "weight": 0.0264893,
       "provider": "tiingo",
@@ -329,7 +329,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -347,7 +347,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "INTC",
       "weight": 0.02491566,
       "provider": "tiingo",
@@ -356,7 +356,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -374,7 +374,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "CSCO",
       "weight": 0.02218272,
       "provider": "tiingo",
@@ -383,7 +383,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -401,7 +401,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "COST",
       "weight": 0.01957227,
       "provider": "tiingo",
@@ -410,7 +410,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -428,7 +428,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "LRCX",
       "weight": 0.0183193,
       "provider": "tiingo",
@@ -437,7 +437,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -455,7 +455,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "AMAT",
       "weight": 0.01767941,
       "provider": "tiingo",
@@ -464,7 +464,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -482,7 +482,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "NFLX",
       "weight": 0.01577625,
       "provider": "tiingo",
@@ -491,7 +491,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -509,7 +509,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "PLTR",
       "weight": 0.01413938,
       "provider": "tiingo",
@@ -518,7 +518,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -536,7 +536,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "KLAC",
       "weight": 0.0124935,
       "provider": "tiingo",
@@ -545,7 +545,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -563,7 +563,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "TXN",
       "weight": 0.01193697,
       "provider": "tiingo",
@@ -572,7 +572,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -590,7 +590,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "MRVL",
       "weight": 0.0113779,
       "provider": "tiingo",
@@ -599,7 +599,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -617,7 +617,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "SNDK",
       "weight": 0.01095823,
       "provider": "tiingo",
@@ -626,7 +626,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -644,7 +644,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "QCOM",
       "weight": 0.01055063,
       "provider": "tiingo",
@@ -653,7 +653,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -671,7 +671,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "LIN",
       "weight": 0.01054994,
       "provider": "tiingo",
@@ -680,7 +680,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -698,7 +698,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "PANW",
       "weight": 0.00982625,
       "provider": "tiingo",
@@ -707,7 +707,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -725,7 +725,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "TMUS",
       "weight": 0.00894067,
       "provider": "tiingo",
@@ -734,7 +734,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -752,7 +752,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "ADI",
       "weight": 0.00893973,
       "provider": "tiingo",
@@ -761,7 +761,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -779,7 +779,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "PEP",
       "weight": 0.00878507,
       "provider": "tiingo",
@@ -788,7 +788,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -806,7 +806,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "STX",
       "weight": 0.008645,
       "provider": "tiingo",
@@ -815,7 +815,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -833,7 +833,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "AMGN",
       "weight": 0.00842673,
       "provider": "tiingo",
@@ -842,7 +842,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -860,7 +860,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "WDC",
       "weight": 0.00807986,
       "provider": "tiingo",
@@ -869,7 +869,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -887,7 +887,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "APP",
       "weight": 0.00782628,
       "provider": "tiingo",
@@ -896,7 +896,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -914,7 +914,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "CRWD",
       "weight": 0.00750922,
       "provider": "tiingo",
@@ -923,7 +923,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -941,7 +941,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "GILD",
       "weight": 0.00719029,
       "provider": "tiingo",
@@ -950,7 +950,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -968,7 +968,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "ISRG",
       "weight": 0.00672164,
       "provider": "tiingo",
@@ -977,7 +977,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -995,7 +995,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "SHOP",
       "weight": 0.00614106,
       "provider": "tiingo",
@@ -1004,7 +1004,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1022,7 +1022,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "HON",
       "weight": 0.0060875,
       "provider": "tiingo",
@@ -1031,7 +1031,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1049,7 +1049,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "BKNG",
       "weight": 0.0058258699999999,
       "provider": "tiingo",
@@ -1058,7 +1058,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1076,7 +1076,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "VRTX",
       "weight": 0.00508784,
       "provider": "tiingo",
@@ -1085,7 +1085,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1103,7 +1103,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "CDNS",
       "weight": 0.00492145,
       "provider": "tiingo",
@@ -1112,7 +1112,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1130,7 +1130,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "SBUX",
       "weight": 0.00488446,
       "provider": "tiingo",
@@ -1139,7 +1139,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1157,7 +1157,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "FTNT",
       "weight": 0.00478545,
       "provider": "tiingo",
@@ -1166,7 +1166,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1184,7 +1184,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "MAR",
       "weight": 0.00469841,
       "provider": "tiingo",
@@ -1193,7 +1193,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1211,7 +1211,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "ADBE",
       "weight": 0.00451544,
       "provider": "tiingo",
@@ -1220,7 +1220,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1238,7 +1238,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "ADP",
       "weight": 0.0041704,
       "provider": "tiingo",
@@ -1247,7 +1247,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1265,7 +1265,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "CEG",
       "weight": 0.00410277,
       "provider": "tiingo",
@@ -1274,7 +1274,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1292,7 +1292,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "SNPS",
       "weight": 0.00410098,
       "provider": "tiingo",
@@ -1301,7 +1301,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1319,7 +1319,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "CSX",
       "weight": 0.00397283,
       "provider": "tiingo",
@@ -1328,7 +1328,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1346,7 +1346,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "MNST",
       "weight": 0.0039132099999999,
       "provider": "tiingo",
@@ -1355,7 +1355,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1373,7 +1373,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "CMCSA",
       "weight": 0.00385501,
       "provider": "tiingo",
@@ -1382,7 +1382,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1400,7 +1400,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "INTU",
       "weight": 0.0038207,
       "provider": "tiingo",
@@ -1409,7 +1409,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1427,7 +1427,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "MELI",
       "weight": 0.00369507,
       "provider": "tiingo",
@@ -1436,7 +1436,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1454,7 +1454,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "MDLZ",
       "weight": 0.00357022,
       "provider": "tiingo",
@@ -1463,7 +1463,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1481,7 +1481,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "MPWR",
       "weight": 0.00346278,
       "provider": "tiingo",
@@ -1490,7 +1490,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1508,7 +1508,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "DDOG",
       "weight": 0.00344097,
       "provider": "tiingo",
@@ -1517,7 +1517,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1535,7 +1535,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "NXPI",
       "weight": 0.00344064,
       "provider": "tiingo",
@@ -1544,7 +1544,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1562,7 +1562,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "ORLY",
       "weight": 0.00337491,
       "provider": "tiingo",
@@ -1571,7 +1571,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1589,7 +1589,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "ROST",
       "weight": 0.00332589,
       "provider": "tiingo",
@@ -1598,7 +1598,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1616,7 +1616,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "CTAS",
       "weight": 0.0031477899999999,
       "provider": "tiingo",
@@ -1625,7 +1625,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1643,7 +1643,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "AEP",
       "weight": 0.0031230599999999,
       "provider": "tiingo",
@@ -1652,7 +1652,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1670,7 +1670,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "WBD",
       "weight": 0.00296805,
       "provider": "tiingo",
@@ -1679,7 +1679,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1697,7 +1697,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "BKR",
       "weight": 0.00289722,
       "provider": "tiingo",
@@ -1706,7 +1706,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1724,7 +1724,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "LITE",
       "weight": 0.00289068,
       "provider": "tiingo",
@@ -1733,7 +1733,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1751,7 +1751,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "REGN",
       "weight": 0.002872,
       "provider": "tiingo",
@@ -1760,7 +1760,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1778,7 +1778,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "DASH",
       "weight": 0.00282663,
       "provider": "tiingo",
@@ -1787,7 +1787,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1805,7 +1805,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "PCAR",
       "weight": 0.00281628,
       "provider": "tiingo",
@@ -1814,7 +1814,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1832,7 +1832,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "ABNB",
       "weight": 0.00257456,
       "provider": "tiingo",
@@ -1841,7 +1841,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1859,7 +1859,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "FANG",
       "weight": 0.0025278,
       "provider": "tiingo",
@@ -1868,7 +1868,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1886,7 +1886,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "FAST",
       "weight": 0.00238837,
       "provider": "tiingo",
@@ -1895,7 +1895,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1913,7 +1913,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "ODFL",
       "weight": 0.00233613,
       "provider": "tiingo",
@@ -1922,7 +1922,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1940,7 +1940,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "EA",
       "weight": 0.00230138,
       "provider": "tiingo",
@@ -1949,7 +1949,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1967,7 +1967,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "MCHP",
       "weight": 0.00223557,
       "provider": "tiingo",
@@ -1976,7 +1976,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -1994,7 +1994,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "XEL",
       "weight": 0.00219483,
       "provider": "tiingo",
@@ -2003,7 +2003,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -2021,7 +2021,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "FER",
       "weight": 0.00217395,
       "provider": "tiingo",
@@ -2030,7 +2030,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -2048,7 +2048,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "ADSK",
       "weight": 0.00215711,
       "provider": "tiingo",
@@ -2057,7 +2057,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -2075,7 +2075,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "EXC",
       "weight": 0.00209653,
       "provider": "tiingo",
@@ -2084,7 +2084,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -2102,7 +2102,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "IDXX",
       "weight": 0.00202515,
       "provider": "tiingo",
@@ -2111,7 +2111,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2129,7 +2129,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "CCEP",
       "weight": 0.0019781,
       "provider": "tiingo",
@@ -2138,7 +2138,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2156,7 +2156,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "KDP",
       "weight": 0.00189358,
       "provider": "tiingo",
@@ -2165,7 +2165,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2183,7 +2183,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "MSTR",
       "weight": 0.00180656,
       "provider": "tiingo",
@@ -2192,7 +2192,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2210,7 +2210,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "TTWO",
       "weight": 0.00178393,
       "provider": "tiingo",
@@ -2219,7 +2219,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 291,
       "after_rows": 291,
@@ -2237,7 +2237,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "ALNY",
       "weight": 0.00175615,
       "provider": "tiingo",
@@ -2246,7 +2246,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2264,7 +2264,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "PYPL",
       "weight": 0.00172756,
       "provider": "tiingo",
@@ -2273,7 +2273,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2291,7 +2291,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "AXON",
       "weight": 0.00171664,
       "provider": "tiingo",
@@ -2300,7 +2300,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2318,7 +2318,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "TRI",
       "weight": 0.00166424,
       "provider": "tiingo",
@@ -2327,7 +2327,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2345,7 +2345,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "PAYX",
       "weight": 0.00160942,
       "provider": "tiingo",
@@ -2354,7 +2354,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2372,7 +2372,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "ROP",
       "weight": 0.00155696,
       "provider": "tiingo",
@@ -2381,7 +2381,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2399,7 +2399,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "WDAY",
       "weight": 0.00138787,
       "provider": "tiingo",
@@ -2408,7 +2408,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2426,7 +2426,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "CPRT",
       "weight": 0.00135396,
       "provider": "tiingo",
@@ -2435,7 +2435,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2453,7 +2453,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "DXCM",
       "weight": 0.0013365299999999,
       "provider": "tiingo",
@@ -2462,7 +2462,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2480,7 +2480,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "GEHC",
       "weight": 0.00133585,
       "provider": "tiingo",
@@ -2489,7 +2489,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2507,7 +2507,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "KHC",
       "weight": 0.0012743799999999,
       "provider": "tiingo",
@@ -2516,7 +2516,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2534,7 +2534,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "CTSH",
       "weight": 0.00114861,
       "provider": "tiingo",
@@ -2543,7 +2543,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2561,7 +2561,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "VRSK",
       "weight": 0.00111894,
       "provider": "tiingo",
@@ -2570,7 +2570,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2588,7 +2588,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "ZS",
       "weight": 0.00094193,
       "provider": "tiingo",
@@ -2597,7 +2597,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2615,7 +2615,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "INSM",
       "weight": 0.00092001,
       "provider": "tiingo",
@@ -2624,7 +2624,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2642,7 +2642,7 @@
       "message": "cache complete, fresh and target-aligned"
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "symbol": "CHTR",
       "weight": 0.00075877,
       "provider": "tiingo",
@@ -2651,7 +2651,7 @@
       "price_column": "adjusted_close",
       "latest_date": "2026-06-09",
       "target_date": "2026-06-09",
-      "staleness_days": 1,
+      "staleness_days": 2,
       "ma200_ready": true,
       "before_rows": 290,
       "after_rows": 290,
@@ -2671,7 +2671,7 @@
   ],
   "api_usage": [
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "provider": "tiingo",
       "endpoint": "daily_prices_cache_backfill",
       "calls_attempted": 0,
@@ -2696,7 +2696,7 @@
       "message": ""
     },
     {
-      "run_date": "2026-06-10",
+      "run_date": "2026-06-11",
       "provider": "twelve_data",
       "endpoint": "time_series_cache_fallback",
       "calls_attempted": 0,
