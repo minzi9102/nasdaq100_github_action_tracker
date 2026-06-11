@@ -1,0 +1,81 @@
+name: Daily Target Date Refresh
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  refresh-target:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: |
+          uv venv .venv
+          uv pip install -r requirements.txt
+
+      - name: Refresh target date
+        env:
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+          TIINGO_API_TOKEN: ${{ secrets.TIINGO_API_TOKEN }}
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+        run: |
+          .venv/bin/python scripts/run_daily.py refresh-target --as-of auto
+
+      - name: Upload target refresh artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-target-date-refresh
+          path: |
+            reports/latest/price_daily.csv
+            reports/latest/price_metrics.csv
+            reports/latest/target_refresh_manifest.json
+            data/raw/
+            data/processed/
+            data/cache/prices/QQQ.csv
+            state/latest_target_refresh_manifest.json
+          retention-days: 30
+
+      - name: Commit target date updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          push_with_rebase_retry() {
+            for attempt in 1 2 3; do
+              if git push origin HEAD:main; then
+                return 0
+              fi
+              if [ "${attempt}" -eq 3 ]; then
+                break
+              fi
+              echo "Push failed on attempt ${attempt}; rebasing on origin/main before retry."
+              git pull --rebase origin main
+            done
+            echo "Push failed after 3 attempts."
+            return 1
+          }
+          git add -f data/cache/prices/QQQ.csv
+          git add reports/latest/price_daily.csv reports/latest/price_metrics.csv reports/latest/target_refresh_manifest.json
+          git add data/raw data/processed state/latest_target_refresh_manifest.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update daily target date"
+            push_with_rebase_retry
+          fi

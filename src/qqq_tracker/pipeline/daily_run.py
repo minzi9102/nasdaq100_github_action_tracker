@@ -1702,7 +1702,40 @@ def fetch_qqq_price_history(
     return output.reindex(columns=PRICE_DAILY_COLUMNS), metrics
 
 
-def run_daily(as_of: str = "auto") -> Dict:
+def load_report_price_inputs(settings: Settings) -> tuple[pd.DataFrame, pd.DataFrame, str, str]:
+    price_daily_path = settings.paths.reports_latest_dir / "price_daily.csv"
+    price_metrics_path = settings.paths.reports_latest_dir / "price_metrics.csv"
+    if not price_daily_path.exists():
+        raise RuntimeError("Missing reports/latest/price_daily.csv; run refresh-target before report.")
+    price_daily = pd.read_csv(price_daily_path)
+    price_metrics = pd.read_csv(price_metrics_path) if price_metrics_path.exists() else pd.DataFrame(columns=PRICE_METRICS_COLUMNS)
+    target_date = history_latest_date(price_daily)
+    if target_date is None:
+        raise RuntimeError("reports/latest/price_daily.csv does not contain a valid target date.")
+    return (
+        price_daily.reindex(columns=PRICE_DAILY_COLUMNS),
+        price_metrics.reindex(columns=PRICE_METRICS_COLUMNS),
+        target_date,
+        "reports/latest/price_daily.csv",
+    )
+
+
+def validate_cache_target_alignment(settings: Settings, holdings: pd.DataFrame, run_date: str, target_date: str) -> None:
+    if holdings.empty or "symbol" not in holdings.columns:
+        raise RuntimeError("Cannot validate Tiingo cache alignment because qqq_equity_holdings is empty.")
+    misses: list[str] = []
+    for symbol in holdings["symbol"].dropna().astype(str):
+        cache_df = load_price_cache(settings, symbol)
+        status = history_cache_status(cache_df, run_date, target_date)
+        if not (status["is_qualified"] and status["is_target_date"]):
+            misses.append(f"{symbol}: latest={status['latest_date']}, rows={status['valid_rows']}, target={target_date}")
+    if misses:
+        preview = "; ".join(misses[:10])
+        suffix = f"; ... {len(misses) - 10} more" if len(misses) > 10 else ""
+        raise RuntimeError(f"Tiingo cache is not target-aligned for report target_date={target_date}: {preview}{suffix}")
+
+
+def run_target_refresh(as_of: str = "auto") -> Dict:
     settings = Settings()
     settings.ensure_dirs()
     run_date = as_of_date(as_of)
@@ -1710,9 +1743,8 @@ def run_daily(as_of: str = "auto") -> Dict:
 
     raw_dir = settings.paths.raw_dir / run_date
     processed_dir = settings.paths.processed_dir / run_date
-    archive_dir = settings.paths.reports_archive_dir / run_date
     latest_dir = settings.paths.reports_latest_dir
-    for p in [raw_dir, processed_dir, archive_dir, latest_dir]:
+    for p in [raw_dir, processed_dir, latest_dir]:
         p.mkdir(parents=True, exist_ok=True)
 
     logs: List[Dict] = []
@@ -1728,9 +1760,59 @@ def run_daily(as_of: str = "auto") -> Dict:
         quality_rows,
     )
     target_date = history_latest_date(price_daily)
-    target_date_source = "current price_daily"
     if target_date is None:
         target_date, target_date_source = determine_target_date(settings, run_date)
+    else:
+        target_date_source = "current price_daily"
+    logs_df = pd.DataFrame(logs)
+    data_quality = pd.DataFrame(quality_rows, columns=DATA_QUALITY_COLUMNS)
+    api_usage = pd.DataFrame(api_usage_rows, columns=API_USAGE_COLUMNS)
+    write_csv(price_daily, processed_dir / "price_daily.csv")
+    write_csv(price_metrics, processed_dir / "price_metrics.csv")
+    write_csv(logs_df, processed_dir / "target_refresh_run_log.csv")
+    write_csv(data_quality, processed_dir / "target_refresh_data_quality.csv")
+    write_csv(api_usage, processed_dir / "target_refresh_api_usage.csv")
+    write_csv(price_daily, latest_dir / "price_daily.csv")
+    write_csv(price_metrics, latest_dir / "price_metrics.csv")
+    manifest = {
+        "ok": True,
+        "stage": "refresh-target",
+        "as_of": run_date,
+        "generated_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        "target_date": target_date,
+        "target_date_source": target_date_source,
+        "latest_files": {
+            "price_daily_csv": rel_path(latest_dir / "price_daily.csv", settings.paths.root),
+            "price_metrics_csv": rel_path(latest_dir / "price_metrics.csv", settings.paths.root),
+            "state_manifest_json": rel_path(settings.paths.state_dir / "latest_target_refresh_manifest.json", settings.paths.root),
+        },
+        "quality_summary": data_quality.to_dict(orient="records"),
+        "api_usage": api_usage.to_dict(orient="records"),
+        "provider_logs": logs,
+    }
+    write_json(manifest, latest_dir / "target_refresh_manifest.json")
+    write_json(manifest, settings.paths.state_dir / "latest_target_refresh_manifest.json")
+    print(json.dumps(manifest, ensure_ascii=False, indent=2))
+    return manifest
+
+
+def run_report(as_of: str = "auto", require_cache_alignment: bool = True) -> Dict:
+    settings = Settings()
+    settings.ensure_dirs()
+    run_date = as_of_date(as_of)
+    providers = make_providers(settings)
+
+    raw_dir = settings.paths.raw_dir / run_date
+    processed_dir = settings.paths.processed_dir / run_date
+    archive_dir = settings.paths.reports_archive_dir / run_date
+    latest_dir = settings.paths.reports_latest_dir
+    for p in [raw_dir, processed_dir, archive_dir, latest_dir]:
+        p.mkdir(parents=True, exist_ok=True)
+
+    logs: List[Dict] = []
+    quality_rows: list[Dict] = []
+    api_usage_rows: list[Dict] = []
+    price_daily, price_metrics, target_date, target_date_source = load_report_price_inputs(settings)
     write_csv(price_daily, processed_dir / "price_daily.csv")
     write_csv(price_metrics, processed_dir / "price_metrics.csv")
 
@@ -1819,6 +1901,8 @@ def run_daily(as_of: str = "auto") -> Dict:
     qqq_equity_holdings = build_equity_holdings(qqq_holdings)
     write_csv(qqq_holdings, processed_dir / "qqq_holdings.csv")
     write_csv(qqq_equity_holdings, processed_dir / "qqq_equity_holdings.csv")
+    if require_cache_alignment:
+        validate_cache_target_alignment(settings, qqq_equity_holdings, run_date, target_date)
 
     if not qqq_holdings.empty:
         quality_rows.append(
@@ -1981,3 +2065,8 @@ def run_daily(as_of: str = "auto") -> Dict:
     write_json(manifest, settings.paths.state_dir / "latest_manifest.json")
     print(json.dumps(manifest, ensure_ascii=False, indent=2))
     return manifest
+
+
+def run_daily(as_of: str = "auto") -> Dict:
+    run_target_refresh(as_of)
+    return run_report(as_of, require_cache_alignment=False)
