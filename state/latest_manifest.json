@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-06-12",
-  "generated_at": "2026-06-12T10:32:53Z",
+  "as_of": "2026-06-13",
+  "generated_at": "2026-06-13T10:32:48Z",
   "latest_files": {
     "excel_report": "reports/latest/nasdaq100_qqq_daily_tracker.xlsx",
     "manifest_json": "reports/latest/manifest.json",
@@ -212,7 +212,7 @@
       "ma200_available": null,
       "actual_quote_provider": "",
       "actual_history_provider": "",
-      "message": "QQQ: holdings rows=104 effective_date=2026-06-10"
+      "message": "QQQ: holdings rows=104 effective_date=2026-06-11"
     },
     {
       "dataset": "qqq_equity_holdings",
@@ -220,7 +220,7 @@
       "ok": true,
       "rows": 98,
       "symbol_coverage_ratio": 0.9423076923076923,
-      "weight_coverage_ratio": 0.9874290081616566,
+      "weight_coverage_ratio": 0.986847063768763,
       "missing_symbols": "ARM,ASML,NQM6,NQM6_,PDD,USD",
       "missing_top_weight_symbols": "",
       "rate_limited": false,
@@ -274,7 +274,7 @@
       "rate_limited": false,
       "stopped_after_429": false,
       "remaining_symbols_skipped": 0,
-      "cache_rows_used": 28611,
+      "cache_rows_used": 28709,
       "live_rows_fetched": 0,
       "fallback_provider": "twelve_data_quote",
       "history_coverage_ratio": 1.0,
@@ -284,12 +284,12 @@
       "ma200_available": null,
       "actual_quote_provider": "twelve_data",
       "actual_history_provider": "mixed_history_cache",
-      "message": "98/98 symbols with history coverage; 20/98 history symbols with Twelve Data quote overlay; target_date=2026-06-11; target_aligned=98/98; non_target_aligned=0/98; min_latest_date=2026-06-11; max_latest_date=2026-06-11; target_date_source=reports/latest/price_daily.csv"
+      "message": "98/98 symbols with history coverage; 20/98 history symbols with Twelve Data quote overlay; target_date=2026-06-12; target_aligned=98/98; non_target_aligned=0/98; min_latest_date=2026-06-12; max_latest_date=2026-06-12; target_date_source=reports/latest/price_daily.csv"
     }
   ],
   "api_usage": [
     {
-      "run_date": "2026-06-12",
+      "run_date": "2026-06-13",
       "provider": "fred",
       "endpoint": "series_observations",
       "calls_attempted": 7,
@@ -314,7 +314,7 @@
       "message": "DGS10: DGS10: 365 rows; DGS2: DGS2: 365 rows; DGS3MO: DGS3MO: 365 rows; ..."
     },
     {
-      "run_date": "2026-06-12",
+      "run_date": "2026-06-13",
       "provider": "invesco",
       "endpoint": "qqq_holdings",
       "calls_attempted": 1,
@@ -339,7 +339,7 @@
       "message": "holdings rows=104"
     },
     {
-      "run_date": "2026-06-12",
+      "run_date": "2026-06-13",
       "provider": "fmp",
       "endpoint": "diagnostic_only",
       "calls_attempted": 0,
@@ -364,7 +364,7 @@
       "message": "FMP production quote collection disabled; use provider capability probe"
     },
     {
-      "run_date": "2026-06-12",
+      "run_date": "2026-06-13",
       "provider": "twelve_data",
       "endpoint": "quote",
       "calls_attempted": 20,
@@ -374,8 +374,8 @@
       "limit_window": "minute",
       "limit_value": 8,
       "credits_used": 20,
-      "symbols_requested": "NVDA,AAPL,MSFT,MU,AMZN,GOOGL,AMD,GOOG,TSLA,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,KLAC",
-      "symbols_loaded": "NVDA,AAPL,MSFT,MU,AMZN,GOOGL,AMD,GOOG,TSLA,AVGO,META,WMT,INTC,CSCO,COST,LRCX,AMAT,NFLX,PLTR,KLAC",
+      "symbols_requested": "NVDA,AAPL,MU,MSFT,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META,WMT,INTC,CSCO,LRCX,AMAT,COST,NFLX,KLAC,PLTR",
+      "symbols_loaded": "NVDA,AAPL,MU,MSFT,AMZN,AMD,GOOGL,TSLA,GOOG,AVGO,META,WMT,INTC,CSCO,LRCX,AMAT,COST,NFLX,KLAC,PLTR",
       "stopped_after_429": false,
       "retry_after_seconds": null,
       "http_status": 200.0,
@@ -386,10 +386,10 @@
       "actual_endpoint": "quote",
       "production_enabled": true,
       "premium_blocked": false,
-      "message": "NVDA: quote loaded on round 1; AAPL: quote loaded on round 1; MSFT: quote loaded on round 1; MU: quote loaded on round 1; AMZN: quote loaded on round 1; ..."
+      "message": "NVDA: quote loaded on round 1; AAPL: quote loaded on round 1; MU: quote loaded on round 1; MSFT: quote loaded on round 1; AMZN: quote loaded on round 1; ..."
     },
     {
-      "run_date": "2026-06-12",
+      "run_date": "2026-06-13",
       "provider": "alpha_vantage",
       "endpoint": "not_called",
       "calls_attempted": 0,
@@ -414,7 +414,7 @@
       "message": "provider not called in this daily pipeline run"
     },
     {
-      "run_date": "2026-06-12",
+      "run_date": "2026-06-13",
       "provider": "tiingo",
       "endpoint": "not_called",
       "calls_attempted": 0,
@@ -494,7 +494,7 @@
       "method": "qqq_holdings",
       "symbol": "QQQ",
       "ok": true,
-      "message": "QQQ: holdings rows=104 effective_date=2026-06-10"
+      "message": "QQQ: holdings rows=104 effective_date=2026-06-11"
     },
     {
       "provider": "tiingo_cache",
