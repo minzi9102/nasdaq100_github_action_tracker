@@ -1,84 +1,84 @@
 ﻿run_date,symbol,weight,provider,history_sources,cache_path,price_column,latest_date,target_date,staleness_days,ma200_ready,before_rows,after_rows,fetched_rows,is_complete,is_fresh,is_qualified,is_target_date,needs_target_update,was_requested,ok,rate_limited,stopped_after_429,retry_after_seconds,message
-2026-06-18,NVDA,0.08155758,tiingo,"tiingo,twelve_data",data/cache/prices/NVDA.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,NVDA: 8 rows
-2026-06-18,AAPL,0.06866865,tiingo,"tiingo,twelve_data",data/cache/prices/AAPL.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,AAPL: 8 rows
-2026-06-18,MU,0.05333647,tiingo,"tiingo,twelve_data",data/cache/prices/MU.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,MU: 8 rows
-2026-06-18,MSFT,0.0468373599999999,tiingo,"tiingo,twelve_data",data/cache/prices/MSFT.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,MSFT: 8 rows
-2026-06-18,AMZN,0.04167276,tiingo,"tiingo,twelve_data",data/cache/prices/AMZN.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,AMZN: 8 rows
-2026-06-18,AMD,0.03886242,tiingo,"tiingo,twelve_data",data/cache/prices/AMD.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,AMD: 8 rows
-2026-06-18,GOOGL,0.03392589,tiingo,"tiingo,twelve_data",data/cache/prices/GOOGL.csv,adjusted_close,2026-06-17,2026-06-17,1,True,267,268,8,True,True,True,True,False,True,True,False,False,,GOOGL: 8 rows
-2026-06-18,TSLA,0.03237789,tiingo,"tiingo,twelve_data",data/cache/prices/TSLA.csv,adjusted_close,2026-06-17,2026-06-17,1,True,267,268,8,True,True,True,True,False,True,True,False,False,,TSLA: 8 rows
-2026-06-18,GOOG,0.03150331,tiingo,"tiingo,twelve_data",data/cache/prices/GOOG.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,GOOG: 8 rows
-2026-06-18,AVGO,0.0294699899999999,tiingo,"tiingo,twelve_data",data/cache/prices/AVGO.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,AVGO: 8 rows
-2026-06-18,INTC,0.02782061,tiingo,"tiingo,twelve_data",data/cache/prices/INTC.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,INTC: 8 rows
-2026-06-18,META,0.02764571,tiingo,"tiingo,twelve_data",data/cache/prices/META.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,META: 8 rows
-2026-06-18,WMT,0.0257194,tiingo,"tiingo,twelve_data",data/cache/prices/WMT.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,WMT: 8 rows
-2026-06-18,LRCX,0.02114648,tiingo,"tiingo,twelve_data",data/cache/prices/LRCX.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,LRCX: 8 rows
-2026-06-18,CSCO,0.0206767,tiingo,"tiingo,twelve_data",data/cache/prices/CSCO.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,CSCO: 8 rows
-2026-06-18,AMAT,0.02024122,tiingo,"tiingo,twelve_data",data/cache/prices/AMAT.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,AMAT: 8 rows
-2026-06-18,COST,0.01893856,tiingo,"tiingo,twelve_data",data/cache/prices/COST.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,COST: 8 rows
-2026-06-18,NFLX,0.01501388,tiingo,"tiingo,twelve_data",data/cache/prices/NFLX.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,NFLX: 8 rows
-2026-06-18,KLAC,0.01463416,tiingo,"tiingo,twelve_data",data/cache/prices/KLAC.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,KLAC: 8 rows
-2026-06-18,SNDK,0.01354646,tiingo,"tiingo,twelve_data",data/cache/prices/SNDK.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,SNDK: 8 rows
-2026-06-18,PLTR,0.01344034,tiingo,"tiingo,twelve_data",data/cache/prices/PLTR.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,PLTR: 8 rows
-2026-06-18,TXN,0.01238181,tiingo,"tiingo,twelve_data",data/cache/prices/TXN.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,TXN: 8 rows
-2026-06-18,MRVL,0.01171649,tiingo,"tiingo,twelve_data",data/cache/prices/MRVL.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,MRVL: 8 rows
-2026-06-18,LIN,0.0105537499999999,tiingo,"tiingo,twelve_data",data/cache/prices/LIN.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,LIN: 8 rows
-2026-06-18,QCOM,0.01030097,tiingo,"tiingo,twelve_data",data/cache/prices/QCOM.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,QCOM: 8 rows
-2026-06-18,PANW,0.0101094499999999,tiingo,"tiingo,twelve_data",data/cache/prices/PANW.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,PANW: 8 rows
-2026-06-18,STX,0.00967352,tiingo,"tiingo,twelve_data",data/cache/prices/STX.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,STX: 8 rows
-2026-06-18,WDC,0.00964958,tiingo,"tiingo,twelve_data",data/cache/prices/WDC.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,WDC: 8 rows
-2026-06-18,ADI,0.0091122199999999,tiingo,"tiingo,twelve_data",data/cache/prices/ADI.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,ADI: 8 rows
-2026-06-18,TMUS,0.00906071,tiingo,"tiingo,twelve_data",data/cache/prices/TMUS.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,TMUS: 8 rows
-2026-06-18,PEP,0.0087906399999999,tiingo,"tiingo,twelve_data",data/cache/prices/PEP.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,PEP: 8 rows
-2026-06-18,AMGN,0.00822743,tiingo,"tiingo,twelve_data",data/cache/prices/AMGN.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,AMGN: 8 rows
-2026-06-18,CRWD,0.00760571,tiingo,"tiingo,twelve_data",data/cache/prices/CRWD.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,CRWD: 8 rows
-2026-06-18,APP,0.00696389,tiingo,"tiingo,twelve_data",data/cache/prices/APP.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,APP: 8 rows
-2026-06-18,GILD,0.00676302,tiingo,"tiingo,twelve_data",data/cache/prices/GILD.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,GILD: 8 rows
-2026-06-18,ISRG,0.00644094,tiingo,"tiingo,twelve_data",data/cache/prices/ISRG.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,ISRG: 8 rows
-2026-06-18,HON,0.00629418,tiingo,"tiingo,twelve_data",data/cache/prices/HON.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,HON: 8 rows
-2026-06-18,BKNG,0.00603553,tiingo,"tiingo,twelve_data",data/cache/prices/BKNG.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,BKNG: 8 rows
-2026-06-18,SHOP,0.00600499,tiingo,"tiingo,twelve_data",data/cache/prices/SHOP.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,SHOP: 8 rows
-2026-06-18,SBUX,0.00503947,tiingo,"tiingo,twelve_data",data/cache/prices/SBUX.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,SBUX: 8 rows
-2026-06-18,VRTX,0.00498241,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,FTNT,0.0048160799999999,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,CDNS,0.00474238,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,MAR,0.00463067,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,CEG,0.00413497,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,MNST,0.00397109,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,ADP,0.00394306,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,CSX,0.00383699,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,SNPS,0.00378984,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,CMCSA,0.00374511,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,ADBE,0.00366264,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,MELI,0.00363411,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,MPWR,0.00353387,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,NXPI,0.00347543,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,MDLZ,0.00343247,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,INTU,0.00339337,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,ROST,0.00334064,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,DDOG,0.00333375,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,ORLY,0.00329525,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,AEP,0.0030451899999999,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,CTAS,0.00304252,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,DASH,0.00300045,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,LITE,0.0029759799999999,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,WBD,0.00289705,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,REGN,0.00278212,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,PCAR,0.00276355,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,BKR,0.00268756,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,ABNB,0.0025628,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,MCHP,0.00236367,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,FANG,0.00233309,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,FAST,0.00230495,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,EA,0.00221529,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,XEL,0.00217682,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,ODFL,0.00216237,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,FER,0.00215132,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,EXC,0.0020617,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,CCEP,0.00198807,tiingo,,,,2026-06-16,2026-06-17,2,True,295,295,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,IDXX,0.00198084,tiingo,,,,2026-06-16,2026-06-17,2,True,295,295,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,KDP,0.00188396,tiingo,,,,2026-06-16,2026-06-17,2,True,295,295,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
-2026-06-18,ADSK,0.00183319,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
+2026-06-18,NVDA,0.08155758,tiingo,"tiingo,twelve_data",data/cache/prices/NVDA.csv,adjusted_close,2026-06-17,2026-06-17,1,True,297,297,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,AAPL,0.06866865,tiingo,"tiingo,twelve_data",data/cache/prices/AAPL.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,MU,0.05333647,tiingo,"tiingo,twelve_data",data/cache/prices/MU.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,MSFT,0.0468373599999999,tiingo,"tiingo,twelve_data",data/cache/prices/MSFT.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,AMZN,0.04167276,tiingo,"tiingo,twelve_data",data/cache/prices/AMZN.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,AMD,0.03886242,tiingo,"tiingo,twelve_data",data/cache/prices/AMD.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,GOOGL,0.03392589,tiingo,"tiingo,twelve_data",data/cache/prices/GOOGL.csv,adjusted_close,2026-06-17,2026-06-17,1,True,268,268,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,TSLA,0.03237789,tiingo,"tiingo,twelve_data",data/cache/prices/TSLA.csv,adjusted_close,2026-06-17,2026-06-17,1,True,268,268,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,GOOG,0.03150331,tiingo,"tiingo,twelve_data",data/cache/prices/GOOG.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,AVGO,0.0294699899999999,tiingo,"tiingo,twelve_data",data/cache/prices/AVGO.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,INTC,0.02782061,tiingo,"tiingo,twelve_data",data/cache/prices/INTC.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,META,0.02764571,tiingo,"tiingo,twelve_data",data/cache/prices/META.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,WMT,0.0257194,tiingo,"tiingo,twelve_data",data/cache/prices/WMT.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,LRCX,0.02114648,tiingo,"tiingo,twelve_data",data/cache/prices/LRCX.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,CSCO,0.0206767,tiingo,"tiingo,twelve_data",data/cache/prices/CSCO.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,AMAT,0.02024122,tiingo,"tiingo,twelve_data",data/cache/prices/AMAT.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,COST,0.01893856,tiingo,"tiingo,twelve_data",data/cache/prices/COST.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,NFLX,0.01501388,tiingo,"tiingo,twelve_data",data/cache/prices/NFLX.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,KLAC,0.01463416,tiingo,"tiingo,twelve_data",data/cache/prices/KLAC.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,SNDK,0.01354646,tiingo,"tiingo,twelve_data",data/cache/prices/SNDK.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,PLTR,0.01344034,tiingo,"tiingo,twelve_data",data/cache/prices/PLTR.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,TXN,0.01238181,tiingo,"tiingo,twelve_data",data/cache/prices/TXN.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,MRVL,0.01171649,tiingo,"tiingo,twelve_data",data/cache/prices/MRVL.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,LIN,0.0105537499999999,tiingo,"tiingo,twelve_data",data/cache/prices/LIN.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,QCOM,0.01030097,tiingo,"tiingo,twelve_data",data/cache/prices/QCOM.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,PANW,0.0101094499999999,tiingo,"tiingo,twelve_data",data/cache/prices/PANW.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,STX,0.00967352,tiingo,"tiingo,twelve_data",data/cache/prices/STX.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,WDC,0.00964958,tiingo,"tiingo,twelve_data",data/cache/prices/WDC.csv,adjusted_close,2026-06-17,2026-06-17,1,True,297,297,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,ADI,0.0091122199999999,tiingo,"tiingo,twelve_data",data/cache/prices/ADI.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,296,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,TMUS,0.00906071,tiingo,"tiingo,twelve_data",data/cache/prices/TMUS.csv,adjusted_close,2026-06-17,2026-06-17,1,True,297,297,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,PEP,0.0087906399999999,tiingo,"tiingo,twelve_data",data/cache/prices/PEP.csv,adjusted_close,2026-06-17,2026-06-17,1,True,297,297,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,AMGN,0.00822743,tiingo,"tiingo,twelve_data",data/cache/prices/AMGN.csv,adjusted_close,2026-06-17,2026-06-17,1,True,297,297,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,CRWD,0.00760571,tiingo,"tiingo,twelve_data",data/cache/prices/CRWD.csv,adjusted_close,2026-06-17,2026-06-17,1,True,297,297,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,APP,0.00696389,tiingo,"tiingo,twelve_data",data/cache/prices/APP.csv,adjusted_close,2026-06-17,2026-06-17,1,True,297,297,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,GILD,0.00676302,tiingo,"tiingo,twelve_data",data/cache/prices/GILD.csv,adjusted_close,2026-06-17,2026-06-17,1,True,297,297,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,ISRG,0.00644094,tiingo,"tiingo,twelve_data",data/cache/prices/ISRG.csv,adjusted_close,2026-06-17,2026-06-17,1,True,297,297,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,HON,0.00629418,tiingo,"tiingo,twelve_data",data/cache/prices/HON.csv,adjusted_close,2026-06-17,2026-06-17,1,True,297,297,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,BKNG,0.00603553,tiingo,"tiingo,twelve_data",data/cache/prices/BKNG.csv,adjusted_close,2026-06-17,2026-06-17,1,True,297,297,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,SHOP,0.00600499,tiingo,"tiingo,twelve_data",data/cache/prices/SHOP.csv,adjusted_close,2026-06-17,2026-06-17,1,True,297,297,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,SBUX,0.00503947,tiingo,"tiingo,twelve_data",data/cache/prices/SBUX.csv,adjusted_close,2026-06-17,2026-06-17,1,True,297,297,0,True,True,True,True,False,False,True,False,False,,"cache complete, fresh and target-aligned"
+2026-06-18,VRTX,0.00498241,tiingo,"tiingo,twelve_data",data/cache/prices/VRTX.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,VRTX: 8 rows
+2026-06-18,FTNT,0.0048160799999999,tiingo,"tiingo,twelve_data",data/cache/prices/FTNT.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,FTNT: 8 rows
+2026-06-18,CDNS,0.00474238,tiingo,"tiingo,twelve_data",data/cache/prices/CDNS.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,CDNS: 8 rows
+2026-06-18,MAR,0.00463067,tiingo,"tiingo,twelve_data",data/cache/prices/MAR.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,MAR: 8 rows
+2026-06-18,CEG,0.00413497,tiingo,"tiingo,twelve_data",data/cache/prices/CEG.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,CEG: 8 rows
+2026-06-18,MNST,0.00397109,tiingo,"tiingo,twelve_data",data/cache/prices/MNST.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,MNST: 8 rows
+2026-06-18,ADP,0.00394306,tiingo,"tiingo,twelve_data",data/cache/prices/ADP.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,ADP: 8 rows
+2026-06-18,CSX,0.00383699,tiingo,"tiingo,twelve_data",data/cache/prices/CSX.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,CSX: 8 rows
+2026-06-18,SNPS,0.00378984,tiingo,"tiingo,twelve_data",data/cache/prices/SNPS.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,SNPS: 8 rows
+2026-06-18,CMCSA,0.00374511,tiingo,"tiingo,twelve_data",data/cache/prices/CMCSA.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,CMCSA: 8 rows
+2026-06-18,ADBE,0.00366264,tiingo,"tiingo,twelve_data",data/cache/prices/ADBE.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,ADBE: 8 rows
+2026-06-18,MELI,0.00363411,tiingo,"tiingo,twelve_data",data/cache/prices/MELI.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,MELI: 8 rows
+2026-06-18,MPWR,0.00353387,tiingo,"tiingo,twelve_data",data/cache/prices/MPWR.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,MPWR: 8 rows
+2026-06-18,NXPI,0.00347543,tiingo,"tiingo,twelve_data",data/cache/prices/NXPI.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,NXPI: 8 rows
+2026-06-18,MDLZ,0.00343247,tiingo,"tiingo,twelve_data",data/cache/prices/MDLZ.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,MDLZ: 8 rows
+2026-06-18,INTU,0.00339337,tiingo,"tiingo,twelve_data",data/cache/prices/INTU.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,INTU: 8 rows
+2026-06-18,ROST,0.00334064,tiingo,"tiingo,twelve_data",data/cache/prices/ROST.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,ROST: 8 rows
+2026-06-18,DDOG,0.00333375,tiingo,"tiingo,twelve_data",data/cache/prices/DDOG.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,DDOG: 8 rows
+2026-06-18,ORLY,0.00329525,tiingo,"tiingo,twelve_data",data/cache/prices/ORLY.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,ORLY: 8 rows
+2026-06-18,AEP,0.0030451899999999,tiingo,"tiingo,twelve_data",data/cache/prices/AEP.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,AEP: 8 rows
+2026-06-18,CTAS,0.00304252,tiingo,"tiingo,twelve_data",data/cache/prices/CTAS.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,CTAS: 8 rows
+2026-06-18,DASH,0.00300045,tiingo,"tiingo,twelve_data",data/cache/prices/DASH.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,DASH: 8 rows
+2026-06-18,LITE,0.0029759799999999,tiingo,"tiingo,twelve_data",data/cache/prices/LITE.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,LITE: 8 rows
+2026-06-18,WBD,0.00289705,tiingo,"tiingo,twelve_data",data/cache/prices/WBD.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,WBD: 8 rows
+2026-06-18,REGN,0.00278212,tiingo,"tiingo,twelve_data",data/cache/prices/REGN.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,REGN: 8 rows
+2026-06-18,PCAR,0.00276355,tiingo,"tiingo,twelve_data",data/cache/prices/PCAR.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,PCAR: 8 rows
+2026-06-18,BKR,0.00268756,tiingo,"tiingo,twelve_data",data/cache/prices/BKR.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,BKR: 8 rows
+2026-06-18,ABNB,0.0025628,tiingo,"tiingo,twelve_data",data/cache/prices/ABNB.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,ABNB: 8 rows
+2026-06-18,MCHP,0.00236367,tiingo,"tiingo,twelve_data",data/cache/prices/MCHP.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,MCHP: 8 rows
+2026-06-18,FANG,0.00233309,tiingo,"tiingo,twelve_data",data/cache/prices/FANG.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,FANG: 8 rows
+2026-06-18,FAST,0.00230495,tiingo,"tiingo,twelve_data",data/cache/prices/FAST.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,FAST: 8 rows
+2026-06-18,EA,0.00221529,tiingo,"tiingo,twelve_data",data/cache/prices/EA.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,EA: 8 rows
+2026-06-18,XEL,0.00217682,tiingo,"tiingo,twelve_data",data/cache/prices/XEL.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,XEL: 8 rows
+2026-06-18,ODFL,0.00216237,tiingo,"tiingo,twelve_data",data/cache/prices/ODFL.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,ODFL: 8 rows
+2026-06-18,FER,0.00215132,tiingo,"tiingo,twelve_data",data/cache/prices/FER.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,FER: 8 rows
+2026-06-18,EXC,0.0020617,tiingo,"tiingo,twelve_data",data/cache/prices/EXC.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,EXC: 8 rows
+2026-06-18,CCEP,0.00198807,tiingo,"tiingo,twelve_data",data/cache/prices/CCEP.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,CCEP: 8 rows
+2026-06-18,IDXX,0.00198084,tiingo,"tiingo,twelve_data",data/cache/prices/IDXX.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,IDXX: 8 rows
+2026-06-18,KDP,0.00188396,tiingo,"tiingo,twelve_data",data/cache/prices/KDP.csv,adjusted_close,2026-06-17,2026-06-17,1,True,295,296,8,True,True,True,True,False,True,True,False,False,,KDP: 8 rows
+2026-06-18,ADSK,0.00183319,tiingo,"tiingo,twelve_data",data/cache/prices/ADSK.csv,adjusted_close,2026-06-17,2026-06-17,1,True,296,297,8,True,True,True,True,False,True,True,False,False,,ADSK: 8 rows
 2026-06-18,MSTR,0.00179357,tiingo,,,,2026-06-16,2026-06-17,2,True,295,295,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
 2026-06-18,TTWO,0.00174765,tiingo,,,,2026-06-16,2026-06-17,2,True,296,296,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
 2026-06-18,PYPL,0.00171298,tiingo,,,,2026-06-16,2026-06-17,2,True,295,295,0,True,True,True,False,True,False,False,False,False,,skipped after max_calls limit
