@@ -1,0 +1,15 @@
+﻿metric_name,metric_value,unit_or_method,data_date,source
+DGS10_latest_value,4.49,percent yield,2026-06-17,FRED
+DGS10_1M_CHANGE,-0.1200000000000001,current value minus value 21 observations ago,2026-06-17,FRED
+DGS2_DGS10_SPREAD,-0.29000000000000004,2-year yield minus 10-year yield,2026-06-17,FRED
+DGS10_DGS2_SPREAD,0.29000000000000004,10-year yield minus 2-year yield,2026-06-17,FRED
+DGS10_DGS2_SPREAD_1M_CHANGE,-0.25,current 10y-2y spread minus spread 21 observations ago,2026-06-17,FRED
+CPIAUCSL_RECENT_PCT_CHANGE_1,0.008651438343614481,CPI近3次变化; pct_change between consecutive observations,2026-05-01,FRED
+CPIAUCSL_RECENT_PCT_CHANGE_2,0.0064003778463364025,CPI近3次变化; pct_change between consecutive observations,2026-05-01,FRED
+CPIAUCSL_RECENT_PCT_CHANGE_3,0.004729142286413968,CPI近3次变化; pct_change between consecutive observations,2026-05-01,FRED
+CPIAUCSL_LATEST_PCT_CHANGE,0.004729142286413968,CPI近3次变化; latest pct_change between consecutive observations,2026-05-01,FRED
+PCEPI_RECENT_PCT_CHANGE_1,0.004015441621060045,PCE近3次变化; pct_change between consecutive observations,2026-04-01,FRED
+PCEPI_RECENT_PCT_CHANGE_2,0.006647621988882024,PCE近3次变化; pct_change between consecutive observations,2026-04-01,FRED
+PCEPI_RECENT_PCT_CHANGE_3,0.003995981009502714,PCE近3次变化; pct_change between consecutive observations,2026-04-01,FRED
+PCEPI_LATEST_PCT_CHANGE,0.003995981009502714,PCE近3次变化; latest pct_change between consecutive observations,2026-04-01,FRED
+UNRATE_3_OBSERVATION_CHANGE,-0.10000000000000053,current unemployment rate minus value 3 observations ago,2026-05-01,FRED
