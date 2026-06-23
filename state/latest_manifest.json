@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-06-20",
-  "generated_at": "2026-06-20T10:32:45Z",
+  "as_of": "2026-06-23",
+  "generated_at": "2026-06-23T10:32:54Z",
   "latest_files": {
     "excel_report": "reports/latest/nasdaq100_qqq_daily_tracker.xlsx",
     "manifest_json": "reports/latest/manifest.json",
@@ -212,7 +212,7 @@
       "ma200_available": null,
       "actual_quote_provider": "",
       "actual_history_provider": "",
-      "message": "QQQ: holdings rows=103 effective_date=2026-06-19"
+      "message": "QQQ: holdings rows=103 effective_date=2026-06-21"
     },
     {
       "dataset": "qqq_equity_holdings",
@@ -274,7 +274,7 @@
       "rate_limited": false,
       "stopped_after_429": false,
       "remaining_symbols_skipped": 0,
-      "cache_rows_used": 29101,
+      "cache_rows_used": 29199,
       "live_rows_fetched": 0,
       "fallback_provider": "twelve_data_quote",
       "history_coverage_ratio": 1.0,
@@ -284,12 +284,12 @@
       "ma200_available": null,
       "actual_quote_provider": "twelve_data",
       "actual_history_provider": "mixed_history_cache",
-      "message": "98/98 symbols with history coverage; 20/98 history symbols with Twelve Data quote overlay; target_date=2026-06-18; target_aligned=98/98; non_target_aligned=0/98; min_latest_date=2026-06-18; max_latest_date=2026-06-18; target_date_source=reports/latest/price_daily.csv"
+      "message": "98/98 symbols with history coverage; 20/98 history symbols with Twelve Data quote overlay; target_date=2026-06-22; target_aligned=98/98; non_target_aligned=0/98; min_latest_date=2026-06-22; max_latest_date=2026-06-22; target_date_source=reports/latest/price_daily.csv"
     }
   ],
   "api_usage": [
     {
-      "run_date": "2026-06-20",
+      "run_date": "2026-06-23",
       "provider": "fred",
       "endpoint": "series_observations",
       "calls_attempted": 7,
@@ -314,7 +314,7 @@
       "message": "DGS10: DGS10: 365 rows; DGS2: DGS2: 365 rows; DGS3MO: DGS3MO: 365 rows; ..."
     },
     {
-      "run_date": "2026-06-20",
+      "run_date": "2026-06-23",
       "provider": "invesco",
       "endpoint": "qqq_holdings",
       "calls_attempted": 1,
@@ -339,7 +339,7 @@
       "message": "holdings rows=103"
     },
     {
-      "run_date": "2026-06-20",
+      "run_date": "2026-06-23",
       "provider": "fmp",
       "endpoint": "diagnostic_only",
       "calls_attempted": 0,
@@ -364,7 +364,7 @@
       "message": "FMP production quote collection disabled; use provider capability probe"
     },
     {
-      "run_date": "2026-06-20",
+      "run_date": "2026-06-23",
       "provider": "twelve_data",
       "endpoint": "quote",
       "calls_attempted": 20,
@@ -389,7 +389,7 @@
       "message": "NVDA: quote loaded on round 1; AAPL: quote loaded on round 1; MU: quote loaded on round 1; MSFT: quote loaded on round 1; AMZN: quote loaded on round 1; ..."
     },
     {
-      "run_date": "2026-06-20",
+      "run_date": "2026-06-23",
       "provider": "alpha_vantage",
       "endpoint": "not_called",
       "calls_attempted": 0,
@@ -414,7 +414,7 @@
       "message": "provider not called in this daily pipeline run"
     },
     {
-      "run_date": "2026-06-20",
+      "run_date": "2026-06-23",
       "provider": "tiingo",
       "endpoint": "not_called",
       "calls_attempted": 0,
@@ -494,7 +494,7 @@
       "method": "qqq_holdings",
       "symbol": "QQQ",
       "ok": true,
-      "message": "QQQ: holdings rows=103 effective_date=2026-06-19"
+      "message": "QQQ: holdings rows=103 effective_date=2026-06-21"
     },
     {
       "provider": "tiingo_cache",

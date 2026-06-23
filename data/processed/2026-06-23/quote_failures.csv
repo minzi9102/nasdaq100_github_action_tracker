@@ -1,0 +1,21 @@
+﻿symbol,company_name,weight,provider,endpoint,attempted_symbol,http_status,api_status,raw_error,parse_error,was_api_success,was_parse_success,was_merge_success,final_missing
+NVDA,NVIDIA Corp,0.08124779,twelve_data,quote,NVDA,200,success,,,True,True,True,False
+AAPL,Apple Inc,0.06934832,twelve_data,quote,AAPL,200,success,,,True,True,True,False
+MU,Micron Technology Inc,0.05584223,twelve_data,quote,MU,200,success,,,True,True,True,False
+MSFT,Microsoft Corp,0.044652370000000004,twelve_data,quote,MSFT,200,success,,,True,True,True,False
+AMZN,Amazon.com Inc,0.04158332,twelve_data,quote,AMZN,200,success,,,True,True,True,False
+AMD,Advanced Micro Devices Inc,0.03833218,twelve_data,quote,AMD,200,success,,,True,True,True,False
+GOOGL,Alphabet Inc Class A,0.03395709,twelve_data,quote,GOOGL,200,success,,,True,True,True,False
+TSLA,Tesla Inc,0.03168063,twelve_data,quote,TSLA,200,success,,,True,True,True,False
+GOOG,Alphabet Inc Class C,0.03167556,twelve_data,quote,GOOG,200,success,,,True,True,True,False
+AVGO,Broadcom Inc,0.03091117,twelve_data,quote,AVGO,200,success,,,True,True,True,False
+INTC,Intel Corp,0.029285890000000002,twelve_data,quote,INTC,200,success,,,True,True,True,False
+META,Meta Platforms Inc,0.02701028,twelve_data,quote,META,200,success,,,True,True,True,False
+WMT,Walmart Inc,0.02505703,twelve_data,quote,WMT,200,success,,,True,True,True,False
+AMAT,Applied Materials Inc,0.02141996,twelve_data,quote,AMAT,200,success,,,True,True,True,False
+LRCX,Lam Research Corp,0.0212627,twelve_data,quote,LRCX,200,success,,,True,True,True,False
+CSCO,Cisco Systems Inc,0.02066105,twelve_data,quote,CSCO,200,success,,,True,True,True,False
+COST,Costco Wholesale Corp,0.01848012,twelve_data,quote,COST,200,success,,,True,True,True,False
+KLAC,KLA Corp,0.01488017,twelve_data,quote,KLAC,200,success,,,True,True,True,False
+NFLX,Netflix Inc,0.01428937,twelve_data,quote,NFLX,200,success,,,True,True,True,False
+SNDK,Sandisk Corp,0.01410392,twelve_data,quote,SNDK,200,success,,,True,True,True,False
