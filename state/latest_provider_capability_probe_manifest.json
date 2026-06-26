@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "run_date": "2026-06-25",
+  "run_date": "2026-06-26",
   "generated_rows": 10,
   "latest_file": "reports/latest/provider_capability_probe.csv",
   "results": [
@@ -58,11 +58,11 @@
       "provider": "fmp",
       "endpoint": "stable/batch-quote",
       "symbol_or_symbols": "AAPL,MSFT",
-      "http_status": 402,
-      "rows": 0,
+      "http_status": 200,
+      "rows": 2,
       "usable_for_production": false,
-      "error_type": "permission_limited",
-      "message": "402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/batch-quote?symbols=AAPL%2CMSFT&apikey=%2A%2A%2AREDACTED%2A%2A%2A"
+      "error_type": "success",
+      "message": "stable_batch_quote: rows=2"
     },
     {
       "provider": "twelve_data",
