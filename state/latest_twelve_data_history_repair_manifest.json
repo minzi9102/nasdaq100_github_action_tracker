@@ -1,7 +1,7 @@
 {
   "ok": true,
-  "run_date": "2026-07-08",
-  "target_date": "2026-07-07",
+  "run_date": "2026-07-09",
+  "target_date": "2026-07-08",
   "target_date_source": "reports/latest/price_daily.csv",
   "provider": "twelve_data",
   "calls_attempted": 0,
