@@ -1,0 +1,4 @@
+﻿run_date,provider,endpoint,calls_attempted,calls_success,calls_failed,rate_limited,limit_window,limit_value,credits_used,symbols_requested,symbols_loaded,stopped_after_429,retry_after_seconds,http_status,error_type,function,outputsize,adjusted,actual_endpoint,production_enabled,premium_blocked,message
+2026-07-10,alpha_vantage,TIME_SERIES_DAILY,1,1,0,False,day,25,1,QQQ,QQQ,False,,200.0,success,TIME_SERIES_DAILY,compact,False,TIME_SERIES_DAILY,True,False,QQQ: 100 rows
+2026-07-10,tiingo,qqq_cache_initialize,0,0,0,False,hour,50,0,,,False,,,,,,,qqq_cache_initialize,True,False,called only when QQQ cache had fewer than 260 rows
+2026-07-10,twelve_data,qqq_cache_initialize,0,0,0,False,minute,8,0,,,False,,,,,,,qqq_cache_initialize,True,False,fallback initialization when QQQ cache remained below 260 rows
