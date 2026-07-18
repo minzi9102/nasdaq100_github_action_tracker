@@ -1,9 +1,9 @@
 {
   "ok": true,
   "stage": "refresh-target",
-  "as_of": "2026-07-17",
-  "generated_at": "2026-07-17T02:45:14Z",
-  "target_date": "2026-07-16",
+  "as_of": "2026-07-18",
+  "generated_at": "2026-07-18T02:45:14Z",
+  "target_date": "2026-07-17",
   "target_date_source": "current price_daily",
   "latest_files": {
     "price_daily_csv": "reports/latest/price_daily.csv",
@@ -38,7 +38,7 @@
   ],
   "api_usage": [
     {
-      "run_date": "2026-07-17",
+      "run_date": "2026-07-18",
       "provider": "alpha_vantage",
       "endpoint": "TIME_SERIES_DAILY",
       "calls_attempted": 1,
@@ -63,7 +63,7 @@
       "message": "QQQ: 100 rows"
     },
     {
-      "run_date": "2026-07-17",
+      "run_date": "2026-07-18",
       "provider": "tiingo",
       "endpoint": "qqq_cache_initialize",
       "calls_attempted": 0,
@@ -88,7 +88,7 @@
       "message": "called only when QQQ cache had fewer than 260 rows"
     },
     {
-      "run_date": "2026-07-17",
+      "run_date": "2026-07-18",
       "provider": "twelve_data",
       "endpoint": "qqq_cache_initialize",
       "calls_attempted": 0,
