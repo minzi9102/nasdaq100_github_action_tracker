@@ -1,0 +1,11 @@
+﻿provider,endpoint,symbol_or_symbols,http_status,rows,usable_for_production,error_type,message
+alpha_vantage,TIME_SERIES_DAILY compact,QQQ,200,100,True,success,QQQ: 100 rows
+alpha_vantage,TIME_SERIES_DAILY full,QQQ,200,0,False,premium_blocked,"Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per second). You may subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to lift the free key rate limit (25 requests per day), raise the per-second burst limit, and instantly unlock all premium endpoints"
+fmp,quote,AAPL,200,1,False,success,AAPL: quote rows=1
+fmp,quote,AVGO,402,0,False,permission_limited,402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/quote?symbol=AVGO&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+fmp,quote batch,"AAPL,MSFT",402,0,False,permission_limited,402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/quote?symbol=AAPL%2CMSFT&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+fmp,stable/batch-quote,"AAPL,MSFT",402,0,False,permission_limited,402 Client Error: Payment Required for url: https://financialmodelingprep.com/stable/batch-quote?symbols=AAPL%2CMSFT&apikey=%2A%2A%2AREDACTED%2A%2A%2A
+twelve_data,quote,GOOG,200,1,True,success,GOOG: quote rows=1
+twelve_data,quote,AVGO,200,1,True,success,AVGO: quote rows=1
+twelve_data,time_series,GOOG,200,260,True,success,GOOG: 260 rows
+twelve_data,time_series,AVGO,200,260,True,success,AVGO: 260 rows
