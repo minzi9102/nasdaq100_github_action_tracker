@@ -1,0 +1,2 @@
+﻿dataset,provider,ok,rows,symbol_coverage_ratio,weight_coverage_ratio,missing_symbols,missing_top_weight_symbols,rate_limited,stopped_after_429,remaining_symbols_skipped,cache_rows_used,live_rows_fetched,fallback_provider,history_coverage_ratio,quote_coverage_ratio,top10_quote_coverage_ratio,top20_quote_coverage_ratio,ma200_available,actual_quote_provider,actual_history_provider,message
+price_daily,alpha_vantage_compact+local_cache,True,260,1.0,1.0,,,False,False,0,260,100,tiingo+twelve_data,1.0,,,,True,,alpha_vantage_compact+local_cache,QQQ cache ready
