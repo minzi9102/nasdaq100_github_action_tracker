@@ -1,0 +1,2 @@
+﻿provider,method,symbol,ok,message
+alpha_vantage,daily,QQQ,False,We have detected your API key as F7S9PUKIECGF96D3 and our standard API rate limit is 25 requests per day. Please subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to instantly remove all daily rate limits.
