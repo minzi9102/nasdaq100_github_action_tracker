@@ -1,9 +1,9 @@
 {
   "ok": true,
   "stage": "refresh-target",
-  "as_of": "2026-09-16",
-  "generated_at": "2026-09-16T02:45:17Z",
-  "target_date": "2026-09-14",
+  "as_of": "2026-09-17",
+  "generated_at": "2026-09-17T02:45:15Z",
+  "target_date": "2026-09-16",
   "target_date_source": "current price_daily",
   "latest_files": {
     "price_daily_csv": "reports/latest/price_daily.csv",
@@ -24,7 +24,7 @@
       "stopped_after_429": false,
       "remaining_symbols_skipped": 0,
       "cache_rows_used": 260,
-      "live_rows_fetched": 0,
+      "live_rows_fetched": 100,
       "fallback_provider": "tiingo+twelve_data",
       "history_coverage_ratio": 1.0,
       "quote_coverage_ratio": null,
@@ -38,32 +38,32 @@
   ],
   "api_usage": [
     {
-      "run_date": "2026-09-16",
+      "run_date": "2026-09-17",
       "provider": "alpha_vantage",
       "endpoint": "TIME_SERIES_DAILY",
       "calls_attempted": 1,
-      "calls_success": 0,
-      "calls_failed": 1,
+      "calls_success": 1,
+      "calls_failed": 0,
       "rate_limited": false,
       "limit_window": "day",
       "limit_value": 25,
       "credits_used": 1,
       "symbols_requested": "QQQ",
-      "symbols_loaded": "",
+      "symbols_loaded": "QQQ",
       "stopped_after_429": false,
       "retry_after_seconds": null,
-      "http_status": null,
-      "error_type": "api_error",
+      "http_status": 200.0,
+      "error_type": "success",
       "function": "TIME_SERIES_DAILY",
       "outputsize": "compact",
       "adjusted": false,
       "actual_endpoint": "TIME_SERIES_DAILY",
       "production_enabled": true,
       "premium_blocked": false,
-      "message": "We have detected your API key as F7S9PUKIECGF96D3 and our standard API rate limit is 25 requests per day. Please subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to instantly remove all daily rate limits."
+      "message": "QQQ: 100 rows"
     },
     {
-      "run_date": "2026-09-16",
+      "run_date": "2026-09-17",
       "provider": "tiingo",
       "endpoint": "qqq_cache_initialize",
       "calls_attempted": 0,
@@ -88,7 +88,7 @@
       "message": "called only when QQQ cache had fewer than 260 rows"
     },
     {
-      "run_date": "2026-09-16",
+      "run_date": "2026-09-17",
       "provider": "twelve_data",
       "endpoint": "qqq_cache_initialize",
       "calls_attempted": 0,
@@ -118,8 +118,8 @@
       "provider": "alpha_vantage",
       "method": "daily",
       "symbol": "QQQ",
-      "ok": false,
-      "message": "We have detected your API key as F7S9PUKIECGF96D3 and our standard API rate limit is 25 requests per day. Please subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to instantly remove all daily rate limits."
+      "ok": true,
+      "message": "QQQ: 100 rows"
     }
   ]
 }
