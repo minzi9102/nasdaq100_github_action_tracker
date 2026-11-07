@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "run_date": "2026-11-06",
+  "run_date": "2026-11-07",
   "generated_rows": 10,
   "latest_file": "reports/latest/provider_capability_probe.csv",
   "results": [
@@ -9,10 +9,10 @@
       "endpoint": "TIME_SERIES_DAILY compact",
       "symbol_or_symbols": "QQQ",
       "http_status": 200,
-      "rows": 0,
-      "usable_for_production": false,
-      "error_type": "premium_blocked",
-      "message": "We have detected your API key as F7S9PUKIECGF96D3 and our standard API rate limit is 25 requests per day. Please subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to instantly remove all daily rate limits."
+      "rows": 100,
+      "usable_for_production": true,
+      "error_type": "success",
+      "message": "QQQ: 100 rows"
     },
     {
       "provider": "alpha_vantage",
