@@ -1,12 +1,10 @@
 {
   "ok": true,
-  "run_date": "2026-11-10",
-  "target_date": "2026-11-09",
+  "run_date": "2026-11-11",
+  "target_date": "2026-11-10",
   "target_date_source": "reports/latest/price_daily.csv",
   "provider": "twelve_data",
-  "calls_attempted": 3,
-  "symbols_loaded": [
-    "CHTR"
-  ],
+  "calls_attempted": 2,
+  "symbols_loaded": [],
   "rate_limited": false
 }
