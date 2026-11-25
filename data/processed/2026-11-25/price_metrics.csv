@@ -1,0 +1,2 @@
+﻿symbol,source,date,latest_close,return_20d,return_60d,vol_20d,current_drawdown,max_drawdown,ma_50,ma_200
+QQQ,alpha_vantage_compact+local_cache,2026-11-24,638.1,-0.11528596187175044,-0.1097438473129081,0.4788315167861013,-0.1600189558486691,-0.19904957480978325,708.4653999999999,683.38665
